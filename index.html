@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Market Plus X | Gafas Inteligentes con Cámara e IA en Colombia</title>
+  <meta name="description" content="Gafas inteligentes con cámara HD/4K, audio Open-Ear, traducción con IA y almacenamiento local. Graba con manos libres. Preventa en Colombia con pago contra entrega en Bogotá." />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <script>
+    // Configuración de Tailwind (modo oscuro + paleta de marca)
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              dark: '#0f172a',     // Slate/Charcoal base
+              card: '#1e293b',     // Slate 800
+              blue: '#3b82f6',     // Azul eléctrico
+              green: '#22c55e',    // Verde neón (WhatsApp)
+            },
+          },
+          keyframes: {
+            pulseGlow: {
+              '0%, 100%': { boxShadow: '0 0 0 0 rgba(34, 197, 94, 0.7)' },
+              '70%': { boxShadow: '0 0 0 18px rgba(34, 197, 94, 0)' },
+            },
+            floatUp: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+          },
+          animation: {
+            pulseGlow: 'pulseGlow 2s infinite',
+            floatUp: 'floatUp 4s ease-in-out infinite',
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    body { background-color: #0f172a; }
+    /* Scrollbar elegante */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+
+    /* Gradiente de fondo del hero */
+    .hero-glow {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(59,130,246,0.18), transparent 40%),
+        radial-gradient(circle at 80% 0%, rgba(34,197,94,0.12), transparent 40%);
+    }
+
+    /* Animación de apertura del acordeón */
+    .faq-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+    }
+  </style>
+</head>
+
+<body class="bg-brand-dark text-slate-200 font-sans antialiased selection:bg-brand-blue/30">
+
+  <!-- ============================ NAVBAR ============================ -->
+  <header id="navbar" class="fixed top-0 inset-x-0 z-50 transition-all duration-300 bg-brand-dark/80 backdrop-blur-md border-b border-white/5">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo -->
+        <a href="#inicio" class="flex items-center gap-2 group">
+          <span class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-brand-blue to-blue-700 shadow-lg shadow-blue-500/30">
+            <i class="fa-solid fa-glasses text-white"></i>
+          </span>
+          <span class="text-lg font-extrabold tracking-tight text-white">
+            Market Plus <span class="text-brand-blue">X</span>
+          </span>
+        </a>
+
+        <!-- Menú escritorio -->
+        <ul class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+          <li><a href="#caracteristicas" class="hover:text-white transition">Características</a></li>
+          <li><a href="#usos" class="hover:text-white transition">Casos de uso</a></li>
+          <li><a href="#precios" class="hover:text-white transition">Precios</a></li>
+          <li><a href="#faq" class="hover:text-white transition">FAQ</a></li>
+        </ul>
+
+        <!-- Botón WhatsApp (CTA) -->
+        <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20quiero%20más%20información%20de%20la%20preventa%20de%20gafas%20inteligentes"
+           target="_blank" rel="noopener"
+           class="inline-flex items-center gap-2 rounded-full bg-brand-green px-4 py-2 text-sm font-semibold text-brand-dark shadow-lg shadow-green-500/30 hover:bg-green-400 transition">
+          <i class="fa-brands fa-whatsapp text-base"></i>
+          <span class="hidden sm:inline">Pedir Preventa</span>
+          <span class="sm:hidden">Preventa</span>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ============================ HERO ============================ -->
+  <section id="inicio" class="relative pt-28 pb-20 sm:pt-36 hero-glow overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+
+        <!-- Columna texto -->
+        <div class="text-center lg:text-left">
+          <span class="inline-flex items-center gap-2 rounded-full border border-brand-blue/30 bg-brand-blue/10 px-3 py-1 text-xs font-semibold text-brand-blue mb-6">
+            <i class="fa-solid fa-bolt"></i> Preventa exclusiva en Colombia
+          </span>
+
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-white">
+            Graba tu mundo con <span class="text-brand-blue">manos libres</span>.
+            <br class="hidden sm:block" />
+            Escucha con total <span class="text-brand-green">seguridad</span>.
+          </h1>
+
+          <p class="mt-6 text-lg text-slate-300 max-w-xl mx-auto lg:mx-0">
+            Gafas inteligentes con cámara HD e IA pensadas para <strong class="text-white">moteros, ciclistas y creadores de contenido</strong> en Colombia.
+            Captura cada ruta y cada momento sin soltar el manubrio ni perder de vista la calle.
+          </p>
+
+          <div class="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+            <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20quiero%20más%20información%20de%20la%20preventa%20de%20gafas%20inteligentes"
+               target="_blank" rel="noopener"
+               class="animate-pulseGlow inline-flex items-center gap-3 rounded-full bg-brand-green px-7 py-4 text-base font-bold text-brand-dark hover:bg-green-400 transition w-full sm:w-auto justify-center">
+              <i class="fa-brands fa-whatsapp text-xl"></i>
+              Reservar mi preventa
+            </a>
+            <a href="#precios" class="inline-flex items-center gap-2 rounded-full border border-white/15 px-7 py-4 text-base font-semibold text-white hover:bg-white/5 transition w-full sm:w-auto justify-center">
+              Ver modelos y precios <i class="fa-solid fa-arrow-down text-sm"></i>
+            </a>
+          </div>
+
+          <!-- Confianza -->
+          <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 justify-center lg:justify-start text-sm text-slate-400">
+            <span><i class="fa-solid fa-truck-fast text-brand-green mr-1"></i> Pago contra entrega en Bogotá</span>
+            <span><i class="fa-solid fa-shield-halved text-brand-green mr-1"></i> Resistente a salpicaduras IPX4</span>
+          </div>
+        </div>
+
+        <!-- Columna mockup reproductor POV -->
+        <div class="relative animate-floatUp">
+          <div class="relative rounded-3xl border border-white/10 bg-brand-card/60 backdrop-blur p-3 shadow-2xl shadow-blue-900/40">
+            <!-- "Pantalla" del video POV -->
+            <div class="relative aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-slate-800 via-slate-900 to-black">
+              <!-- Simulación de carretera POV -->
+              <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(59,130,246,0.25),transparent_60%)]"></div>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="text-center">
+                  <span class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/10 backdrop-blur border border-white/20 hover:scale-110 transition cursor-pointer">
+                    <i class="fa-solid fa-play text-3xl text-white ml-1"></i>
+                  </span>
+                  <p class="mt-4 text-sm text-slate-300 font-medium">Vista POV en primera persona</p>
+                </div>
+              </div>
+
+              <!-- HUD superior: REC -->
+              <div class="absolute top-3 left-3 flex items-center gap-2 rounded-full bg-black/50 px-3 py-1 text-xs font-semibold text-white">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span> REC · 4K
+              </div>
+              <div class="absolute top-3 right-3 rounded-full bg-black/50 px-3 py-1 text-xs font-semibold text-white">
+                <i class="fa-solid fa-battery-three-quarters text-brand-green mr-1"></i> 87%
+              </div>
+
+              <!-- Barra de reproducción -->
+              <div class="absolute bottom-0 inset-x-0 p-3">
+                <div class="h-1.5 rounded-full bg-white/20 overflow-hidden">
+                  <div class="h-full w-2/3 bg-brand-blue"></div>
+                </div>
+                <div class="mt-2 flex items-center justify-between text-[11px] text-slate-300">
+                  <span>01:24</span>
+                  <span class="flex gap-3">
+                    <i class="fa-solid fa-volume-high"></i>
+                    <i class="fa-solid fa-expand"></i>
+                  </span>
+                  <span>03:50</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tarjeta flotante -->
+          <div class="absolute -bottom-5 -left-3 sm:-left-6 rounded-2xl bg-brand-card border border-white/10 px-4 py-3 shadow-xl flex items-center gap-3">
+            <span class="inline-flex w-10 h-10 items-center justify-center rounded-full bg-brand-green/15 text-brand-green">
+              <i class="fa-solid fa-microchip"></i>
+            </span>
+            <div>
+              <p class="text-xs text-slate-400">Asistente</p>
+              <p class="text-sm font-semibold text-white">IA integrada</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ CARACTERÍSTICAS ============================ -->
+  <section id="caracteristicas" class="py-20 border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Tecnología que vas a usar todos los días</h2>
+        <p class="mt-4 text-slate-400">Diseñadas para el ritmo de la ciudad: graba, escucha y comunícate sin sacar el celular.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Card 1 -->
+        <div class="group rounded-2xl border border-white/10 bg-brand-card p-6 hover:border-brand-blue/50 hover:-translate-y-1.5 transition duration-300 hover:shadow-xl hover:shadow-blue-900/30">
+          <span class="inline-flex w-12 h-12 items-center justify-center rounded-xl bg-brand-blue/15 text-brand-blue text-xl group-hover:scale-110 transition">
+            <i class="fa-solid fa-camera"></i>
+          </span>
+          <h3 class="mt-5 text-lg font-bold text-white">Cámara HD</h3>
+          <p class="mt-2 text-sm text-slate-400">Resolución 2K/4K nítida con un solo toque. Captura cada detalle de tu ruta o tu contenido.</p>
+        </div>
+        <!-- Card 2 -->
+        <div class="group rounded-2xl border border-white/10 bg-brand-card p-6 hover:border-brand-blue/50 hover:-translate-y-1.5 transition duration-300 hover:shadow-xl hover:shadow-blue-900/30">
+          <span class="inline-flex w-12 h-12 items-center justify-center rounded-xl bg-brand-green/15 text-brand-green text-xl group-hover:scale-110 transition">
+            <i class="fa-solid fa-headphones-simple"></i>
+          </span>
+          <h3 class="mt-5 text-lg font-bold text-white">Audio Abierto</h3>
+          <p class="mt-2 text-sm text-slate-400">Altavoces Open-Ear en las patillas: escucha música y llamadas sin aislar el ruido de la calle.</p>
+        </div>
+        <!-- Card 3 -->
+        <div class="group rounded-2xl border border-white/10 bg-brand-card p-6 hover:border-brand-blue/50 hover:-translate-y-1.5 transition duration-300 hover:shadow-xl hover:shadow-blue-900/30">
+          <span class="inline-flex w-12 h-12 items-center justify-center rounded-xl bg-brand-blue/15 text-brand-blue text-xl group-hover:scale-110 transition">
+            <i class="fa-solid fa-language"></i>
+          </span>
+          <h3 class="mt-5 text-lg font-bold text-white">Traducción con IA</h3>
+          <p class="mt-2 text-sm text-slate-400">Asistente de voz y traducción de doble vía en tiempo real. Habla con cualquiera, en cualquier idioma.</p>
+        </div>
+        <!-- Card 4 -->
+        <div class="group rounded-2xl border border-white/10 bg-brand-card p-6 hover:border-brand-blue/50 hover:-translate-y-1.5 transition duration-300 hover:shadow-xl hover:shadow-blue-900/30">
+          <span class="inline-flex w-12 h-12 items-center justify-center rounded-xl bg-brand-green/15 text-brand-green text-xl group-hover:scale-110 transition">
+            <i class="fa-solid fa-sd-card"></i>
+          </span>
+          <h3 class="mt-5 text-lg font-bold text-white">Almacenamiento Local</h3>
+          <p class="mt-2 text-sm text-slate-400">Soporte MicroSD hasta 128GB. Graba horas de video sin depender de la nube ni de tus datos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ CASOS DE USO (TABS) ============================ -->
+  <section id="usos" class="py-20 border-t border-white/5">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Hechas para tu estilo de vida</h2>
+        <p class="mt-4 text-slate-400">Elige tu perfil y descubre cómo las Market Plus X trabajan para ti.</p>
+      </div>
+
+      <!-- Botones de tab -->
+      <div class="flex flex-col sm:flex-row gap-3 justify-center mb-8" role="tablist">
+        <button data-tab="moteros"
+          class="tab-btn rounded-full px-6 py-3 text-sm font-semibold transition bg-brand-blue text-white shadow-lg shadow-blue-500/30">
+          <i class="fa-solid fa-motorcycle mr-2"></i> Para Moteros y Ciclistas
+        </button>
+        <button data-tab="creadores"
+          class="tab-btn rounded-full px-6 py-3 text-sm font-semibold transition bg-brand-card text-slate-300 hover:text-white border border-white/10">
+          <i class="fa-solid fa-video mr-2"></i> Para Creadores de Contenido
+        </button>
+      </div>
+
+      <!-- Panel: Moteros -->
+      <div id="tab-moteros" class="tab-panel rounded-3xl border border-white/10 bg-brand-card p-8 sm:p-10">
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+              <i class="fa-solid fa-shield-halved text-brand-green"></i> Seguridad vial en cada ruta
+            </h3>
+            <p class="mt-4 text-slate-300">
+              Tu testigo en la vía. Graba infracciones, accidentes y maniobras peligrosas en automático para tener evidencia ante cualquier eventualidad.
+              Escucha tu GPS y tu música por los altavoces Open-Ear <strong class="text-white">sin tapar tus oídos</strong>, manteniendo plena conciencia del tráfico.
+            </p>
+            <ul class="mt-6 space-y-3 text-sm">
+              <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-green"></i> Grabación manos libres sin soltar el manubrio</li>
+              <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-green"></i> Evidencia en video de infracciones de terceros</li>
+              <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-green"></i> Oídos libres = más reacción ante el peligro</li>
+            </ul>
+          </div>
+          <div class="aspect-video rounded-2xl bg-gradient-to-br from-slate-800 to-black flex items-center justify-center border border-white/10">
+            <i class="fa-solid fa-motorcycle text-6xl text-brand-blue/70"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel: Creadores -->
+      <div id="tab-creadores" class="tab-panel hidden rounded-3xl border border-white/10 bg-brand-card p-8 sm:p-10">
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+              <i class="fa-solid fa-clapperboard text-brand-blue"></i> Vlogs POV sin límites
+            </h3>
+            <p class="mt-4 text-slate-300">
+              Crea contenido en primera persona como nunca antes. Graba vlogs, recetas, deportes y experiencias <strong class="text-white">con las dos manos libres</strong>,
+              captando exactamente lo que tus ojos ven. Despídete del trípode y del celular en la mano.
+            </p>
+            <ul class="mt-6 space-y-3 text-sm">
+              <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-green"></i> Toma POV inmersiva en 2K/4K</li>
+              <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-green"></i> Manos libres para cocinar, entrenar o crear</li>
+              <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-green"></i> Transfiere a tu celular por Wi-Fi y publica al instante</li>
+            </ul>
+          </div>
+          <div class="aspect-video rounded-2xl bg-gradient-to-br from-slate-800 to-black flex items-center justify-center border border-white/10">
+            <i class="fa-solid fa-video text-6xl text-brand-green/70"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ PRECIOS ============================ -->
+  <section id="precios" class="py-20 border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Elige tu modelo</h2>
+        <p class="mt-4 text-slate-400">Precios de preventa en pesos colombianos (COP). Pago contra entrega disponible en Bogotá.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- Producto 1: Casual Standard -->
+        <div class="relative rounded-2xl border border-white/10 bg-brand-card p-6 flex flex-col hover:-translate-y-1.5 transition duration-300">
+          <h3 class="text-lg font-bold text-white">Casual Standard</h3>
+          <p class="mt-1 text-sm text-slate-400">El punto de entrada perfecto.</p>
+          <p class="mt-5 text-3xl font-extrabold text-white">$299.900 <span class="text-sm font-medium text-slate-400">COP</span></p>
+          <ul class="mt-5 space-y-2 text-sm text-slate-300 flex-1">
+            <li><i class="fa-solid fa-camera text-brand-blue mr-2"></i> Resolución 2K</li>
+            <li><i class="fa-solid fa-battery-half text-brand-blue mr-2"></i> Batería 6h</li>
+            <li><i class="fa-solid fa-headphones-simple text-brand-blue mr-2"></i> Audio Open-Ear</li>
+            <li><i class="fa-solid fa-sd-card text-brand-blue mr-2"></i> MicroSD hasta 128GB</li>
+          </ul>
+          <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20quiero%20comprar%20las%20gafas%20Casual%20Standard%20($299.900)"
+             target="_blank" rel="noopener"
+             class="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-brand-green px-5 py-3 text-sm font-bold text-brand-dark hover:bg-green-400 transition">
+            <i class="fa-brands fa-whatsapp"></i> Comprar por WhatsApp
+          </a>
+        </div>
+
+        <!-- Producto 2: Casual Pro (Más vendido) -->
+        <div class="relative rounded-2xl border-2 border-brand-blue bg-brand-card p-6 flex flex-col hover:-translate-y-1.5 transition duration-300 shadow-xl shadow-blue-900/30 lg:scale-105">
+          <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-brand-blue px-4 py-1 text-xs font-bold text-white shadow-lg whitespace-nowrap">
+            <i class="fa-solid fa-fire mr-1"></i> Más Vendido
+          </span>
+          <h3 class="text-lg font-bold text-white">Casual Pro</h3>
+          <p class="mt-1 text-sm text-slate-400">El equilibrio ideal precio/batería.</p>
+          <p class="mt-5 text-3xl font-extrabold text-white">$359.900 <span class="text-sm font-medium text-slate-400">COP</span></p>
+          <ul class="mt-5 space-y-2 text-sm text-slate-300 flex-1">
+            <li><i class="fa-solid fa-camera text-brand-blue mr-2"></i> Resolución 2K</li>
+            <li><i class="fa-solid fa-battery-full text-brand-green mr-2"></i> Batería 12h</li>
+            <li><i class="fa-solid fa-headphones-simple text-brand-blue mr-2"></i> Audio Open-Ear</li>
+            <li><i class="fa-solid fa-sd-card text-brand-blue mr-2"></i> MicroSD hasta 128GB</li>
+          </ul>
+          <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20quiero%20comprar%20las%20gafas%20Casual%20Pro%20($359.900)"
+             target="_blank" rel="noopener"
+             class="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-brand-green px-5 py-3 text-sm font-bold text-brand-dark hover:bg-green-400 transition">
+            <i class="fa-brands fa-whatsapp"></i> Comprar por WhatsApp
+          </a>
+        </div>
+
+        <!-- Producto 3: Casual Ultra (Tope de gama) -->
+        <div class="relative rounded-2xl border border-white/10 bg-brand-card p-6 flex flex-col hover:-translate-y-1.5 transition duration-300">
+          <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-purple-500 to-brand-blue px-4 py-1 text-xs font-bold text-white shadow-lg whitespace-nowrap">
+            <i class="fa-solid fa-crown mr-1"></i> Tope de Gama
+          </span>
+          <h3 class="text-lg font-bold text-white">Casual Ultra</h3>
+          <p class="mt-1 text-sm text-slate-400">Máxima calidad de imagen 4K.</p>
+          <p class="mt-5 text-3xl font-extrabold text-white">$420.000 <span class="text-sm font-medium text-slate-400">COP</span></p>
+          <ul class="mt-5 space-y-2 text-sm text-slate-300 flex-1">
+            <li><i class="fa-solid fa-camera text-brand-green mr-2"></i> Resolución 4K</li>
+            <li><i class="fa-solid fa-battery-full text-brand-green mr-2"></i> Batería 12h</li>
+            <li><i class="fa-solid fa-headphones-simple text-brand-blue mr-2"></i> Audio Open-Ear</li>
+            <li><i class="fa-solid fa-sd-card text-brand-blue mr-2"></i> MicroSD hasta 128GB</li>
+          </ul>
+          <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20quiero%20comprar%20las%20gafas%20Casual%20Ultra%20($420.000)"
+             target="_blank" rel="noopener"
+             class="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-brand-green px-5 py-3 text-sm font-bold text-brand-dark hover:bg-green-400 transition">
+            <i class="fa-brands fa-whatsapp"></i> Comprar por WhatsApp
+          </a>
+        </div>
+
+        <!-- Producto 4: Deportiva Ciclismo (Especializado) -->
+        <div class="relative rounded-2xl border border-white/10 bg-brand-card p-6 flex flex-col hover:-translate-y-1.5 transition duration-300">
+          <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-brand-green px-4 py-1 text-xs font-bold text-brand-dark shadow-lg whitespace-nowrap">
+            <i class="fa-solid fa-bicycle mr-1"></i> Especializado
+          </span>
+          <h3 class="text-lg font-bold text-white">Deportiva Ciclismo</h3>
+          <p class="mt-1 text-sm text-slate-400">Diseño aerodinámico para rutas.</p>
+          <p class="mt-5 text-3xl font-extrabold text-white">$320.000 <span class="text-sm font-medium text-slate-400">COP</span></p>
+          <ul class="mt-5 space-y-2 text-sm text-slate-300 flex-1">
+            <li><i class="fa-solid fa-wind text-brand-green mr-2"></i> Diseño aerodinámico</li>
+            <li><i class="fa-solid fa-camera text-brand-blue mr-2"></i> Resolución 2K deportiva</li>
+            <li><i class="fa-solid fa-shield-halved text-brand-blue mr-2"></i> Lentes para alta velocidad</li>
+            <li><i class="fa-solid fa-sd-card text-brand-blue mr-2"></i> MicroSD hasta 128GB</li>
+          </ul>
+          <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20quiero%20comprar%20las%20gafas%20Deportiva%20Ciclismo%20($320.000)"
+             target="_blank" rel="noopener"
+             class="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-brand-green px-5 py-3 text-sm font-bold text-brand-dark hover:bg-green-400 transition">
+            <i class="fa-brands fa-whatsapp"></i> Comprar por WhatsApp
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ FAQ ============================ -->
+  <section id="faq" class="py-20 border-t border-white/5">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Preguntas frecuentes</h2>
+        <p class="mt-4 text-slate-400">Resolvemos las dudas más comunes antes de tu compra.</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- FAQ 1 -->
+        <div class="faq-item rounded-2xl border border-white/10 bg-brand-card overflow-hidden">
+          <button class="faq-trigger w-full flex items-center justify-between gap-4 px-6 py-5 text-left">
+            <span class="font-semibold text-white"><i class="fa-solid fa-cloud-rain text-brand-blue mr-3"></i>¿Qué pasa si llueve?</span>
+            <i class="faq-icon fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+          </button>
+          <div class="faq-content px-6 text-slate-300 text-sm">
+            <p class="pb-5">Las gafas cuentan con certificación de resistencia a salpicaduras <strong class="text-white">IPX4</strong>, por lo que soportan lluvia ligera y sudor sin problema. No están diseñadas para sumergirse en agua.</p>
+          </div>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div class="faq-item rounded-2xl border border-white/10 bg-brand-card overflow-hidden">
+          <button class="faq-trigger w-full flex items-center justify-between gap-4 px-6 py-5 text-left">
+            <span class="font-semibold text-white"><i class="fa-solid fa-money-bill-wave text-brand-green mr-3"></i>¿Tienen pago contra entrega en Bogotá?</span>
+            <i class="faq-icon fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+          </button>
+          <div class="faq-content px-6 text-slate-300 text-sm">
+            <p class="pb-5">¡Sí! En <strong class="text-white">Bogotá</strong> ofrecemos pago contra entrega: pagas cuando recibes tu producto. Para el resto del país coordinamos el envío por WhatsApp con pago anticipado o contraentrega según la transportadora.</p>
+          </div>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div class="faq-item rounded-2xl border border-white/10 bg-brand-card overflow-hidden">
+          <button class="faq-trigger w-full flex items-center justify-between gap-4 px-6 py-5 text-left">
+            <span class="font-semibold text-white"><i class="fa-solid fa-mobile-screen text-brand-blue mr-3"></i>¿Cómo se descargan los videos al celular?</span>
+            <i class="faq-icon fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+          </button>
+          <div class="faq-content px-6 text-slate-300 text-sm">
+            <p class="pb-5">Muy fácil: a través de la <strong class="text-white">App oficial</strong> conectas tus gafas por <strong class="text-white">Wi-Fi o Bluetooth</strong> y transfieres tus videos y fotos directamente a tu celular para editarlos y compartirlos al instante.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ CTA FINAL ============================ -->
+  <section class="py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="rounded-3xl bg-gradient-to-br from-brand-blue to-blue-700 p-8 sm:p-12 text-center shadow-2xl shadow-blue-900/40">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">¿Listo para grabar tu mundo?</h2>
+        <p class="mt-3 text-blue-100">Aparta la tuya en preventa y recíbela con pago contra entrega en Bogotá.</p>
+        <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20quiero%20apartar%20mis%20gafas%20inteligentes%20en%20preventa"
+           target="_blank" rel="noopener"
+           class="mt-6 inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-base font-bold text-brand-dark hover:bg-slate-100 transition">
+          <i class="fa-brands fa-whatsapp text-xl text-brand-green"></i> Escríbenos por WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ FOOTER ============================ -->
+  <footer class="border-t border-white/5 bg-brand-dark">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div>
+          <a href="#inicio" class="flex items-center gap-2">
+            <span class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-brand-blue to-blue-700">
+              <i class="fa-solid fa-glasses text-white"></i>
+            </span>
+            <span class="text-lg font-extrabold text-white">Market Plus <span class="text-brand-blue">X</span></span>
+          </a>
+          <p class="mt-4 text-sm text-slate-400 max-w-xs">Gafas inteligentes con cámara e IA. Tecnología premium para vivir y grabar Colombia con manos libres.</p>
+        </div>
+
+        <div>
+          <h4 class="text-sm font-semibold text-white uppercase tracking-wide">Enlaces</h4>
+          <ul class="mt-4 space-y-2 text-sm text-slate-400">
+            <li><a href="#caracteristicas" class="hover:text-white transition">Características</a></li>
+            <li><a href="#precios" class="hover:text-white transition">Precios</a></li>
+            <li><a href="#faq" class="hover:text-white transition">Preguntas frecuentes</a></li>
+            <li><a href="#" class="hover:text-white transition">Términos y condiciones</a></li>
+            <li><a href="#" class="hover:text-white transition">Política de privacidad</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-sm font-semibold text-white uppercase tracking-wide">Síguenos</h4>
+          <div class="mt-4 flex gap-3">
+            <a href="#" aria-label="Instagram" class="inline-flex w-10 h-10 items-center justify-center rounded-full bg-brand-card border border-white/10 text-slate-300 hover:text-white hover:border-brand-blue transition"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" aria-label="TikTok" class="inline-flex w-10 h-10 items-center justify-center rounded-full bg-brand-card border border-white/10 text-slate-300 hover:text-white hover:border-brand-blue transition"><i class="fa-brands fa-tiktok"></i></a>
+            <a href="#" aria-label="Facebook" class="inline-flex w-10 h-10 items-center justify-center rounded-full bg-brand-card border border-white/10 text-slate-300 hover:text-white hover:border-brand-blue transition"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://wa.me/573229320982" target="_blank" rel="noopener" aria-label="WhatsApp" class="inline-flex w-10 h-10 items-center justify-center rounded-full bg-brand-card border border-white/10 text-slate-300 hover:text-brand-green hover:border-brand-green transition"><i class="fa-brands fa-whatsapp"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-10 pt-6 border-t border-white/5 text-center text-xs text-slate-500">
+        © <span id="year"></span> Market Plus X. Todos los derechos reservados. Hecho en Colombia 🇨🇴
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================ BOTÓN FLOTANTE WHATSAPP (MÓVIL) ============================ -->
+  <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20quiero%20más%20información%20de%20la%20preventa"
+     target="_blank" rel="noopener"
+     class="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-brand-green px-5 py-4 font-bold text-brand-dark shadow-2xl shadow-green-500/40 animate-pulseGlow md:hidden">
+    <i class="fa-brands fa-whatsapp text-xl"></i> Pedir Preventa
+  </a>
+
+  <!-- ============================ JAVASCRIPT ============================ -->
+  <script>
+    // Año dinámico en footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Navbar: sombra/opacidad al hacer scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 20) {
+        navbar.classList.add('shadow-lg', 'shadow-black/30');
+      } else {
+        navbar.classList.remove('shadow-lg', 'shadow-black/30');
+      }
+    });
+
+    // ---------- TABS (Casos de uso) ----------
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+
+    tabButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-tab');
+
+        // Reset de estilos en todos los botones
+        tabButtons.forEach((b) => {
+          b.classList.remove('bg-brand-blue', 'text-white', 'shadow-lg', 'shadow-blue-500/30');
+          b.classList.add('bg-brand-card', 'text-slate-300', 'border', 'border-white/10');
+        });
+
+        // Activar botón seleccionado
+        btn.classList.add('bg-brand-blue', 'text-white', 'shadow-lg', 'shadow-blue-500/30');
+        btn.classList.remove('bg-brand-card', 'text-slate-300', 'border', 'border-white/10');
+
+        // Mostrar panel correspondiente
+        tabPanels.forEach((panel) => panel.classList.add('hidden'));
+        document.getElementById('tab-' + target).classList.remove('hidden');
+      });
+    });
+
+    // ---------- ACORDEÓN FAQ ----------
+    const faqTriggers = document.querySelectorAll('.faq-trigger');
+
+    faqTriggers.forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        const content = trigger.nextElementSibling;
+        const icon = trigger.querySelector('.faq-icon');
+        const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+
+        // Cerrar todos (comportamiento acordeón)
+        document.querySelectorAll('.faq-content').forEach((c) => (c.style.maxHeight = '0px'));
+        document.querySelectorAll('.faq-icon').forEach((i) => i.classList.remove('rotate-180'));
+
+        // Abrir el seleccionado si estaba cerrado
+        if (!isOpen) {
+          content.style.maxHeight = content.scrollHeight + 'px';
+          icon.classList.add('rotate-180');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

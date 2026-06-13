@@ -1,0 +1,22 @@
+# Dependencias
+node_modules/
+
+# Vercel
+.vercel
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+
+# Variables de entorno
+.env
+.env.local
+.env*.local
