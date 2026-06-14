@@ -312,7 +312,16 @@
         <!-- Ultra (Tope de gama) -->
         <div class="reveal relative flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition">
           <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-ink px-3 py-1 text-xs font-bold text-white whitespace-nowrap shadow">Tope de gama</span>
-          <img src="assets/modelo-ultra.jpeg" alt="Gafas Market Plus X Casual Ultra — lentes rojos 4K" loading="lazy" class="rounded-xl border border-slate-100 mb-4 h-36 w-full object-contain object-center bg-white" />
+          <img id="ultra-main-img" src="assets/modelo-ultra.jpeg" alt="Gafas Market Plus X Casual Ultra — lentes rojos 4K" loading="lazy" class="rounded-xl border border-slate-100 h-[200px] w-full object-contain object-center bg-white" />
+          <div class="mt-2 mb-4 flex items-center gap-2">
+            <span class="text-xs text-slate-400">3 colores:</span>
+            <img src="assets/modelo-ultra.jpeg" data-color-img="assets/modelo-ultra.jpeg" data-target="ultra-main-img" data-group="ultra" alt="Rojas 4K" title="Rojas 4K" loading="lazy"
+                 class="w-10 h-8 rounded-lg object-cover object-center cursor-pointer border-2 border-accent shadow-sm" />
+            <img src="assets/modelo-ultra-azul.jpeg" data-color-img="assets/modelo-ultra-azul.jpeg" data-target="ultra-main-img" data-group="ultra" alt="Azul 4K" title="Azul 4K" loading="lazy"
+                 class="w-10 h-8 rounded-lg object-cover object-center cursor-pointer border border-slate-300 transition" />
+            <img src="assets/modelo-ultra-negro.jpeg" data-color-img="assets/modelo-ultra-negro.jpeg" data-target="ultra-main-img" data-group="ultra" alt="Negra 4K" title="Negra 4K" loading="lazy"
+                 class="w-10 h-8 rounded-lg object-cover object-center cursor-pointer border border-slate-300 transition" />
+          </div>
           <h3 class="text-lg font-bold">Casual Ultra</h3>
           <p class="mt-1 text-sm text-slate-500">Máxima calidad de imagen.</p>
           <p class="mt-4 text-3xl font-extrabold">$420.000 <span class="text-sm font-medium text-slate-400">COP</span></p>
@@ -334,9 +343,9 @@
           <img id="deportiva-main-img" src="assets/deportiva-blanca-naranja.jpeg" alt="Gafas Deportiva Ciclismo — montura blanca lentes naranjas espejo" loading="lazy" class="rounded-xl border border-slate-100 h-36 w-full object-contain object-center bg-[#f8f8f8]" />
           <div class="mt-2 mb-4 flex items-center gap-2">
             <span class="text-xs text-slate-400">2 colores:</span>
-            <img src="assets/deportiva-blanca-naranja.jpeg" data-color-img="assets/deportiva-blanca-naranja.jpeg" alt="Blanca / Naranjas" title="Blanca / Naranjas" loading="lazy"
+            <img src="assets/deportiva-blanca-naranja.jpeg" data-color-img="assets/deportiva-blanca-naranja.jpeg" data-target="deportiva-main-img" data-group="deportiva" alt="Blanca / Naranjas" title="Blanca / Naranjas" loading="lazy"
                  class="deportiva-thumb w-10 h-8 rounded-lg object-cover [object-position:center_60%] cursor-pointer border-2 border-accent shadow-sm" />
-            <img src="assets/deportiva-negra.png" data-color-img="assets/deportiva-negra.png" alt="Negra" title="Negra" loading="lazy"
+            <img src="assets/deportiva-negra.jpeg" data-color-img="assets/deportiva-negra.jpeg" data-target="deportiva-main-img" data-group="deportiva" alt="Negra" title="Negra" loading="lazy"
                  class="deportiva-thumb w-10 h-8 rounded-lg object-cover object-center cursor-pointer border border-slate-300 transition" />
           </div>
           <h3 class="text-lg font-bold">Deportiva Ciclismo</h3>
@@ -698,13 +707,15 @@
     }
     setupVideo('heroVideoWrap', 'heroPlayBtn');
 
-    // Selector de color deportiva
+    // Selector de color genérico (usa data-target y data-group)
     document.querySelectorAll('[data-color-img]').forEach(thumb => {
       thumb.addEventListener('click', () => {
-        const mainImg = document.getElementById('deportiva-main-img');
+        const targetId = thumb.dataset.target;
+        const group = thumb.dataset.group;
+        const mainImg = document.getElementById(targetId);
         if (!mainImg) return;
         mainImg.src = thumb.dataset.colorImg;
-        document.querySelectorAll('[data-color-img]').forEach(t => {
+        document.querySelectorAll(`[data-group="${group}"]`).forEach(t => {
           t.classList.remove('border-2', 'border-accent', 'shadow-sm');
           t.classList.add('border', 'border-slate-300');
         });
