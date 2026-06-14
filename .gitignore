@@ -22,3 +22,5 @@ Thumbs.db
 .env*.local
 
 .vercel
+assets/video-real.mov
+assets/*.mov
