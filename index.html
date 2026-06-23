@@ -15,6 +15,16 @@
   })(window,document,'script','dataLayer','GTM-WG74VTMW');</script>
   <!-- End Google Tag Manager -->
 
+  <!-- Google tag (gtag.js) — GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0QH4MFCW2X"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-0QH4MFCW2X');
+  </script>
+  <!-- End GA4 -->
+
   <!-- Open Graph / redes -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Market Plus X | Gafas Inteligentes con Cámara 2K e IA" />
@@ -707,10 +717,14 @@
     // Año
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Meta Pixel: registrar conversión "Contact" en cada clic a WhatsApp
+    // Conversión en cada clic a WhatsApp: Meta Pixel + Google Analytics 4
     document.querySelectorAll('a[href*="wa.me"]').forEach(link => {
       link.addEventListener('click', () => {
         if (window.fbq) fbq('track', 'Contact');
+        if (window.gtag) gtag('event', 'contact_whatsapp', {
+          button_text: (link.innerText || '').trim().slice(0, 100),
+          link_url: link.href
+        });
       });
     });
 
