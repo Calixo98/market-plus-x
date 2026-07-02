@@ -75,6 +75,8 @@
     body { background: #0b0b0c; }
     ::selection { background: rgba(0,102,255,.35); }
     html { -webkit-tap-highlight-color: transparent; }
+    .btn-outline { background: rgba(0,102,255,.08); border: 1.5px solid #0066ff; transition: background .3s ease, box-shadow .3s ease; }
+    .btn-outline:hover { background: rgba(0,102,255,.18); box-shadow: 0 0 20px rgba(0,102,255,.18); }
   </style>
 </head>
 
@@ -124,7 +126,7 @@
              class="inline-flex items-center justify-center gap-2 rounded-full bg-wa px-7 py-4 text-base font-bold text-white shadow-lg shadow-accent/20 hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp text-xl"></i> Comprar por WhatsApp
           </a>
-          <a href="#galeria" class="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-card px-7 py-4 text-base font-semibold text-ink hover:bg-white/5 transition">
+          <a href="#galeria" class="inline-flex items-center justify-center gap-2 rounded-full btn-outline px-7 py-4 text-base font-semibold text-ink transition">
             Ver galería
           </a>
         </div>

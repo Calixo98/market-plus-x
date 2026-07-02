@@ -111,6 +111,10 @@
     /* Glow del producto (único uso decorativo del acento) */
     .glow { background: radial-gradient(closest-side, rgba(0,102,255,.14), transparent 70%); }
 
+    /* Botón secundario con contorno azul (reemplaza el glass sutil, poco visible) */
+    .btn-outline { background: rgba(0,102,255,.08); border: 1.5px solid #0066ff; transition: background .3s ease, box-shadow .3s ease; }
+    .btn-outline:hover { background: rgba(0,102,255,.18); box-shadow: 0 0 20px rgba(0,102,255,.18); }
+
     /* Viñeta: funde los bordes de fotos con fondo claro hacia el negro del tema */
     .photo-vignette { position: relative; }
     .photo-vignette img { filter: saturate(.55) brightness(.82) contrast(1.03); }
@@ -226,7 +230,7 @@
         </a>
         <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20para%20elegir%20mis%20gafas%20inteligentes"
            target="_blank" rel="noopener"
-           class="inline-flex items-center justify-center gap-2 rounded-full border border-hairline glass px-8 py-4 text-base font-semibold text-ink hover:border-accent transition">
+           class="inline-flex items-center justify-center gap-2 rounded-full btn-outline px-8 py-4 text-base font-semibold text-ink transition">
           <i class="fa-brands fa-whatsapp text-xl text-accent"></i> Asesoría por WhatsApp
         </a>
       </div>
@@ -290,7 +294,7 @@
               </a>
               <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Deportiva%20Ciclismo%20($359.900)"
                  target="_blank" rel="noopener"
-                 class="inline-flex items-center gap-2 rounded-full border border-hairline glass px-6 py-3 text-sm font-semibold text-ink hover:border-accent transition">
+                 class="inline-flex items-center gap-2 rounded-full btn-outline px-6 py-3 text-sm font-semibold text-ink transition">
                 <i class="fa-brands fa-whatsapp text-accent"></i> Asesoría
               </a>
             </div>
