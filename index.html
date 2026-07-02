@@ -111,6 +111,14 @@
     /* Glow del producto (único uso decorativo del acento) */
     .glow { background: radial-gradient(closest-side, rgba(0,102,255,.14), transparent 70%); }
 
+    /* Viñeta: funde los bordes de fotos con fondo claro hacia el negro del tema */
+    .photo-vignette { position: relative; }
+    .photo-vignette::after {
+      content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 1;
+      background: radial-gradient(120% 100% at 50% 42%, transparent 38%, #0b0b0c 96%);
+    }
+    .photo-vignette .anatomy-point { z-index: 2; }
+
     /* Float del hero */
     @keyframes heroFloat { from { transform: translateY(0); } to { transform: translateY(-8px); } }
     .hero-float { animation: heroFloat 6s ease-in-out infinite alternate; }
@@ -225,10 +233,10 @@
       <!-- Producto flotante con glow y parallax -->
       <div class="relative mt-14">
         <div class="glow absolute inset-x-0 -top-10 bottom-0 -z-10"></div>
-        <div id="heroImgWrap" class="hero-float mx-auto max-w-3xl">
+        <div id="heroImgWrap" class="hero-float photo-vignette mx-auto max-w-3xl rounded-bento overflow-hidden border border-hairline shadow-2xl">
           <img id="heroImg" src="assets/modelo-standard.jpeg"
                alt="Gafas inteligentes Market Plus X — foto real del producto"
-               class="mx-auto rounded-bento border border-hairline shadow-2xl w-full object-cover" />
+               class="mx-auto w-full object-cover" />
         </div>
       </div>
 
@@ -343,7 +351,7 @@
       <div class="grid lg:grid-cols-2 gap-10 items-start">
         <!-- Imagen con callouts (sticky en desktop) -->
         <div class="lg:sticky lg:top-24">
-          <div class="relative rounded-bento overflow-hidden border border-hairline">
+          <div class="relative photo-vignette rounded-bento overflow-hidden border border-hairline">
             <img src="assets/modelo-standard.jpeg" alt="Anatomía de las gafas Market Plus X — foto real" loading="lazy" class="w-full object-cover" />
             <!-- Callout 1: cámara -->
             <div id="point-camara" class="anatomy-point absolute" style="left: 40%; top: 30%;">
