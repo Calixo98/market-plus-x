@@ -113,9 +113,10 @@
 
     /* Viñeta: funde los bordes de fotos con fondo claro hacia el negro del tema */
     .photo-vignette { position: relative; }
+    .photo-vignette img { filter: saturate(.55) brightness(.82) contrast(1.03); }
     .photo-vignette::after {
       content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 1;
-      background: radial-gradient(120% 100% at 50% 42%, transparent 38%, #0b0b0c 96%);
+      background: radial-gradient(85% 75% at 50% 38%, transparent 8%, rgba(11,11,12,.55) 45%, #0b0b0c 82%);
     }
     .photo-vignette .anatomy-point { z-index: 2; }
 
