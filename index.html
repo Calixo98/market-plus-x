@@ -72,13 +72,14 @@
           fontFamily: { sans: ['Inter', '-apple-system', 'sans-serif'] },
           colors: {
             night:  '#0b0b0c',
-            raised: '#131316',
-            card:   '#17171b',
+            raised: '#17171c',
+            card:   '#1c1c22',
             ink:    '#ffffff',
             sec:    '#a1a1aa',
             ter:    '#63636b',
             accent: { DEFAULT: '#0066ff', hover: '#2b7fff', soft: 'rgba(0,102,255,0.12)' },
-            hairline: 'rgba(255,255,255,0.08)',
+            wa:     { DEFAULT: '#25D366', dark: '#1DA851' },
+            hairline: 'rgba(255,255,255,0.12)',
           },
           borderRadius: { bento: '24px' },
         },
@@ -96,11 +97,11 @@
     ::-webkit-scrollbar-thumb:hover { background: #0066ff; }
 
     /* Glass */
-    .glass { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); background: rgba(19,19,22,.6); }
+    .glass { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); background: rgba(28,28,34,.65); }
 
     /* Bento card */
-    .bento { border-radius: 24px; border: 1px solid rgba(255,255,255,.08); background: #131316;
-             box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 20px 60px rgba(0,0,0,.5);
+    .bento { border-radius: 24px; border: 1px solid rgba(255,255,255,.12); background: #17171c;
+             box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 20px 60px rgba(0,0,0,.5);
              transition: transform .3s ease, border-color .3s ease; }
     .bento:hover { transform: translateY(-4px); border-color: rgba(0,102,255,.45); }
 
@@ -230,8 +231,8 @@
         </a>
         <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20para%20elegir%20mis%20gafas%20inteligentes"
            target="_blank" rel="noopener"
-           class="inline-flex items-center justify-center gap-2 rounded-full btn-outline px-8 py-4 text-base font-semibold text-ink transition">
-          <i class="fa-brands fa-whatsapp text-xl text-accent"></i> Asesoría por WhatsApp
+           class="inline-flex items-center justify-center gap-2 rounded-full bg-wa hover:bg-wa-dark px-8 py-4 text-base font-bold text-white transition">
+          <i class="fa-brands fa-whatsapp text-xl"></i> Asesoría por WhatsApp
         </a>
       </div>
 
@@ -294,8 +295,8 @@
               </a>
               <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Deportiva%20Ciclismo%20($359.900)"
                  target="_blank" rel="noopener"
-                 class="inline-flex items-center gap-2 rounded-full btn-outline px-6 py-3 text-sm font-semibold text-ink transition">
-                <i class="fa-brands fa-whatsapp text-accent"></i> Asesoría
+                 class="inline-flex items-center gap-2 rounded-full bg-wa hover:bg-wa-dark px-6 py-3 text-sm font-bold text-white transition">
+                <i class="fa-brands fa-whatsapp"></i> Asesoría
               </a>
             </div>
           </div>
@@ -431,7 +432,7 @@
           </ul>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Casual%20Standard%20($319.000)"
              target="_blank" rel="noopener"
-             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition">
+             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
           </a>
         </div>
@@ -450,7 +451,7 @@
           </ul>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Casual%20Pro%20($359.000)"
              target="_blank" rel="noopener"
-             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition">
+             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
           </a>
         </div>
@@ -478,7 +479,7 @@
           </ul>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Casual%20Ultra%20($420.000)"
              target="_blank" rel="noopener"
-             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition">
+             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
           </a>
         </div>
@@ -504,7 +505,7 @@
           </ul>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Deportiva%20Ciclismo%20($359.900)"
              target="_blank" rel="noopener"
-             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition">
+             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
           </a>
           <a href="deportiva.html" class="mt-2 inline-flex items-center justify-center gap-1 text-sm font-semibold text-accent hover:text-accent-hover transition">
@@ -791,7 +792,7 @@
           <p class="mt-4 text-sec max-w-xl mx-auto">Escríbenos por WhatsApp y un asesor real te ayuda a elegir el modelo perfecto para ti.</p>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20para%20elegir%20mis%20gafas%20inteligentes"
              target="_blank" rel="noopener"
-             class="mt-8 inline-flex items-center gap-3 rounded-full bg-accent px-10 py-5 text-lg font-bold text-white hover:bg-accent-hover transition">
+             class="mt-8 inline-flex items-center gap-3 rounded-full bg-wa px-10 py-5 text-lg font-bold text-white hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp text-2xl"></i> Hablar con un asesor
           </a>
           <p class="mt-5 text-sm text-ter"><i class="fa-solid fa-truck-fast mr-1 text-accent"></i> Pago contra entrega en Bogotá · Envíos a toda Colombia</p>
@@ -825,7 +826,7 @@
         <div>
           <h4 class="text-sm font-semibold uppercase tracking-wide text-ter">Contacto</h4>
           <ul class="mt-4 space-y-2 text-sm text-sec">
-            <li><a href="https://wa.me/573229320982" target="_blank" rel="noopener" class="hover:text-ink transition"><i class="fa-brands fa-whatsapp text-accent mr-2"></i>+57 322 932 0982</a></li>
+            <li><a href="https://wa.me/573229320982" target="_blank" rel="noopener" class="hover:text-ink transition"><i class="fa-brands fa-whatsapp text-wa mr-2"></i>+57 322 932 0982</a></li>
             <li><a href="https://instagram.com/marketplusx98" target="_blank" rel="noopener" class="hover:text-ink transition"><i class="fa-brands fa-instagram mr-2"></i>@marketplusx98</a></li>
             <li><a href="https://www.tiktok.com/@market.plus.x" target="_blank" rel="noopener" class="hover:text-ink transition"><i class="fa-brands fa-tiktok mr-2"></i>@market.plus.x</a></li>
           </ul>
@@ -853,7 +854,7 @@
   <!-- ========================= BOTÓN FLOTANTE WHATSAPP ========================= -->
   <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20inteligentes"
      target="_blank" rel="noopener"
-     class="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-4 font-bold text-white shadow-2xl shadow-accent/30 hover:bg-accent-hover transition md:hidden">
+     class="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-wa px-5 py-4 font-bold text-white shadow-2xl shadow-wa/30 hover:bg-wa-dark transition md:hidden">
     <i class="fa-brands fa-whatsapp text-xl"></i> WhatsApp
   </a>
 
