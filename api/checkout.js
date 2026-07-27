@@ -120,7 +120,7 @@ module.exports = async (req, res) => {
       expirationTime,
       redirectUrl,
       customer: { email, fullName: nombre, phoneNumber: telefono },
-      shipping: { addressLine1: direccion, city: ciudad, region: departamento || ciudad, phoneNumber: telefono },
+      shipping: { addressLine1: direccion, city: ciudad, region: departamento || ciudad, country: 'CO', phoneNumber: telefono },
       resumen: { subtotal, envio, total, zona: zona.nombre },
     });
   } catch (err) {
