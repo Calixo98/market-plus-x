@@ -24,3 +24,9 @@ Thumbs.db
 .vercel
 assets/video-real.mov
 assets/*.mov
+
+.env*
+
+# Skills instalados automaticamente por integraciones de Vercel (no son parte del proyecto)
+.agents/
+skills-lock.json
