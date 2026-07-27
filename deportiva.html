@@ -78,8 +78,9 @@
           colors: {
             night: '#0b0b0c', raised: '#17171c', card: '#1c1c22',
             ink: '#ffffff',
-            accent: { DEFAULT: '#0066ff', dark: '#2b7fff', soft: 'rgba(0,102,255,0.12)' },
+            accent: { DEFAULT: '#0066ff', dark: '#2b7fff', hover: '#2b7fff', soft: 'rgba(0,102,255,0.12)' },
             wa: { DEFAULT: '#25D366', dark: '#1DA851' },
+            hairline: 'rgba(255,255,255,0.12)',
           },
         },
       },
@@ -109,9 +110,15 @@
           <span class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-accent text-white shadow-sm"><i class="fa-solid fa-glasses"></i></span>
           <span class="text-lg font-extrabold tracking-tight">Market Plus <span class="text-accent">X</span></span>
         </a>
-        <a href="index.html#modelos" class="inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-ink transition">
-          <i class="fa-solid fa-arrow-left"></i> Volver a la tienda
-        </a>
+        <div class="flex items-center gap-3">
+          <a href="index.html#modelos" class="inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-ink transition">
+            <i class="fa-solid fa-arrow-left"></i> <span class="hidden sm:inline">Volver a la tienda</span>
+          </a>
+          <button id="carritoBtn" class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl text-zinc-400 hover:text-ink hover:bg-white/5" aria-label="Ver carrito">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span id="carritoBadge" class="hidden absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent text-white text-[10px] font-bold">0</span>
+          </button>
+        </div>
       </div>
     </nav>
   </header>
@@ -134,24 +141,37 @@
           <li class="flex items-center gap-2"><i class="fa-solid fa-headphones-simple text-accent"></i> Audio open-ear</li>
           <li class="flex items-center gap-2"><i class="fa-solid fa-glasses text-accent"></i> Lentes espejo</li>
         </ul>
-        <div class="mt-7 flex flex-col sm:flex-row gap-3">
+
+        <div class="mt-5 flex items-center gap-2">
+          <span class="text-xs text-zinc-500">2 colores:</span>
+          <img src="assets/dep-roja-estudio.jpg" data-color-img="assets/dep-roja-estudio.jpg" data-target="deportiva-hero-img" data-group="deportiva" data-sku="MPX-G-DEP-NAR" alt="Negra / Lente Naranja" title="Negra / Lente Naranja" loading="lazy"
+               class="w-11 h-9 rounded-lg object-cover cursor-pointer border-2 border-accent bg-white" />
+          <img src="assets/dep-negra.jpg" data-color-img="assets/dep-negra.jpg" data-target="deportiva-hero-img" data-group="deportiva" data-sku="MPX-G-DEP-NEG" alt="Negra / Lente Negro" title="Negra / Lente Negro" loading="lazy"
+               class="w-11 h-9 rounded-lg object-cover cursor-pointer border border-hairline bg-white transition" />
+        </div>
+
+        <div class="mt-5 flex flex-col sm:flex-row gap-3">
+          <button data-add-to-cart data-sku="MPX-G-DEP-NAR" data-sku-group="deportiva"
+             class="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-7 py-4 text-base font-bold text-white shadow-lg hover:bg-accent-hover transition">
+            <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
+          </button>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20comprar%20las%20gafas%20Deportiva%20Ciclismo%20($359.900)"
              target="_blank" rel="noopener"
              class="inline-flex items-center justify-center gap-2 rounded-full bg-wa px-7 py-4 text-base font-bold text-white shadow-lg shadow-wa/20 hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp text-xl"></i> Comprar por WhatsApp
           </a>
-          <a href="#galeria" class="inline-flex items-center justify-center gap-2 rounded-full btn-outline px-7 py-4 text-base font-semibold text-ink transition">
-            Ver galería
-          </a>
         </div>
+        <a href="#galeria" class="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-accent hover:text-accent-hover transition">
+          Ver galería <i class="fa-solid fa-arrow-down text-xs"></i>
+        </a>
         <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-zinc-500">
           <span><i class="fa-solid fa-truck-fast text-accent mr-1"></i> Contra entrega a nivel nacional</span>
           <span><i class="fa-solid fa-map-location-dot text-accent mr-1"></i> Envíos a toda Colombia</span>
         </div>
       </div>
       <div>
-        <img src="assets/dep-hero.jpg" alt="Gafas Deportiva Ciclismo Market Plus X — montura blanca, lente espejo naranja y cámara integrada, sobre el asfalto" class="rounded-3xl border border-white/15 shadow-xl w-full object-cover" />
-        <p class="mt-3 text-center text-xs text-zinc-500">Foto real del producto — montura blanca, lente espejo y cámara frontal.</p>
+        <img id="deportiva-hero-img" src="assets/dep-roja-estudio.jpg" alt="Gafas Deportiva Ciclismo Market Plus X — montura negra, lente espejo naranja y cámara integrada" class="rounded-3xl border border-white/15 shadow-xl w-full object-contain bg-white" />
+        <p class="mt-3 text-center text-xs text-zinc-500">Foto real del producto — montura negra, lente espejo y cámara frontal.</p>
       </div>
     </div>
   </section>
@@ -289,5 +309,7 @@
     document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
     lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
   </script>
+
+  <script src="carrito.js"></script>
 </body>
 </html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pedidos | Market Plus X</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: {
+      night: '#0b0b0c', raised: '#17171c', card: '#1c1c22', ink: '#ffffff', sec: '#a1a1aa', ter: '#63636b',
+      accent: { DEFAULT: '#0066ff', hover: '#2b7fff' }, hairline: 'rgba(255,255,255,0.12)',
+      okc: '#25D366', badc: '#f87171',
+    } } } };
+  </script>
+  <style>
+    body { background: #0b0b0c; }
+    input { background: #1c1c22; border: 1px solid rgba(255,255,255,.12); color: #fff; }
+    th, td { padding: 10px 12px; text-align: left; white-space: nowrap; }
+    tr { border-bottom: 1px solid rgba(255,255,255,.08); }
+  </style>
+</head>
+<body class="font-sans text-ink antialiased bg-night min-h-screen p-6">
+
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-2xl font-extrabold">Pedidos — Market Plus X</h1>
+    <p class="mt-1 text-sm text-ter">Vista interna. No compartas el enlace ni el token.</p>
+
+    <div class="mt-6 flex flex-wrap gap-3 items-end">
+      <div>
+        <label class="block text-xs font-semibold uppercase text-ter mb-1.5">Token de administrador</label>
+        <input type="password" id="token" class="rounded-lg px-3 py-2 text-sm w-72" placeholder="Pega tu ADMIN_TOKEN" />
+      </div>
+      <button id="btnCargar" class="rounded-lg bg-accent px-5 py-2 text-sm font-bold hover:bg-accent-hover transition">Cargar pedidos</button>
+      <span id="estado" class="text-sm text-ter"></span>
+    </div>
+
+    <div class="mt-6 overflow-x-auto rounded-xl border border-hairline">
+      <table class="w-full text-sm">
+        <thead class="bg-card text-ter uppercase text-xs">
+          <tr>
+            <th>Fecha</th><th>Estado</th><th>Referencia</th><th>Cliente</th><th>Teléfono</th>
+            <th>Ciudad</th><th>Dirección</th><th>Productos</th><th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="filas"><tr><td colspan="9" class="text-ter">Ingresa el token y carga los pedidos.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const fmt = n => n == null ? '—' : '$' + Number(n).toLocaleString('es-CO');
+    const badge = estado => {
+      const colores = { APPROVED: 'text-okc', DECLINED: 'text-badc', ERROR: 'text-badc', PENDING: 'text-accent', VOIDED: 'text-ter' };
+      return `<span class="font-bold ${colores[estado] || 'text-ter'}">${estado || '—'}</span>`;
+    };
+
+    document.getElementById('btnCargar').addEventListener('click', async () => {
+      const token = document.getElementById('token').value.trim();
+      const estadoEl = document.getElementById('estado');
+      const filas = document.getElementById('filas');
+      if (!token) { estadoEl.textContent = 'Falta el token.'; return; }
+
+      estadoEl.textContent = 'Cargando…';
+      try {
+        const res = await fetch('api/pedidos', { headers: { Authorization: `Bearer ${token}` } });
+        const data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.error || 'Error al cargar pedidos');
+
+        if (data.pedidos.length === 0) {
+          filas.innerHTML = '<tr><td colspan="9" class="text-ter">Sin pedidos todavía.</td></tr>';
+        } else {
+          filas.innerHTML = data.pedidos.map(p => `
+            <tr>
+              <td>${p.confirmadoEn ? new Date(p.confirmadoEn).toLocaleString('es-CO') : '—'}</td>
+              <td>${badge(p.estado)}</td>
+              <td class="font-mono text-xs">${p.referencia}</td>
+              <td>${p.cliente ? p.cliente.nombre : '—'}</td>
+              <td>${p.cliente ? p.cliente.telefono : '—'}</td>
+              <td>${p.ciudad || '—'}</td>
+              <td class="whitespace-normal max-w-xs">${p.cliente ? p.cliente.direccion : '—'}</td>
+              <td class="whitespace-normal max-w-xs">${p.items ? p.items.map(i => `${i.qty}× ${i.sku}`).join(', ') : (p.advertencia || '—')}</td>
+              <td>${fmt(p.total)}</td>
+            </tr>`).join('');
+        }
+        estadoEl.textContent = `${data.pedidos.length} pedido(s).`;
+      } catch (err) {
+        estadoEl.textContent = err.message;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "zonas": [
+    {
+      "id": "bogota",
+      "nombre": "Bogotá D.C.",
+      "tarifa": 12000,
+      "ciudades": ["Bogotá", "Bogotá D.C."]
+    },
+    {
+      "id": "principales",
+      "nombre": "Ciudad principal",
+      "tarifa": 15000,
+      "ciudades": ["Medellín", "Cali", "Barranquilla", "Cartagena", "Bucaramanga", "Pereira", "Manizales", "Cúcuta"]
+    },
+    {
+      "id": "resto",
+      "nombre": "Resto del país",
+      "tarifa": 22000,
+      "ciudades": []
+    }
+  ]
+}

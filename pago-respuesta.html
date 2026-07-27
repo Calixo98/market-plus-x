@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estado de tu pago | Market Plus X</title>
+  <meta name="theme-color" content="#0b0b0c" />
+  <meta name="robots" content="noindex,nofollow" />
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-WG74VTMW');</script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Google tag (gtag.js) — GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0QH4MFCW2X"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-0QH4MFCW2X');
+  </script>
+  <!-- End GA4 -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: {
+        night: '#0b0b0c', raised: '#17171c', card: '#1c1c22', ink: '#ffffff', sec: '#a1a1aa', ter: '#63636b',
+        accent: { DEFAULT: '#0066ff', hover: '#2b7fff', soft: 'rgba(0,102,255,0.12)' },
+        wa: { DEFAULT: '#25D366', dark: '#1DA851' }, hairline: 'rgba(255,255,255,0.12)',
+      } } },
+    };
+  </script>
+  <style>
+    body { background: #0b0b0c; }
+    .bento { border-radius: 24px; border: 1px solid rgba(255,255,255,.12); background: #17171c; }
+  </style>
+</head>
+<body class="font-sans text-ink antialiased bg-night min-h-screen flex items-center justify-center px-4">
+
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WG74VTMW"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <div class="bento max-w-md w-full p-8 text-center">
+    <div id="estadoIcono" class="w-16 h-16 mx-auto rounded-full bg-card flex items-center justify-center text-3xl">
+      <i class="fa-solid fa-spinner fa-spin text-accent"></i>
+    </div>
+    <h1 id="estadoTitulo" class="mt-5 text-xl font-extrabold">Confirmando tu pago…</h1>
+    <p id="estadoTexto" class="mt-3 text-sm text-sec">Esto solo toma un momento.</p>
+
+    <div class="mt-7 flex flex-col gap-3">
+      <a href="index.html#inicio" class="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-bold text-white hover:bg-accent-hover transition">
+        Volver a la tienda
+      </a>
+      <a href="https://wa.me/573229320982" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-full bg-wa px-6 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
+        <i class="fa-brands fa-whatsapp"></i> Escríbenos por WhatsApp
+      </a>
+    </div>
+
+    <p class="mt-5 text-xs text-ter">
+      Esta pantalla es solo informativa. La confirmación real de tu pedido llega directamente de Wompi;
+      si tienes dudas, escríbenos con tu número de referencia.
+    </p>
+  </div>
+
+  <script>
+    // Aviso importante (ver docs de Wompi): la redirección NUNCA es la prueba de la venta,
+    // solo un mensaje informativo para el cliente. Lo que confirma el pedido es el webhook
+    // server-side (api/webhook-wompi.js). Esta consulta es "mejor esfuerzo": si falla, no
+    // pasa nada — el pedido se procesa igual del lado del servidor.
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+
+    const icono = document.getElementById('estadoIcono');
+    const titulo = document.getElementById('estadoTitulo');
+    const texto = document.getElementById('estadoTexto');
+
+    function pintar(estado) {
+      const mapa = {
+        APPROVED: { icon: 'fa-check', color: 'text-wa', t: '¡Pago aprobado!', d: 'Tu pedido quedó confirmado. Te contactaremos por WhatsApp para coordinar el envío.' },
+        DECLINED: { icon: 'fa-xmark', color: 'text-red-400', t: 'Pago rechazado', d: 'Tu banco rechazó la transacción. Puedes intentar con otro medio de pago o escribirnos.' },
+        PENDING:  { icon: 'fa-clock', color: 'text-accent', t: 'Pago en proceso', d: 'Estamos esperando la confirmación de tu banco. Te avisaremos por WhatsApp apenas se confirme.' },
+        ERROR:    { icon: 'fa-triangle-exclamation', color: 'text-red-400', t: 'Algo salió mal', d: 'No pudimos procesar el pago. Escríbenos por WhatsApp y te ayudamos.' },
+        DESCONOCIDO: { icon: 'fa-circle-info', color: 'text-sec', t: 'No pudimos confirmar el estado', d: 'Si el dinero salió de tu cuenta, escríbenos por WhatsApp con tu número de referencia y lo verificamos.' },
+      };
+      const info = mapa[estado] || mapa.DESCONOCIDO;
+      icono.innerHTML = `<i class="fa-solid ${info.icon} ${info.color}"></i>`;
+      titulo.textContent = info.t;
+      texto.textContent = info.d;
+
+      if (estado === 'APPROVED') {
+        if (window.gtag) gtag('event', 'purchase_redirect_informativo');
+      }
+    }
+
+    if (!id) {
+      pintar('DESCONOCIDO');
+    } else {
+      // Intento informativo contra la API publica de Wompi (produccion, y si falla, sandbox).
+      const intentar = url => fetch(url).then(r => r.ok ? r.json() : Promise.reject());
+      intentar(`https://production.wompi.co/v1/transactions/${id}`)
+        .catch(() => intentar(`https://sandbox.wompi.co/v1/transactions/${id}`))
+        .then(data => pintar(data.data.status))
+        .catch(() => pintar('DESCONOCIDO'));
+    }
+  </script>
+</body>
+</html>

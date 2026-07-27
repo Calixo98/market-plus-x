@@ -1,0 +1,51 @@
+{
+  "moneda": "COP",
+  "whatsapp": "573229320982",
+  "productos": [
+    {
+      "sku": "MPX-G-STD",
+      "nombre": "Casual Standard",
+      "subtitulo": "El punto de entrada ideal.",
+      "precio": 319000,
+      "imagen": "assets/modelo-pro.png",
+      "stockInicial": 1,
+      "envioGratis": false
+    },
+    {
+      "sku": "MPX-G-PRO",
+      "nombre": "Casual Pro",
+      "subtitulo": "El equilibrio perfecto.",
+      "precio": 359000,
+      "imagen": "assets/modelo-standard.jpeg",
+      "stockInicial": 2,
+      "envioGratis": false
+    },
+    {
+      "sku": "MPX-G-ULTRA-NEG",
+      "nombre": "Casual Ultra 4K Negra",
+      "subtitulo": "Máxima calidad de imagen.",
+      "precio": 420000,
+      "imagen": "assets/modelo-ultra-negro.jpeg",
+      "stockInicial": 2,
+      "envioGratis": true
+    },
+    {
+      "sku": "MPX-G-DEP-NAR",
+      "nombre": "Deportiva Ciclismo — Negra / Lente Naranja",
+      "subtitulo": "Diseño aerodinámico.",
+      "precio": 359900,
+      "imagen": "assets/dep-roja-estudio.jpg",
+      "stockInicial": 1,
+      "envioGratis": false
+    },
+    {
+      "sku": "MPX-G-DEP-NEG",
+      "nombre": "Deportiva Ciclismo — Negra / Lente Negro",
+      "subtitulo": "Diseño aerodinámico.",
+      "precio": 359900,
+      "imagen": "assets/dep-negra.jpg",
+      "stockInicial": 1,
+      "envioGratis": false
+    }
+  ]
+}

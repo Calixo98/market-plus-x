@@ -201,9 +201,13 @@
 
         <div class="flex items-center gap-2">
           <a href="#modelos"
-             class="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover transition">
+             class="hidden sm:inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover transition">
             Ver Modelos
           </a>
+          <button id="carritoBtn" class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl text-sec hover:text-ink hover:bg-white/5" aria-label="Ver carrito">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span id="carritoBadge" class="hidden absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent text-white text-[10px] font-bold">0</span>
+          </button>
           <button id="menuBtn" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl text-sec hover:text-ink hover:bg-white/5" aria-label="Abrir menú">
             <i class="fa-solid fa-bars"></i>
           </button>
@@ -444,9 +448,13 @@
             <li><i class="fa-solid fa-battery-half text-accent mr-2"></i> Batería ~6h de uso</li>
             <li><i class="fa-solid fa-droplet-slash text-accent mr-2"></i> Resistencia IPX4</li>
           </ul>
+          <button data-add-to-cart data-sku="MPX-G-STD"
+             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition">
+            <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
+          </button>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Casual%20Standard%20($319.000)"
              target="_blank" rel="noopener"
-             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
+             class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
           </a>
         </div>
@@ -463,9 +471,13 @@
             <li><i class="fa-solid fa-battery-full text-accent mr-2"></i> Batería ~12h de uso</li>
             <li><i class="fa-solid fa-droplet-slash text-accent mr-2"></i> Resistencia IPX4</li>
           </ul>
+          <button data-add-to-cart data-sku="MPX-G-PRO"
+             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition">
+            <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
+          </button>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Casual%20Pro%20($359.000)"
              target="_blank" rel="noopener"
-             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
+             class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
           </a>
         </div>
@@ -473,17 +485,9 @@
         <!-- Ultra (Tope de gama) -->
         <div class="reveal bento relative flex flex-col p-6">
           <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-white text-[#0b0b0c] px-3 py-1 text-xs font-bold whitespace-nowrap">Tope de gama</span>
-          <img id="ultra-main-img" src="assets/modelo-ultra.jpeg" alt="Gafas Market Plus X Casual Ultra — lentes rojos 4K" loading="lazy" class="rounded-2xl border border-hairline h-[200px] w-full object-contain object-center bg-white/[.03]" />
-          <div class="mt-2 mb-4 flex items-center gap-2">
-            <span class="text-xs text-ter">3 colores:</span>
-            <img src="assets/modelo-ultra.jpeg" data-color-img="assets/modelo-ultra.jpeg" data-target="ultra-main-img" data-group="ultra" alt="Rojas 4K" title="Rojas 4K" loading="lazy"
-                 class="w-10 h-8 rounded-lg object-cover object-center cursor-pointer border-2 border-accent" />
-            <img src="assets/modelo-ultra-azul.jpeg" data-color-img="assets/modelo-ultra-azul.jpeg" data-target="ultra-main-img" data-group="ultra" alt="Azul 4K" title="Azul 4K" loading="lazy"
-                 class="w-10 h-8 rounded-lg object-cover object-center cursor-pointer border border-hairline transition" />
-            <img src="assets/modelo-ultra-negro.jpeg" data-color-img="assets/modelo-ultra-negro.jpeg" data-target="ultra-main-img" data-group="ultra" alt="Negra 4K" title="Negra 4K" loading="lazy"
-                 class="w-10 h-8 rounded-lg object-cover object-center cursor-pointer border border-hairline transition" />
-          </div>
-          <h3 class="text-lg font-bold">Casual Ultra</h3>
+          <img id="ultra-main-img" src="assets/modelo-ultra-negro.jpeg" alt="Gafas Market Plus X Casual Ultra 4K — negra" loading="lazy" class="rounded-2xl border border-hairline h-[200px] w-full object-contain object-center bg-white/[.03]" />
+          <p class="mt-2 mb-4 text-xs text-ter">Envío gratis a toda Colombia en este modelo.</p>
+          <h3 class="text-lg font-bold">Casual Ultra 4K</h3>
           <p class="mt-1 text-sm text-ter">Máxima calidad de imagen.</p>
           <p class="mt-4 text-3xl font-extrabold">$420.000 <span class="text-sm font-medium text-ter">COP</span></p>
           <ul class="mt-4 space-y-1.5 text-sm text-sec flex-1">
@@ -491,9 +495,13 @@
             <li><i class="fa-solid fa-battery-full text-accent mr-2"></i> Batería ~12h de uso</li>
             <li><i class="fa-solid fa-droplet-slash text-accent mr-2"></i> Resistencia IPX4</li>
           </ul>
+          <button data-add-to-cart data-sku="MPX-G-ULTRA-NEG"
+             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition">
+            <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
+          </button>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Casual%20Ultra%20($420.000)"
              target="_blank" rel="noopener"
-             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
+             class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
           </a>
         </div>
@@ -501,12 +509,12 @@
         <!-- Deportiva (Especializado) -->
         <div class="reveal bento relative flex flex-col p-6">
           <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-soft border border-accent/40 text-accent px-3 py-1 text-xs font-bold whitespace-nowrap">Especializado</span>
-          <img id="deportiva-main-img" src="assets/deportiva-blanca-naranja.jpeg" alt="Gafas Deportiva Ciclismo — montura blanca lentes naranjas espejo" loading="lazy" class="rounded-2xl border border-hairline h-36 w-full object-contain object-center bg-white/[.03]" />
+          <img id="deportiva-main-img" src="assets/dep-roja-estudio.jpg" alt="Gafas Deportiva Ciclismo — montura negra lente naranja espejo" loading="lazy" class="rounded-2xl border border-hairline h-36 w-full object-contain object-center bg-white/[.03]" />
           <div class="mt-2 mb-4 flex items-center gap-2">
             <span class="text-xs text-ter">2 colores:</span>
-            <img src="assets/deportiva-blanca-naranja.jpeg" data-color-img="assets/deportiva-blanca-naranja.jpeg" data-target="deportiva-main-img" data-group="deportiva" alt="Blanca / Naranjas" title="Blanca / Naranjas" loading="lazy"
-                 class="deportiva-thumb w-10 h-8 rounded-lg object-cover [object-position:center_60%] cursor-pointer border-2 border-accent" />
-            <img src="assets/deportiva-negra.jpeg" data-color-img="assets/deportiva-negra.jpeg" data-target="deportiva-main-img" data-group="deportiva" alt="Negra" title="Negra" loading="lazy"
+            <img src="assets/dep-roja-estudio.jpg" data-color-img="assets/dep-roja-estudio.jpg" data-target="deportiva-main-img" data-group="deportiva" data-sku="MPX-G-DEP-NAR" alt="Negra / Lente Naranja" title="Negra / Lente Naranja" loading="lazy"
+                 class="deportiva-thumb w-10 h-8 rounded-lg object-cover object-center cursor-pointer border-2 border-accent" />
+            <img src="assets/dep-negra.jpg" data-color-img="assets/dep-negra.jpg" data-target="deportiva-main-img" data-group="deportiva" data-sku="MPX-G-DEP-NEG" alt="Negra / Lente Negro" title="Negra / Lente Negro" loading="lazy"
                  class="deportiva-thumb w-10 h-8 rounded-lg object-cover object-center cursor-pointer border border-hairline transition" />
           </div>
           <h3 class="text-lg font-bold">Deportiva Ciclismo</h3>
@@ -517,9 +525,13 @@
             <li><i class="fa-solid fa-camera text-accent mr-2"></i> Cámara 2K deportiva</li>
             <li><i class="fa-solid fa-droplet-slash text-accent mr-2"></i> Resistencia IPX4</li>
           </ul>
+          <button data-add-to-cart data-sku="MPX-G-DEP-NAR" data-sku-group="deportiva"
+             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition">
+            <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
+          </button>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Deportiva%20Ciclismo%20($359.900)"
              target="_blank" rel="noopener"
-             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
+             class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
           </a>
           <a href="deportiva.html" class="mt-2 inline-flex items-center justify-center gap-1 text-sm font-semibold text-accent hover:text-accent-hover transition">
@@ -912,22 +924,8 @@
     menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
     mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.add('hidden')));
 
-    // Selector de color genérico (usa data-target y data-group)
-    document.querySelectorAll('[data-color-img]').forEach(thumb => {
-      thumb.addEventListener('click', () => {
-        const targetId = thumb.dataset.target;
-        const group = thumb.dataset.group;
-        const mainImg = document.getElementById(targetId);
-        if (!mainImg) return;
-        mainImg.src = thumb.dataset.colorImg;
-        document.querySelectorAll(`[data-group="${group}"]`).forEach(t => {
-          t.classList.remove('border-2', 'border-accent');
-          t.classList.add('border', 'border-hairline');
-        });
-        thumb.classList.remove('border', 'border-hairline');
-        thumb.classList.add('border-2', 'border-accent');
-      });
-    });
+    // Selector de color: centralizado en carrito.js (ver [data-color-img] ahí),
+    // para que index.html y deportiva.html compartan la misma lógica.
 
     // Acordeón FAQ
     document.querySelectorAll('.faq-trigger').forEach(trigger => {
@@ -1000,5 +998,7 @@
       document.querySelectorAll('.anatomy-step, .anatomy-point').forEach(el => el.classList.add('active'));
     }
   </script>
+
+  <script src="carrito.js"></script>
 </body>
 </html>
