@@ -4,12 +4,15 @@
 // Contrato con el HTML de cada pagina:
 //   - Un boton con id="carritoBtn" y un <span id="carritoBadge"> dentro, para el contador.
 //   - Botones "Agregar al carrito": <button data-add-to-cart data-sku="...">
-//     Si el producto tiene variantes de color, el swatch debe traer data-sku y
-//     data-group; al hacer clic se actualiza data-sku del boton con ese mismo data-group.
-//   - Este script inyecta el panel lateral del carrito (overlay) el solo.
+//   - Selectores de color: <button role="radio" data-color-img data-target data-group
+//     data-sku> envolviendo una <img alt="">. Al activarse actualiza la imagen principal,
+//     el estado aria-checked del grupo, y si hay un boton "Agregar al carrito" del mismo
+//     grupo (data-sku-group), lo apunta al SKU de la variante seleccionada.
+//   - Este script inyecta el panel lateral del carrito (dialogo accesible) el solo.
 (function () {
   const STORAGE_KEY = 'mpx_carrito';
   let productosCache = null;
+  let disparadorApertura = null; // elemento que abrio el panel, para devolverle el foco
 
   function leerCarrito() {
     try {
@@ -63,10 +66,12 @@
 
   function actualizarBadge() {
     const badge = document.getElementById('carritoBadge');
+    const btn = document.getElementById('carritoBtn');
     if (!badge) return;
     const n = totalItems();
     badge.textContent = n;
     badge.classList.toggle('hidden', n === 0);
+    if (btn) btn.setAttribute('aria-label', n === 0 ? 'Ver carrito, vacío' : `Ver carrito, ${n} artículo${n === 1 ? '' : 's'}`);
   }
 
   function fmt(n) {
@@ -77,10 +82,16 @@
     if (document.getElementById('carritoPanel')) return;
     const wrap = document.createElement('div');
     wrap.innerHTML = `
+      <style>
+        @media (prefers-reduced-motion: reduce) {
+          #carritoPanel { transition: none !important; }
+        }
+      </style>
       <div id="carritoOverlay" class="fixed inset-0 z-[70] hidden bg-black/60"></div>
-      <aside id="carritoPanel" class="fixed top-0 right-0 z-[71] h-full w-full max-w-md translate-x-full transition-transform duration-300 bg-raised border-l border-hairline flex flex-col">
+      <aside id="carritoPanel" role="dialog" aria-modal="true" aria-labelledby="carritoTitulo"
+             class="fixed top-0 right-0 z-[71] h-full w-full max-w-md translate-x-full transition-transform duration-300 bg-raised border-l border-hairline flex flex-col">
         <div class="flex items-center justify-between p-5 border-b border-hairline">
-          <h2 class="text-lg font-bold">Tu carrito</h2>
+          <h2 id="carritoTitulo" class="text-lg font-bold">Tu carrito</h2>
           <button id="carritoClose" class="w-9 h-9 inline-flex items-center justify-center rounded-lg text-sec hover:text-ink hover:bg-white/5" aria-label="Cerrar carrito">
             <i class="fa-solid fa-xmark"></i>
           </button>
@@ -101,18 +112,56 @@
 
     document.getElementById('carritoClose').addEventListener('click', cerrarPanel);
     document.getElementById('carritoOverlay').addEventListener('click', cerrarPanel);
+    document.getElementById('carritoPanel').addEventListener('keydown', manejarTeclaPanel);
+  }
+
+  function elementosFocuseables(panel) {
+    return [...panel.querySelectorAll('button, a[href], input, select, [tabindex]:not([tabindex="-1"])')]
+      .filter(el => !el.disabled && el.offsetParent !== null);
+  }
+
+  // Escape cierra; Tab queda atrapado dentro del panel mientras esta abierto
+  // (patron de dialogo modal — el contenido de fondo no debe ser alcanzable).
+  function manejarTeclaPanel(e) {
+    if (e.key === 'Escape') {
+      cerrarPanel();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    const panel = document.getElementById('carritoPanel');
+    const focuseables = elementosFocuseables(panel);
+    if (focuseables.length === 0) return;
+    const primero = focuseables[0];
+    const ultimo = focuseables[focuseables.length - 1];
+    if (e.shiftKey && document.activeElement === primero) {
+      e.preventDefault();
+      ultimo.focus();
+    } else if (!e.shiftKey && document.activeElement === ultimo) {
+      e.preventDefault();
+      primero.focus();
+    }
   }
 
   function abrirPanel() {
+    disparadorApertura = document.activeElement;
+    const panel = document.getElementById('carritoPanel');
     document.getElementById('carritoOverlay').classList.remove('hidden');
-    document.getElementById('carritoPanel').classList.remove('translate-x-full');
+    panel.classList.remove('translate-x-full');
+    panel.removeAttribute('inert');
     document.body.classList.add('overflow-hidden');
+    const foco = elementosFocuseables(panel)[0];
+    if (foco) foco.focus();
   }
 
   function cerrarPanel() {
+    const panel = document.getElementById('carritoPanel');
+    if (panel.classList.contains('translate-x-full')) return; // ya estaba cerrado
     document.getElementById('carritoOverlay').classList.add('hidden');
-    document.getElementById('carritoPanel').classList.add('translate-x-full');
+    panel.classList.add('translate-x-full');
+    panel.setAttribute('inert', ''); // saca todo el contenido del orden de tabulacion mientras esta oculto
     document.body.classList.remove('overflow-hidden');
+    if (disparadorApertura && document.contains(disparadorApertura)) disparadorApertura.focus();
+    disparadorApertura = null;
   }
 
   async function renderPanel() {
@@ -129,25 +178,26 @@
 
     const productos = await cargarProductos();
     let subtotal = 0;
-    cont.innerHTML = items.map(item => {
+    cont.innerHTML = `<ul class="space-y-4">` + items.map(item => {
       const p = productos.find(x => x.sku === item.sku);
       if (!p) return '';
       subtotal += p.precio * item.qty;
       return `
-        <div class="flex gap-3 items-center">
-          <img src="${p.imagen}" alt="${p.nombre}" class="w-16 h-16 rounded-xl object-contain bg-white/[.03] border border-hairline" />
+        <li class="flex gap-3 items-center">
+          <img src="${p.imagen}" alt="" class="w-16 h-16 rounded-xl object-contain bg-white/[.03] border border-hairline" />
           <div class="flex-1 min-w-0">
             <p class="text-sm font-semibold truncate">${p.nombre}</p>
             <p class="text-xs text-ter">${fmt(p.precio)}</p>
             <div class="mt-1 flex items-center gap-2">
-              <button data-qty-menos="${item.sku}" class="w-7 h-7 rounded-lg border border-hairline text-sec hover:text-ink">−</button>
-              <span class="text-sm w-6 text-center">${item.qty}</span>
-              <button data-qty-mas="${item.sku}" class="w-7 h-7 rounded-lg border border-hairline text-sec hover:text-ink">+</button>
-              <button data-quitar="${item.sku}" class="ml-auto text-xs text-ter hover:text-ink">Quitar</button>
+              <button data-qty-menos="${item.sku}" aria-label="Quitar uno de ${p.nombre}" class="w-7 h-7 rounded-lg border border-hairline text-sec hover:text-ink">−</button>
+              <span class="text-sm w-6 text-center" aria-hidden="true">${item.qty}</span>
+              <span class="sr-only">Cantidad: ${item.qty}</span>
+              <button data-qty-mas="${item.sku}" aria-label="Agregar uno de ${p.nombre}" class="w-7 h-7 rounded-lg border border-hairline text-sec hover:text-ink">+</button>
+              <button data-quitar="${item.sku}" aria-label="Quitar ${p.nombre} del carrito" class="ml-auto px-2 py-1.5 -mr-2 text-xs text-ter hover:text-ink">Quitar</button>
             </div>
           </div>
-        </div>`;
-    }).join('');
+        </li>`;
+    }).join('') + `</ul>`;
     subtotalEl.textContent = fmt(subtotal);
 
     cont.querySelectorAll('[data-qty-menos]').forEach(b => b.addEventListener('click', () => {
@@ -178,6 +228,28 @@
       .catch(() => { /* si el backend de pagos aun no esta configurado, no bloqueamos la venta por WhatsApp */ });
   }
 
+  // Activa un swatch de color: swap de imagen, aria-checked del grupo, y
+  // actualiza el SKU del boton "Agregar al carrito" asociado (data-sku-group).
+  function activarSwatch(thumb) {
+    const grupo = thumb.dataset.group;
+    const mainImg = document.getElementById(thumb.dataset.target);
+    if (mainImg) mainImg.src = thumb.dataset.colorImg;
+
+    document.querySelectorAll(`[data-color-img][data-group="${grupo}"]`).forEach(t => {
+      t.setAttribute('aria-checked', 'false');
+      t.classList.remove('border-2', 'border-accent');
+      t.classList.add('border', 'border-hairline');
+    });
+    thumb.setAttribute('aria-checked', 'true');
+    thumb.classList.remove('border', 'border-hairline');
+    thumb.classList.add('border-2', 'border-accent');
+
+    if (thumb.dataset.sku) {
+      const addBtn = document.querySelector(`[data-add-to-cart][data-sku-group="${grupo}"]`);
+      if (addBtn) addBtn.dataset.sku = thumb.dataset.sku;
+    }
+  }
+
   function wire() {
     crearPanel();
     actualizarBadge();
@@ -195,27 +267,11 @@
       }
     });
 
-    // Selector de color generico: cambia la imagen principal, resalta el swatch
-    // activo, y si hay un boton "Agregar al carrito" del mismo grupo (data-sku-group),
-    // lo apunta al SKU de la variante seleccionada.
+    // Selectores de color: botones reales (role="radio"), operables por teclado
+    // (Enter/Espacio nativos de <button>) y con estado expuesto vía aria-checked,
+    // no solo por color de borde.
     document.querySelectorAll('[data-color-img]').forEach(thumb => {
-      thumb.addEventListener('click', () => {
-        const grupo = thumb.dataset.group;
-        const mainImg = document.getElementById(thumb.dataset.target);
-        if (mainImg) mainImg.src = thumb.dataset.colorImg;
-
-        document.querySelectorAll(`[data-color-img][data-group="${grupo}"]`).forEach(t => {
-          t.classList.remove('border-2', 'border-accent');
-          t.classList.add('border', 'border-hairline');
-        });
-        thumb.classList.remove('border', 'border-hairline');
-        thumb.classList.add('border-2', 'border-accent');
-
-        if (thumb.dataset.sku) {
-          const addBtn = document.querySelector(`[data-add-to-cart][data-sku-group="${grupo}"]`);
-          if (addBtn) addBtn.dataset.sku = thumb.dataset.sku;
-        }
-      });
+      thumb.addEventListener('click', () => activarSwatch(thumb));
     });
   }
 

@@ -90,7 +90,7 @@
             card:   '#1c1c22',
             ink:    '#ffffff',
             sec:    '#a1a1aa',
-            ter:    '#63636b',
+            ter:    '#8a8a92',
             accent: { DEFAULT: '#0066ff', hover: '#2b7fff', soft: 'rgba(0,102,255,0.12)' },
             wa:     { DEFAULT: '#25D366', dark: '#1DA851' },
             hairline: 'rgba(255,255,255,0.12)',
@@ -109,6 +109,8 @@
     ::-webkit-scrollbar-track { background: #0b0b0c; }
     ::-webkit-scrollbar-thumb { background: #2a2a30; border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: #0066ff; }
+    button:focus-visible, a:focus-visible, [role="radio"]:focus-visible { outline: 2px solid #2b7fff; outline-offset: 2px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
     /* Glass */
     .glass { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); background: rgba(28,28,34,.65); }
@@ -249,7 +251,7 @@
         </a>
         <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20para%20elegir%20mis%20gafas%20inteligentes"
            target="_blank" rel="noopener"
-           class="inline-flex items-center justify-center gap-2 rounded-full bg-wa hover:bg-wa-dark px-8 py-4 text-base font-bold text-white transition">
+           class="inline-flex items-center justify-center gap-2 rounded-full bg-wa hover:bg-wa-dark px-8 py-4 text-base font-bold text-night transition">
           <i class="fa-brands fa-whatsapp text-xl"></i> Asesoría por WhatsApp
         </a>
       </div>
@@ -313,7 +315,7 @@
               </a>
               <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Deportiva%20Ciclismo%20($359.900)"
                  target="_blank" rel="noopener"
-                 class="inline-flex items-center gap-2 rounded-full bg-wa hover:bg-wa-dark px-6 py-3 text-sm font-bold text-white transition">
+                 class="inline-flex items-center gap-2 rounded-full bg-wa hover:bg-wa-dark px-6 py-3 text-sm font-bold text-night transition">
                 <i class="fa-brands fa-whatsapp"></i> Asesoría
               </a>
             </div>
@@ -454,7 +456,7 @@
           </button>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Casual%20Standard%20($319.000)"
              target="_blank" rel="noopener"
-             class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
+             class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-night hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
           </a>
         </div>
@@ -477,7 +479,7 @@
           </button>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Casual%20Pro%20($359.000)"
              target="_blank" rel="noopener"
-             class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
+             class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-night hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
           </a>
         </div>
@@ -501,7 +503,7 @@
           </button>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Casual%20Ultra%20($420.000)"
              target="_blank" rel="noopener"
-             class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
+             class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-night hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
           </a>
         </div>
@@ -510,12 +512,20 @@
         <div class="reveal bento relative flex flex-col p-6">
           <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-soft border border-accent/40 text-accent px-3 py-1 text-xs font-bold whitespace-nowrap">Especializado</span>
           <img id="deportiva-main-img" src="assets/dep-roja-estudio.jpg" alt="Gafas Deportiva Ciclismo — montura negra lente naranja espejo" loading="lazy" class="rounded-2xl border border-hairline h-36 w-full object-contain object-center bg-white/[.03]" />
-          <div class="mt-2 mb-4 flex items-center gap-2">
-            <span class="text-xs text-ter">2 colores:</span>
-            <img src="assets/dep-roja-estudio.jpg" data-color-img="assets/dep-roja-estudio.jpg" data-target="deportiva-main-img" data-group="deportiva" data-sku="MPX-G-DEP-NAR" alt="Negra / Lente Naranja" title="Negra / Lente Naranja" loading="lazy"
-                 class="deportiva-thumb w-10 h-8 rounded-lg object-cover object-center cursor-pointer border-2 border-accent" />
-            <img src="assets/dep-negra.jpg" data-color-img="assets/dep-negra.jpg" data-target="deportiva-main-img" data-group="deportiva" data-sku="MPX-G-DEP-NEG" alt="Negra / Lente Negro" title="Negra / Lente Negro" loading="lazy"
-                 class="deportiva-thumb w-10 h-8 rounded-lg object-cover object-center cursor-pointer border border-hairline transition" />
+          <div role="radiogroup" aria-label="Color" class="mt-2 mb-4 flex items-center gap-2">
+            <span class="text-xs text-ter" aria-hidden="true">2 colores:</span>
+            <button type="button" role="radio" aria-checked="true" title="Negra / Lente Naranja"
+                    data-color-img="assets/dep-roja-estudio.jpg" data-target="deportiva-main-img" data-group="deportiva" data-sku="MPX-G-DEP-NAR"
+                    class="deportiva-thumb w-10 h-8 p-0 rounded-lg overflow-hidden border-2 border-accent">
+              <img src="assets/dep-roja-estudio.jpg" alt="" loading="lazy" class="w-full h-full object-cover object-center" />
+              <span class="sr-only">Negra / Lente Naranja</span>
+            </button>
+            <button type="button" role="radio" aria-checked="false" title="Negra / Lente Negro"
+                    data-color-img="assets/dep-negra.jpg" data-target="deportiva-main-img" data-group="deportiva" data-sku="MPX-G-DEP-NEG"
+                    class="deportiva-thumb w-10 h-8 p-0 rounded-lg overflow-hidden border border-hairline transition">
+              <img src="assets/dep-negra.jpg" alt="" loading="lazy" class="w-full h-full object-cover object-center" />
+              <span class="sr-only">Negra / Lente Negro</span>
+            </button>
           </div>
           <h3 class="text-lg font-bold">Deportiva Ciclismo</h3>
           <p class="mt-1 text-sm text-ter">Diseño aerodinámico.</p>
@@ -531,7 +541,7 @@
           </button>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Deportiva%20Ciclismo%20($359.900)"
              target="_blank" rel="noopener"
-             class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-white hover:bg-wa-dark transition">
+             class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-night hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
           </a>
           <a href="deportiva.html" class="mt-2 inline-flex items-center justify-center gap-1 text-sm font-semibold text-accent hover:text-accent-hover transition">
@@ -818,7 +828,7 @@
           <p class="mt-4 text-sec max-w-xl mx-auto">Escríbenos por WhatsApp y un asesor real te ayuda a elegir el modelo perfecto para ti.</p>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20para%20elegir%20mis%20gafas%20inteligentes"
              target="_blank" rel="noopener"
-             class="mt-8 inline-flex items-center gap-3 rounded-full bg-wa px-10 py-5 text-lg font-bold text-white hover:bg-wa-dark transition">
+             class="mt-8 inline-flex items-center gap-3 rounded-full bg-wa px-10 py-5 text-lg font-bold text-night hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp text-2xl"></i> Hablar con un asesor
           </a>
           <p class="mt-5 text-sm text-ter"><i class="fa-solid fa-truck-fast mr-1 text-accent"></i> Pago contra entrega a toda Colombia · Envíos con guía de seguimiento</p>
@@ -880,7 +890,7 @@
   <!-- ========================= BOTÓN FLOTANTE WHATSAPP ========================= -->
   <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20inteligentes"
      target="_blank" rel="noopener"
-     class="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-wa px-5 py-4 font-bold text-white shadow-2xl shadow-wa/30 hover:bg-wa-dark transition md:hidden">
+     class="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-wa px-5 py-4 font-bold text-night shadow-2xl shadow-wa/30 hover:bg-wa-dark transition md:hidden">
     <i class="fa-brands fa-whatsapp text-xl"></i> WhatsApp
   </a>
 

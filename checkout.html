@@ -70,7 +70,7 @@
           fontFamily: { sans: ['Inter', '-apple-system', 'sans-serif'] },
           colors: {
             night: '#0b0b0c', raised: '#17171c', card: '#1c1c22',
-            ink: '#ffffff', sec: '#a1a1aa', ter: '#63636b',
+            ink: '#ffffff', sec: '#a1a1aa', ter: '#8a8a92',
             accent: { DEFAULT: '#0066ff', hover: '#2b7fff', soft: 'rgba(0,102,255,0.12)' },
             wa: { DEFAULT: '#25D366', dark: '#1DA851' },
             hairline: 'rgba(255,255,255,0.12)',
@@ -88,7 +88,14 @@
              box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 20px 60px rgba(0,0,0,.5); }
     input, select { background: #1c1c22; border: 1px solid rgba(255,255,255,.12); color: #fff; }
     input:focus, select:focus { outline: none; border-color: #0066ff; }
-    input::placeholder { color: #63636b; }
+    input:focus-visible, select:focus-visible { outline: 2px solid #2b7fff; outline-offset: 2px; }
+    button:focus-visible, a:focus-visible { outline: 2px solid #2b7fff; outline-offset: 2px; }
+    input::placeholder { color: #8a8a92; }
+    input[aria-invalid="true"], select[aria-invalid="true"] { border-color: #f87171; }
+    #btnPagar:disabled { background: #2a2f3a; color: #b8bcc4; cursor: not-allowed; }
+    @media (prefers-reduced-motion: reduce) {
+      #carritoPanel { transition: none !important; }
+    }
   </style>
 </head>
 <body class="font-sans text-ink antialiased bg-night">
@@ -126,27 +133,27 @@
         <h2 class="text-lg font-bold">Tus datos</h2>
         <form id="formCheckout" class="mt-5 space-y-4" novalidate>
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Nombre completo</label>
-            <input type="text" id="nombre" required class="w-full rounded-xl px-4 py-3 text-sm" placeholder="Como aparece en tu documento" />
+            <label for="nombre" class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Nombre completo</label>
+            <input type="text" id="nombre" name="nombre" autocomplete="name" required aria-describedby="formError" class="w-full rounded-xl px-4 py-3 text-sm" placeholder="Como aparece en tu documento" />
           </div>
           <div class="grid sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Email</label>
-              <input type="email" id="email" required class="w-full rounded-xl px-4 py-3 text-sm" placeholder="tucorreo@ejemplo.com" />
+              <label for="email" class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Email</label>
+              <input type="email" id="email" name="email" autocomplete="email" inputmode="email" required aria-describedby="formError" class="w-full rounded-xl px-4 py-3 text-sm" placeholder="tucorreo@ejemplo.com" />
             </div>
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Teléfono / WhatsApp</label>
-              <input type="tel" id="telefono" required class="w-full rounded-xl px-4 py-3 text-sm" placeholder="300 123 4567" />
+              <label for="telefono" class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Teléfono / WhatsApp</label>
+              <input type="tel" id="telefono" name="telefono" autocomplete="tel" inputmode="tel" required aria-describedby="formError" class="w-full rounded-xl px-4 py-3 text-sm" placeholder="300 123 4567" />
             </div>
           </div>
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Dirección de envío</label>
-            <input type="text" id="direccion" required class="w-full rounded-xl px-4 py-3 text-sm" placeholder="Calle, número, barrio" />
+            <label for="direccion" class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Dirección de envío</label>
+            <input type="text" id="direccion" name="direccion" autocomplete="street-address" required aria-describedby="formError" class="w-full rounded-xl px-4 py-3 text-sm" placeholder="Calle, número, barrio" />
           </div>
           <div class="grid sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Ciudad</label>
-              <select id="ciudad" required class="w-full rounded-xl px-4 py-3 text-sm">
+              <label for="ciudad" class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Ciudad</label>
+              <select id="ciudad" name="ciudad" autocomplete="address-level2" required aria-describedby="formError" class="w-full rounded-xl px-4 py-3 text-sm">
                 <option value="">Selecciona tu ciudad</option>
                 <option value="Bogotá D.C.">Bogotá D.C.</option>
                 <option value="Medellín">Medellín</option>
@@ -161,15 +168,15 @@
               </select>
             </div>
             <div id="ciudadOtraWrap" class="hidden">
-              <label class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">¿Cuál?</label>
-              <input type="text" id="ciudadOtra" class="w-full rounded-xl px-4 py-3 text-sm" placeholder="Nombre de tu ciudad" />
+              <label for="ciudadOtra" class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">¿Cuál?</label>
+              <input type="text" id="ciudadOtra" name="ciudadOtra" autocomplete="address-level2" aria-describedby="formError" class="w-full rounded-xl px-4 py-3 text-sm" placeholder="Nombre de tu ciudad" />
             </div>
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Departamento</label>
-              <input type="text" id="departamento" class="w-full rounded-xl px-4 py-3 text-sm" placeholder="Opcional" />
+              <label for="departamento" class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Departamento</label>
+              <input type="text" id="departamento" name="departamento" autocomplete="address-level1" class="w-full rounded-xl px-4 py-3 text-sm" placeholder="Opcional" />
             </div>
           </div>
-          <p id="formError" class="hidden text-sm text-red-400"></p>
+          <p id="formError" role="alert" aria-live="assertive" class="hidden text-sm text-red-400"></p>
         </form>
       </div>
 
@@ -183,7 +190,7 @@
             <div class="flex justify-between text-sec"><span>Envío</span><span id="resumenEnvio">Selecciona tu ciudad</span></div>
             <div class="flex justify-between text-lg font-extrabold pt-2 border-t border-hairline"><span>Total</span><span id="resumenTotal">$0</span></div>
           </div>
-          <button id="btnPagar" class="mt-6 w-full inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-4 text-base font-bold text-white hover:bg-accent-hover transition disabled:opacity-50 disabled:cursor-not-allowed">
+          <button id="btnPagar" type="submit" form="formCheckout" class="mt-6 w-full inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-4 text-base font-bold text-white hover:bg-accent-hover transition disabled:cursor-not-allowed">
             <i class="fa-solid fa-lock"></i> Pagar con Wompi
           </button>
           <p class="mt-3 text-xs text-ter text-center">Tarjeta, PSE, Nequi o Bancolombia. Tienes 15 minutos para completar el pago.</p>
@@ -266,16 +273,35 @@
     });
     document.getElementById('ciudadOtra').addEventListener('input', renderResumen);
 
-    function mostrarError(msg) {
+    // Limpia el aria-invalid de un intento anterior antes de validar de nuevo.
+    function limpiarInvalidos() {
+      ['nombre', 'email', 'telefono', 'direccion', 'ciudad', 'ciudadOtra'].forEach(id => {
+        document.getElementById(id).removeAttribute('aria-invalid');
+      });
+    }
+
+    // Muestra el error, lo asocia al campo culpable, y le mueve el foco — así
+    // el usuario SIEMPRE ve o siente que algo paso (no solo un texto que puede
+    // quedar fuera de la pantalla en movil), y un lector de pantalla lo anuncia
+    // de inmediato por el aria-live del propio elemento.
+    function mostrarError(msg, campoId) {
       const el = document.getElementById('formError');
       el.textContent = msg;
       el.classList.remove('hidden');
+      if (campoId) {
+        const campo = document.getElementById(campoId);
+        campo.setAttribute('aria-invalid', 'true');
+        campo.focus();
+        campo.scrollIntoView({ block: 'center', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      }
     }
     function ocultarError() {
       document.getElementById('formError').classList.add('hidden');
+      limpiarInvalidos();
     }
 
-    document.getElementById('btnPagar').addEventListener('click', async () => {
+    document.getElementById('formCheckout').addEventListener('submit', async (e) => {
+      e.preventDefault();
       ocultarError();
       const nombre = document.getElementById('nombre').value.trim();
       const email = document.getElementById('email').value.trim();
@@ -284,17 +310,18 @@
       const departamento = document.getElementById('departamento').value.trim();
       const ciudad = ciudadSeleccionada();
 
-      if (nombre.length < 3) return mostrarError('Escribe tu nombre completo.');
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return mostrarError('Escribe un email válido.');
-      if (telefono.replace(/\D/g, '').length < 7) return mostrarError('Escribe un teléfono válido.');
-      if (direccion.length < 5) return mostrarError('Escribe tu dirección de envío.');
-      if (!ciudad) return mostrarError('Selecciona o escribe tu ciudad.');
+      if (nombre.length < 3) return mostrarError('Escribe tu nombre completo.', 'nombre');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return mostrarError('Escribe un email válido.', 'email');
+      if (telefono.replace(/\D/g, '').length < 7) return mostrarError('Escribe un teléfono válido.', 'telefono');
+      if (direccion.length < 5) return mostrarError('Escribe tu dirección de envío.', 'direccion');
+      if (!ciudad) return mostrarError('Selecciona o escribe tu ciudad.', document.getElementById('ciudad').value === '__otra__' ? 'ciudadOtra' : 'ciudad');
 
       const items = window.MPXCarrito.leer();
       if (items.length === 0) return mostrarError('Tu carrito está vacío.');
 
       const btn = document.getElementById('btnPagar');
       btn.disabled = true;
+      btn.setAttribute('aria-busy', 'true');
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando…';
 
       try {
@@ -349,6 +376,7 @@
       } catch (err) {
         mostrarError(err.message || 'Ocurrió un error. Intenta de nuevo.');
         btn.disabled = false;
+        btn.removeAttribute('aria-busy');
         btn.innerHTML = '<i class="fa-solid fa-lock"></i> Pagar con Wompi';
       }
     });

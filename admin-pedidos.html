@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <script>
     tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: {
-      night: '#0b0b0c', raised: '#17171c', card: '#1c1c22', ink: '#ffffff', sec: '#a1a1aa', ter: '#63636b',
+      night: '#0b0b0c', raised: '#17171c', card: '#1c1c22', ink: '#ffffff', sec: '#a1a1aa', ter: '#8a8a92',
       accent: { DEFAULT: '#0066ff', hover: '#2b7fff' }, hairline: 'rgba(255,255,255,0.12)',
       okc: '#25D366', badc: '#f87171',
     } } } };
@@ -18,8 +18,9 @@
   <style>
     body { background: #0b0b0c; }
     input { background: #1c1c22; border: 1px solid rgba(255,255,255,.12); color: #fff; }
+    input:focus-visible, button:focus-visible { outline: 2px solid #2b7fff; outline-offset: 2px; }
     th, td { padding: 10px 12px; text-align: left; white-space: nowrap; }
-    tr { border-bottom: 1px solid rgba(255,255,255,.08); }
+    tr { border-bottom: 1px solid rgba(255,255,255,.12); }
   </style>
 </head>
 <body class="font-sans text-ink antialiased bg-night min-h-screen p-6">
@@ -30,19 +31,20 @@
 
     <div class="mt-6 flex flex-wrap gap-3 items-end">
       <div>
-        <label class="block text-xs font-semibold uppercase text-ter mb-1.5">Token de administrador</label>
-        <input type="password" id="token" class="rounded-lg px-3 py-2 text-sm w-72" placeholder="Pega tu ADMIN_TOKEN" />
+        <label for="token" class="block text-xs font-semibold uppercase text-ter mb-1.5">Token de administrador</label>
+        <input type="password" id="token" autocomplete="off" class="rounded-lg px-3 py-2 text-sm w-72" placeholder="Pega tu ADMIN_TOKEN" />
       </div>
       <button id="btnCargar" class="rounded-lg bg-accent px-5 py-2 text-sm font-bold hover:bg-accent-hover transition">Cargar pedidos</button>
-      <span id="estado" class="text-sm text-ter"></span>
+      <span id="estado" role="status" class="text-sm text-ter"></span>
     </div>
 
     <div class="mt-6 overflow-x-auto rounded-xl border border-hairline">
       <table class="w-full text-sm">
+        <caption class="sr-only">Pedidos recibidos, del más reciente al más antiguo</caption>
         <thead class="bg-card text-ter uppercase text-xs">
           <tr>
-            <th>Fecha</th><th>Estado</th><th>Referencia</th><th>Cliente</th><th>Teléfono</th>
-            <th>Ciudad</th><th>Dirección</th><th>Productos</th><th>Total</th>
+            <th scope="col">Fecha</th><th scope="col">Estado</th><th scope="col">Referencia</th><th scope="col">Cliente</th><th scope="col">Teléfono</th>
+            <th scope="col">Ciudad</th><th scope="col">Dirección</th><th scope="col">Productos</th><th scope="col">Total</th>
           </tr>
         </thead>
         <tbody id="filas"><tr><td colspan="9" class="text-ter">Ingresa el token y carga los pedidos.</td></tr></tbody>
