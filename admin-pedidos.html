@@ -52,9 +52,13 @@
 
   <script>
     const fmt = n => n == null ? '—' : '$' + Number(n).toLocaleString('es-CO');
+    // Los datos de pedidos vienen del formulario publico de checkout.html:
+    // cualquier campo (nombre, direccion, ciudad, SKU) puede contener HTML
+    // hostil. Escapar SIEMPRE antes de insertar en el DOM con innerHTML.
+    const esc = s => String(s ?? '—').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const badge = estado => {
       const colores = { APPROVED: 'text-okc', DECLINED: 'text-badc', ERROR: 'text-badc', PENDING: 'text-accent', VOIDED: 'text-ter' };
-      return `<span class="font-bold ${colores[estado] || 'text-ter'}">${estado || '—'}</span>`;
+      return `<span class="font-bold ${colores[estado] || 'text-ter'}">${esc(estado)}</span>`;
     };
 
     document.getElementById('btnCargar').addEventListener('click', async () => {
@@ -74,14 +78,14 @@
         } else {
           filas.innerHTML = data.pedidos.map(p => `
             <tr>
-              <td>${p.confirmadoEn ? new Date(p.confirmadoEn).toLocaleString('es-CO') : '—'}</td>
+              <td>${p.confirmadoEn ? esc(new Date(p.confirmadoEn).toLocaleString('es-CO')) : '—'}</td>
               <td>${badge(p.estado)}</td>
-              <td class="font-mono text-xs">${p.referencia}</td>
-              <td>${p.cliente ? p.cliente.nombre : '—'}</td>
-              <td>${p.cliente ? p.cliente.telefono : '—'}</td>
-              <td>${p.ciudad || '—'}</td>
-              <td class="whitespace-normal max-w-xs">${p.cliente ? p.cliente.direccion : '—'}</td>
-              <td class="whitespace-normal max-w-xs">${p.items ? p.items.map(i => `${i.qty}× ${i.sku}`).join(', ') : (p.advertencia || '—')}</td>
+              <td class="font-mono text-xs">${esc(p.referencia)}</td>
+              <td>${p.cliente ? esc(p.cliente.nombre) : '—'}</td>
+              <td>${p.cliente ? esc(p.cliente.telefono) : '—'}</td>
+              <td>${esc(p.ciudad)}</td>
+              <td class="whitespace-normal max-w-xs">${p.cliente ? esc(p.cliente.direccion) : '—'}</td>
+              <td class="whitespace-normal max-w-xs">${p.items ? p.items.map(i => `${esc(i.qty)}× ${esc(i.sku)}`).join(', ') : esc(p.advertencia)}</td>
               <td>${fmt(p.total)}</td>
             </tr>`).join('');
         }

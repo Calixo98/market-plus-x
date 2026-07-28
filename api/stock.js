@@ -1,6 +1,6 @@
 // GET /api/stock
-// Devuelve la disponibilidad actual por SKU (inicial - vendido - retenido por
-// reservas vigentes), para que la web marque "Agotado" sin intervencion manual.
+// Devuelve la disponibilidad actual por SKU (contador atomico, ver lib/catalogo.js),
+// para que la web marque "Agotado" sin intervencion manual.
 
 const catalogo = require('../lib/catalogo');
 

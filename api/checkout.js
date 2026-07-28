@@ -1,8 +1,8 @@
 // POST /api/checkout
 // Recibe el carrito (SKUs + cantidades + ciudad + datos del cliente), recalcula
 // el total desde el catalogo del servidor (nunca confia en precios del navegador),
-// reserva el stock por 15 minutos y devuelve los parametros firmados para
-// redirigir al Web Checkout de Wompi.
+// reserva el stock de forma ATOMICA (ver lib/catalogo.js) y devuelve los
+// parametros firmados para redirigir al Web Checkout de Wompi.
 //
 // Referencia: https://docs.wompi.co/docs/colombia/widget-checkout-web/
 
@@ -15,8 +15,36 @@ const RESERVA_TTL_SEGUNDOS = 15 * 60;
 const MAX_QTY_POR_ITEM = 5;
 const MAX_ITEMS = 10;
 
+// Limite de tasa por IP: evita que alguien bloquee el inventario mandando
+// checkouts sin pagar (cada intento retiene stock por 15 min).
+//
+// OJO: con un catalogo de solo 1-2 unidades por SKU, ningun limite lo bastante
+// generoso para clientes reales (que pueden necesitar reintentar 2-3 veces)
+// puede impedir matematicamente que UNA sola IP agote el catalogo completo en
+// una sola ventana (el total de unidades es menor que cualquier limite razonable
+// para humanos). Este limite eleva el costo del ataque (antes: gratis e ilimitado,
+// repetible cada 15 min sin espera) a "requiere gastar todo el cupo de una IP y
+// esperar 10 min para repetir" — no lo elimina del todo. Cerrarlo del todo
+// requeriria verificacion humana (captcha) antes de reservar, fuera de alcance
+// de este arreglo.
+const LIMITE_INTENTOS_POR_VENTANA = 4;
+const VENTANA_LIMITE_SEGUNDOS = 10 * 60;
+
 function error(res, status, mensaje) {
   res.status(status).json({ ok: false, error: mensaje });
+}
+
+function obtenerIp(req) {
+  const xff = req.headers['x-forwarded-for'];
+  if (xff) return String(xff).split(',')[0].trim();
+  return (req.socket && req.socket.remoteAddress) || 'desconocida';
+}
+
+async function excedeLimiteDeTasa(ip) {
+  const clave = `ratelimit:checkout:${ip}`;
+  const conteo = await kv.incrby(clave, 1);
+  if (conteo === 1) await kv.expire(clave, VENTANA_LIMITE_SEGUNDOS);
+  return conteo > LIMITE_INTENTOS_POR_VENTANA;
 }
 
 module.exports = async (req, res) => {
@@ -48,8 +76,8 @@ module.exports = async (req, res) => {
   if (!telefono || String(telefono).replace(/\D/g, '').length < 7) return error(res, 400, 'Teléfono invalido');
   if (!direccion || String(direccion).trim().length < 5) return error(res, 400, 'Dirección de envío requerida');
 
-  // 1) Resolver cada item contra el catalogo real (precio e imagen del servidor, no del cliente).
-  // Es validacion pura (sin tocar Redis), asi que corre siempre, sin importar la configuracion.
+  // Resolver cada item contra el catalogo real (precio e imagen del servidor,
+  // no del cliente). Es validacion pura (sin tocar Redis), corre siempre.
   const itemsResueltos = [];
   for (const it of items) {
     const producto = catalogo.buscarProducto(it.sku);
@@ -61,68 +89,92 @@ module.exports = async (req, res) => {
   const secreto = process.env.WOMPI_INTEGRITY_SECRET;
   if (!secreto) return error(res, 500, 'Integracion de pagos no configurada (falta WOMPI_INTEGRITY_SECRET)');
 
+  const ip = obtenerIp(req);
+
   try {
-    // 2) Verificar stock disponible AHORA (inicial - vendido - retenido por otras reservas vigentes).
-    for (const it of itemsResueltos) {
-      const disponible = await catalogo.stockDisponible(it.sku);
-      if (disponible < it.qty) {
-        return error(res, 409, `Sin stock suficiente para ${it.nombre} (quedan ${disponible})`);
-      }
+    if (await excedeLimiteDeTasa(ip)) {
+      return error(res, 429, 'Demasiados intentos. Espera unos minutos e intenta de nuevo.');
     }
 
-    // 3) Calcular el total. Envio gratis solo si TODO el carrito son referencias con envioGratis.
-    const subtotal = itemsResueltos.reduce((acc, it) => acc + it.precio * it.qty, 0);
-    const todoEnvioGratis = itemsResueltos.every(it => it.envioGratis);
-    const zona = catalogo.buscarZonaEnvio(ciudad);
-    const envio = todoEnvioGratis ? 0 : zona.tarifa;
-    const total = subtotal + envio;
+    // Liberar reservas abandonadas antes de intentar reservar la nueva: evita
+    // que carritos nunca pagados dejen el inventario bloqueado indefinidamente.
+    await catalogo.liberarReservasVencidas();
 
-    // 4) Referencia unica + firma de integridad (el secreto SOLO existe en esta funcion).
-    const referencia = `MPX-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
-    const expirationTime = new Date(Date.now() + RESERVA_TTL_SEGUNDOS * 1000).toISOString();
-    const amountInCents = Math.round(total * 100);
+    // Reserva ATOMICA: la propia operacion de descuento es la verificacion de
+    // stock. No hay ventana entre "leer disponibilidad" y "escribir la reserva".
+    const itemsParaReservar = itemsResueltos.map(it => ({ sku: it.sku, qty: it.qty }));
+    const resultadoReserva = await catalogo.reservarStock(itemsParaReservar);
+    if (!resultadoReserva.ok) {
+      const producto = catalogo.buscarProducto(resultadoReserva.sku);
+      return error(
+        res, 409,
+        `Sin stock suficiente para ${producto ? producto.nombre : resultadoReserva.sku} (quedan ${resultadoReserva.disponible})`
+      );
+    }
 
-    const signature = firmarIntegridad({
-      referencia,
-      montoEnCentavos: amountInCents,
-      moneda: catalogo.moneda,
-      expirationTime,
-      secreto,
-    });
+    try {
+      // Calcular el total. Envio gratis solo si TODO el carrito son referencias con envioGratis.
+      const subtotal = itemsResueltos.reduce((acc, it) => acc + it.precio * it.qty, 0);
+      const todoEnvioGratis = itemsResueltos.every(it => it.envioGratis);
+      const zona = catalogo.buscarZonaEnvio(ciudad);
+      const envio = todoEnvioGratis ? 0 : zona.tarifa;
+      const total = subtotal + envio;
 
-    // 5) Reservar el stock por 15 minutos (se descuenta de verdad solo cuando llegue el webhook).
-    await kv.set(
-      `reserva:${referencia}`,
-      JSON.stringify({
-        items: itemsResueltos.map(it => ({ sku: it.sku, qty: it.qty })),
-        ciudad,
-        zona: zona.id,
-        cliente: { nombre, email, telefono, direccion, departamento: departamento || null },
-        subtotal,
-        envio,
-        total,
-        creadoEn: new Date().toISOString(),
-      }),
-      { exSeconds: RESERVA_TTL_SEGUNDOS }
-    );
+      // Referencia unica + firma de integridad (el secreto SOLO existe en esta funcion).
+      const referencia = `MPX-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+      const expirationTime = new Date(Date.now() + RESERVA_TTL_SEGUNDOS * 1000).toISOString();
+      const amountInCents = Math.round(total * 100);
 
-    const proto = req.headers['x-forwarded-proto'] || 'https';
-    const redirectUrl = `${proto}://${req.headers.host}/pago-respuesta.html`;
-    const publicKey = process.env.WOMPI_PUBLIC_KEY || 'pub_prod_qg4b0cfHMATdoZNRvjtdIQVilCstMh9d';
+      const signature = firmarIntegridad({
+        referencia,
+        montoEnCentavos: amountInCents,
+        moneda: catalogo.moneda,
+        expirationTime,
+        secreto,
+      });
 
-    return res.status(200).json({
-      ok: true,
-      publicKey,
-      currency: catalogo.moneda,
-      amountInCents,
-      reference: referencia,
-      signature,
-      expirationTime,
-      redirectUrl,
-      customer: { email, fullName: nombre, phoneNumber: telefono },
-      shipping: { addressLine1: direccion, city: ciudad, region: departamento || ciudad, country: 'CO', phoneNumber: telefono },
-      resumen: { subtotal, envio, total, zona: zona.nombre },
-    });
+      await kv.set(
+        `reserva:${referencia}`,
+        JSON.stringify({
+          items: itemsParaReservar,
+          ciudad,
+          zona: zona.id,
+          cliente: { nombre, email, telefono, direccion, departamento: departamento || null },
+          subtotal,
+          envio,
+          total,
+          creadoEn: new Date().toISOString(),
+          expiraEn: expirationTime,
+        })
+      );
+      // Red de seguridad de almacenamiento (24h): la logica real de vencimiento
+      // usa el campo expiraEn de arriba, no este TTL.
+      await kv.expire(`reserva:${referencia}`, catalogo.RESERVA_TTL_RESPALDO_SEGUNDOS);
+
+      const proto = req.headers['x-forwarded-proto'] || 'https';
+      const redirectUrl = `${proto}://${req.headers.host}/pago-respuesta.html`;
+      const publicKey = process.env.WOMPI_PUBLIC_KEY || 'pub_prod_qg4b0cfHMATdoZNRvjtdIQVilCstMh9d';
+
+      return res.status(200).json({
+        ok: true,
+        publicKey,
+        currency: catalogo.moneda,
+        amountInCents,
+        reference: referencia,
+        signature,
+        expirationTime,
+        redirectUrl,
+        customer: { email, fullName: nombre, phoneNumber: telefono },
+        shipping: { addressLine1: direccion, city: ciudad, region: departamento || ciudad, country: 'CO', phoneNumber: telefono },
+        resumen: { subtotal, envio, total, zona: zona.nombre },
+      });
+    } catch (errInterno) {
+      // Ya reservamos el stock atomicamente arriba: si algo falla DESPUES de eso
+      // (p.ej. no se pudo guardar la reserva), hay que devolverlo o el stock
+      // quedaria perdido para siempre.
+      await catalogo.liberarStock(itemsParaReservar);
+      throw errInterno;
+    }
   } catch (err) {
     console.error('Error en /api/checkout:', err);
     return error(res, 500, 'No se pudo iniciar el pago. Intenta de nuevo en un momento.');
