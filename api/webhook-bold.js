@@ -22,6 +22,7 @@ const kv = require('../lib/kv');
 const catalogo = require('../lib/catalogo');
 const { leerCuerpoCrudo, verificarFirmaWebhook } = require('../lib/bold');
 const { enviarEventoCompra } = require('../lib/meta');
+const { notificarPedidoAprobado } = require('../lib/telegram');
 
 const TIPOS_CONOCIDOS = ['SALE_APPROVED', 'SALE_REJECTED', 'VOID_APPROVED', 'VOID_REJECTED'];
 
@@ -119,6 +120,15 @@ module.exports = async (req, res) => {
           ip: reserva.ip,
           userAgent: reserva.userAgent,
           eventTime: tiempoEvento,
+        });
+
+        // Aviso por Telegram: hoy es la unica forma de enterarse de una venta
+        // sin entrar manualmente a admin-pedidos.html.
+        await notificarPedidoAprobado({
+          referencia,
+          total: reserva.total,
+          items: reserva.items,
+          cliente: reserva.cliente,
         });
       } else {
         // SALE_REJECTED / VOID_APPROVED / VOID_REJECTED: liberar el stock retenido.
