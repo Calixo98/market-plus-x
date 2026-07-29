@@ -21,6 +21,7 @@
 const kv = require('../lib/kv');
 const catalogo = require('../lib/catalogo');
 const { leerCuerpoCrudo, verificarFirmaWebhook } = require('../lib/bold');
+const { enviarEventoCompra } = require('../lib/meta');
 
 const TIPOS_CONOCIDOS = ['SALE_APPROVED', 'SALE_REJECTED', 'VOID_APPROVED', 'VOID_REJECTED'];
 
@@ -102,6 +103,23 @@ module.exports = async (req, res) => {
           })
         );
         await kv.del(`reserva:${referencia}`);
+
+        // Meta Pixel Purchase, server-side (Conversions API): la redireccion
+        // del cliente no es prueba confiable de venta, asi que se dispara
+        // aqui, no en pago-respuesta.html. No bloquea la respuesta a Bold mas
+        // de lo necesario ni hace fallar el webhook si Meta no responde: el
+        // pedido ya quedo guardado arriba de todas formas.
+        const tiempoEvento = datos.created_at ? Math.floor(new Date(datos.created_at).getTime() / 1000) : Math.floor(Date.now() / 1000);
+        await enviarEventoCompra({
+          referencia,
+          total: reserva.total,
+          moneda: catalogo.moneda,
+          email: reserva.cliente.email,
+          telefono: reserva.cliente.telefono,
+          ip: reserva.ip,
+          userAgent: reserva.userAgent,
+          eventTime: tiempoEvento,
+        });
       } else {
         // SALE_REJECTED / VOID_APPROVED / VOID_REJECTED: liberar el stock retenido.
         await catalogo.liberarStock(reserva.items);

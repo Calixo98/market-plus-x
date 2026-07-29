@@ -164,6 +164,11 @@ module.exports = async (req, res) => {
           total,
           creadoEn: new Date().toISOString(),
           expiraEn: expirationTime,
+          // Se guardan aqui (no en el webhook) porque son datos del navegador
+          // del comprador: el webhook lo llama Bold desde SUS servidores, asi
+          // que su IP/user-agent no sirven para el evento Purchase de Meta.
+          ip,
+          userAgent: req.headers['user-agent'] || null,
         })
       );
       // Red de seguridad de almacenamiento (24h): la logica real de vencimiento
