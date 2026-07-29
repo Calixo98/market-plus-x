@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Finalizar compra | Market Plus X</title>
-  <meta name="description" content="Finaliza tu compra en Market Plus X — pago seguro con Wompi (tarjeta, PSE, Nequi, Bancolombia)." />
+  <meta name="description" content="Finaliza tu compra en Market Plus X — pago seguro con Bold (tarjeta, PSE, Nequi, Bancolombia)." />
   <meta name="theme-color" content="#0b0b0c" />
   <meta name="robots" content="noindex,nofollow" />
 
@@ -191,16 +191,13 @@
             <div class="flex justify-between text-lg font-extrabold pt-2 border-t border-hairline"><span>Total</span><span id="resumenTotal">$0</span></div>
           </div>
           <button id="btnPagar" type="submit" form="formCheckout" class="mt-6 w-full inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-4 text-base font-bold text-white hover:bg-accent-hover transition disabled:cursor-not-allowed">
-            <i class="fa-solid fa-lock"></i> Pagar con Wompi
+            <i class="fa-solid fa-lock"></i> Pagar con Bold
           </button>
           <p class="mt-3 text-xs text-ter text-center">Tarjeta, PSE, Nequi o Bancolombia. Tienes 15 minutos para completar el pago.</p>
         </div>
       </div>
     </div>
   </main>
-
-  <!-- Form oculto que se envia a Wompi (Web Checkout, redireccion GET) -->
-  <form id="formWompi" method="GET" action="https://checkout.wompi.co/p/" class="hidden"></form>
 
   <script>
     const fmt = n => '$' + n.toLocaleString('es-CO');
@@ -346,38 +343,14 @@
         if (window.fbq) fbq('track', 'InitiateCheckout', { value: data.resumen.total, currency: 'COP' });
         if (window.ttq) ttq.track('InitiateCheckout');
 
-        const form = document.getElementById('formWompi');
-        form.innerHTML = '';
-        const campos = {
-          'public-key': data.publicKey,
-          currency: data.currency,
-          'amount-in-cents': data.amountInCents,
-          reference: data.reference,
-          'signature:integrity': data.signature,
-          'expiration-time': data.expirationTime,
-          'redirect-url': data.redirectUrl,
-          'customer-data:email': data.customer.email,
-          'customer-data:full-name': data.customer.fullName,
-          'customer-data:phone-number': data.customer.phoneNumber,
-          'shipping-address:address-line-1': data.shipping.addressLine1,
-          'shipping-address:city': data.shipping.city,
-          'shipping-address:region': data.shipping.region,
-          'shipping-address:country': data.shipping.country,
-          'shipping-address:phone-number': data.shipping.phoneNumber,
-        };
-        Object.entries(campos).forEach(([name, value]) => {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = name;
-          input.value = value;
-          form.appendChild(input);
-        });
-        form.submit();
+        // El servidor ya calculo el total real y lo mando a Bold: solo queda
+        // redirigir. No hay nada que firmar ni construir en el navegador.
+        location.href = data.paymentUrl;
       } catch (err) {
         mostrarError(err.message || 'Ocurrió un error. Intenta de nuevo.');
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
-        btn.innerHTML = '<i class="fa-solid fa-lock"></i> Pagar con Wompi';
+        btn.innerHTML = '<i class="fa-solid fa-lock"></i> Pagar con Bold';
       }
     });
 

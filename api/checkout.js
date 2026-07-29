@@ -1,15 +1,16 @@
 // POST /api/checkout
 // Recibe el carrito (SKUs + cantidades + ciudad + datos del cliente), recalcula
 // el total desde el catalogo del servidor (nunca confia en precios del navegador),
-// reserva el stock de forma ATOMICA (ver lib/catalogo.js) y devuelve los
-// parametros firmados para redirigir al Web Checkout de Wompi.
+// reserva el stock de forma ATOMICA (ver lib/catalogo.js) y crea un Link de
+// Pago de Bold por ese monto exacto. El navegador solo recibe la URL final,
+// nunca calcula ni firma nada.
 //
-// Referencia: https://docs.wompi.co/docs/colombia/widget-checkout-web/
+// Referencia: https://developers.bold.co/pagos-en-linea/api-link-de-pagos
 
 const crypto = require('crypto');
 const kv = require('../lib/kv');
 const catalogo = require('../lib/catalogo');
-const { firmarIntegridad } = require('../lib/wompi');
+const { crearLinkDePago } = require('../lib/bold');
 
 const RESERVA_TTL_SEGUNDOS = 15 * 60;
 const MAX_QTY_POR_ITEM = 5;
@@ -86,8 +87,8 @@ module.exports = async (req, res) => {
   }
 
   // Fallar rapido si la integracion de pagos no esta configurada, antes de tocar Redis.
-  const secreto = process.env.WOMPI_INTEGRITY_SECRET;
-  if (!secreto) return error(res, 500, 'Integracion de pagos no configurada (falta WOMPI_INTEGRITY_SECRET)');
+  const identidad = process.env.BOLD_IDENTITY_KEY;
+  if (!identidad) return error(res, 500, 'Integracion de pagos no configurada (falta BOLD_IDENTITY_KEY)');
 
   const ip = obtenerIp(req);
 
@@ -120,17 +121,35 @@ module.exports = async (req, res) => {
       const envio = todoEnvioGratis ? 0 : zona.tarifa;
       const total = subtotal + envio;
 
-      // Referencia unica + firma de integridad (el secreto SOLO existe en esta funcion).
+      // Referencia unica (queda en metadata.reference en Bold, y es la clave
+      // que el webhook usa para encontrar de nuevo esta reserva).
       const referencia = `MPX-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
-      const expirationTime = new Date(Date.now() + RESERVA_TTL_SEGUNDOS * 1000).toISOString();
-      const amountInCents = Math.round(total * 100);
+      const expiraEnMs = Date.now() + RESERVA_TTL_SEGUNDOS * 1000;
+      const expirationTime = new Date(expiraEnMs).toISOString();
 
-      const signature = firmarIntegridad({
+      // x-forwarded-proto puede llegar como lista separada por comas si hay
+      // varios proxies en la cadena (p.ej. "https,http" en vercel dev, que
+      // antepone el suyo al que ya mandamos nosotros) — solo el primer valor
+      // es el que importa. Bold rechaza la URL entera si el esquema no es
+      // exactamente "https".
+      const proto = String(req.headers['x-forwarded-proto'] || 'https').split(',')[0].trim();
+      const callbackUrl = `${proto}://${req.headers.host}/pago-respuesta.html`;
+
+      // Primero se crea el link en Bold, y SOLO si Bold lo acepta se escribe
+      // la reserva en Redis. Si se escribiera antes y crearLinkDePago fallara,
+      // quedaria un registro reserva:{referencia} huerfano: liberarStock() ya
+      // le devuelve las unidades al contador aqui abajo, pero cuando esa
+      // reserva huerfana "expirara" mas tarde, liberarReservasVencidas() le
+      // devolveria esas MISMAS unidades otra vez, inflando el stock real.
+      const { url: paymentUrl } = await crearLinkDePago({
         referencia,
-        montoEnCentavos: amountInCents,
+        totalPesos: total,
         moneda: catalogo.moneda,
-        expirationTime,
-        secreto,
+        descripcion: `Market Plus X — pedido ${referencia}`,
+        callbackUrl,
+        expiraEnMs,
+        payerEmail: email,
+        identidad,
       });
 
       await kv.set(
@@ -151,27 +170,15 @@ module.exports = async (req, res) => {
       // usa el campo expiraEn de arriba, no este TTL.
       await kv.expire(`reserva:${referencia}`, catalogo.RESERVA_TTL_RESPALDO_SEGUNDOS);
 
-      const proto = req.headers['x-forwarded-proto'] || 'https';
-      const redirectUrl = `${proto}://${req.headers.host}/pago-respuesta.html`;
-      const publicKey = process.env.WOMPI_PUBLIC_KEY || 'pub_prod_qg4b0cfHMATdoZNRvjtdIQVilCstMh9d';
-
       return res.status(200).json({
         ok: true,
-        publicKey,
-        currency: catalogo.moneda,
-        amountInCents,
-        reference: referencia,
-        signature,
-        expirationTime,
-        redirectUrl,
-        customer: { email, fullName: nombre, phoneNumber: telefono },
-        shipping: { addressLine1: direccion, city: ciudad, region: departamento || ciudad, country: 'CO', phoneNumber: telefono },
+        paymentUrl,
         resumen: { subtotal, envio, total, zona: zona.nombre },
       });
     } catch (errInterno) {
       // Ya reservamos el stock atomicamente arriba: si algo falla DESPUES de eso
-      // (p.ej. no se pudo guardar la reserva), hay que devolverlo o el stock
-      // quedaria perdido para siempre.
+      // (p.ej. Bold rechazo el link, o no se pudo guardar la reserva), hay que
+      // devolverlo o el stock quedaria perdido para siempre.
       await catalogo.liberarStock(itemsParaReservar);
       throw errInterno;
     }
