@@ -8,7 +8,7 @@
       "subtitulo": "El punto de entrada ideal.",
       "precio": 319000,
       "imagen": "assets/modelo-pro.png",
-      "stockInicial": 1,
+      "stockInicial": 3,
       "envioGratis": false
     },
     {
@@ -17,7 +17,7 @@
       "subtitulo": "El equilibrio perfecto.",
       "precio": 359000,
       "imagen": "assets/modelo-standard.jpeg",
-      "stockInicial": 2,
+      "stockInicial": 1,
       "envioGratis": false
     },
     {
@@ -26,7 +26,7 @@
       "subtitulo": "Máxima calidad de imagen.",
       "precio": 420000,
       "imagen": "assets/modelo-ultra-negro.jpeg",
-      "stockInicial": 2,
+      "stockInicial": 1,
       "envioGratis": true
     },
     {
