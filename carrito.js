@@ -103,7 +103,7 @@
             <span id="carritoSubtotal" class="font-bold text-ink">$0</span>
           </div>
           <p class="text-xs text-ter">El envío se calcula en el siguiente paso, según tu ciudad.</p>
-          <a href="checkout.html" id="carritoIrPagar" class="w-full inline-flex items-center justify-center gap-2 rounded-full bg-accent px-5 py-3.5 text-sm font-bold text-white hover:bg-accent-hover transition">
+          <a href="checkout.html" id="carritoIrPagar" class="w-full inline-flex items-center justify-center gap-2 rounded-sm bg-accent px-5 py-3.5 text-sm font-bold text-night hover:bg-accent-hover transition">
             Ir a pagar <i class="fa-solid fa-arrow-right text-xs"></i>
           </a>
         </div>

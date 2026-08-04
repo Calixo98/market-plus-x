@@ -1,0 +1,155 @@
+/* ============================================================
+   Sistema de "gama" — atmósfera de fondo, cinta y transición
+   Compartido por las 6 páginas del sitio (index, deportiva,
+   politicas, checkout, pago-respuesta, admin-pedidos).
+
+   Regla de oro (ver DESIGN_V3.md): el CTA principal ("accent",
+   lima #C8F02A) NUNCA cambia entre gamas. Solo cambia el color
+   de AMBIENTE — fondo, mancha, etiqueta de sección, hover de
+   borde. Por eso este archivo no toca ningún tailwind.config.
+
+   Uso: <html data-gama="home|catalogo|pdp|carrito|marca">
+   ============================================================ */
+
+/* Registro de tipo para que --g1/--g2/--g3/--g-base puedan hacer
+   transición suave de color (p.ej. al entrar a #modelos en index).
+   Sin soporte (Firefox hoy) el cambio simplemente ocurre de golpe,
+   nunca se rompe nada — degradación consistente con @view-transition. */
+@property --g1     { syntax: '<color>'; inherits: true; initial-value: #C8F02A; }
+@property --g2     { syntax: '<color>'; inherits: true; initial-value: #C8F02A; }
+@property --g3     { syntax: '<color>'; inherits: true; initial-value: #C8F02A; }
+@property --g-base { syntax: '<color>'; inherits: true; initial-value: #07080A; }
+
+html[data-gama] {
+  transition: --g1 .5s ease, --g2 .5s ease, --g3 .5s ease, --g-base .5s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-gama] { transition: none; }
+}
+
+:root,
+[data-gama="home"] {
+  --g1: #D8FF3C; --g2: #C8F02A; --g3: #7A8F1E; --g-blob2: 122,106,140;
+  --g-base: #07080A; --g-label: "GAMA 01 — LIMA ÁCIDO";
+}
+[data-gama="catalogo"] {
+  --g1: #C9C0D8; --g2: #B8AEC9; --g3: #6A5A8C; --g-blob2: 106,90,140;
+  --g-base: #14101E; --g-label: "GAMA 02 — VIOLETA GRAFITO";
+}
+[data-gama="pdp"] {
+  --g1: #FFA25C; --g2: #FF7A2A; --g3: #FF4A12; --g-blob2: 122,143,30;
+  --g-base: #0A0503; --g-label: "GAMA 03 — NARANJA INCANDESCENTE";
+}
+[data-gama="carrito"] {
+  --g1: #6BFF72; --g2: #2BE332; --g3: #0E7A18; --g-blob2: 20,80,40;
+  --g-base: #04120A; --g-label: "GAMA 04 — VERDE NEÓN";
+}
+[data-gama="marca"] {
+  --g1: #FFFFFF; --g2: #F2F1EC; --g3: #C8C6BC; --g-blob2: 200,198,188;
+  --g-base: #F2F1EC; --g-label: "GAMA 05 — HUESO";
+}
+
+/* ---------- Fondo con atmósfera ----------
+   Capa fija detrás de todo el contenido. No intercepta clics ni
+   foco (pointer-events:none) y no forma parte del árbol de
+   accesibilidad (aria-hidden en el HTML). */
+.mpx-ambient {
+  position: fixed; inset: 0; z-index: -1; overflow: hidden;
+  pointer-events: none;
+}
+.mpx-ambient::before {
+  content: ""; position: absolute; top: -30%; left: -15%; right: -10%; height: 135%;
+  background: radial-gradient(ellipse 96% 78% at 34% 34%,
+    var(--g1) 0%, var(--g2) 38%, color-mix(in srgb, var(--g3) 62%, transparent) 62%,
+    transparent 86%);
+  filter: blur(26px);
+  animation: mpxBreathe 9s ease-in-out infinite;
+}
+.mpx-ambient::after {
+  content: ""; position: absolute; bottom: -20%; right: -10%; width: 60vw; height: 60vw;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(var(--g-blob2), .9) 0%, rgba(var(--g-blob2), .5) 45%, transparent 72%);
+  filter: blur(30px);
+}
+.mpx-grain {
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence baseFrequency='.75' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)' opacity='.42'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay; opacity: .85;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mpx-ambient::before { animation: none; }
+}
+/* Interruptor de rendimiento: si el scroll cuesta en un equipo de
+   gama baja, agregar la clase mpx-ambient--flat al <body> apaga el
+   grano y el blend mode sin tocar el resto del sistema. */
+.mpx-ambient--flat .mpx-grain { display: none; }
+
+@keyframes mpxBreathe {
+  0%, 100% { opacity: .72; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.06); }
+}
+
+/* ---------- Insignia de gama en el header ----------
+   Puramente decorativa (aria-hidden en el HTML) — cambia sola al
+   cambiar data-gama, sin JS. Oculta en móvil por espacio. */
+.mpx-gama-badge {
+  display: none;
+  align-items: center; gap: 8px; padding: 6px 12px;
+  border: 1px solid rgba(242,241,236,.16); border-radius: 999px;
+  font-size: 9.5px; letter-spacing: .2em; color: rgba(242,241,236,.5);
+  white-space: nowrap; flex: 0 0 auto;
+}
+.mpx-gama-badge::before { content: var(--g-label); }
+@media (min-width: 900px) { .mpx-gama-badge { display: inline-flex; } }
+[data-gama="marca"] .mpx-gama-badge { color: rgba(7,8,10,.5); border-color: rgba(7,8,10,.16); }
+
+/* ---------- Cinta en movimiento (ticker de specs) ----------
+   Reutiliza el mismo patrón de @keyframes marquee que ya existe
+   para el carrusel de fotos: se duplica el contenido y se corre
+   -50%, así el bucle es perfecto sin JS. */
+.mpx-ticker {
+  position: relative; z-index: 1; overflow: hidden;
+  background: var(--g2); border-block: 1px solid var(--g-base);
+  padding: 13px 0;
+}
+.mpx-ticker-track {
+  display: flex; width: max-content;
+  animation: mpxTicker 26s linear infinite;
+}
+.mpx-ticker:hover .mpx-ticker-track,
+.mpx-ticker:focus-within .mpx-ticker-track { animation-play-state: paused; }
+.mpx-ticker-set {
+  display: flex; gap: 44px; padding-right: 44px;
+  font-size: 11px; font-weight: 600; letter-spacing: .2em;
+  color: var(--g-base); white-space: nowrap;
+}
+@keyframes mpxTicker { from { transform: translate3d(0,0,0); } to { transform: translate3d(-50%,0,0); } }
+@media (prefers-reduced-motion: reduce) {
+  .mpx-ticker-track { animation: none; }
+}
+
+/* ---------- Animación de entrada (páginas sin GSAP) ----------
+   index.html ya tiene su propio sistema .reveal por scroll (GSAP);
+   esto es para las páginas que no cargan GSAP. */
+.mpx-rise { animation: mpxRise .6s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes mpxRise { from { opacity: 0; transform: translate3d(0,18px,0); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .mpx-rise { animation: none; }
+}
+
+/* ---------- Barrido entre páginas (View Transitions API) ----------
+   Solo CSS: si el navegador no la soporta (Firefox hoy), esta regla
+   no aplica y la navegación es la normal — nunca bloquea nada. */
+@view-transition { navigation: auto; }
+::view-transition-old(root) {
+  animation: mpxWipeOut .42s cubic-bezier(.76,0,.24,1) both;
+}
+::view-transition-new(root) {
+  animation: mpxWipeIn .48s cubic-bezier(.76,0,.24,1) both;
+}
+@keyframes mpxWipeIn  { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes mpxWipeOut { from { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}

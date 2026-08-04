@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<html lang="es" class="scroll-smooth" data-gama="carrito">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Finalizar compra | Market Plus X</title>
   <meta name="description" content="Finaliza tu compra en Market Plus X — pago seguro con Bold (tarjeta, PSE, Nequi, Bancolombia)." />
-  <meta name="theme-color" content="#0b0b0c" />
+  <meta name="theme-color" content="#07080A" />
   <meta name="robots" content="noindex,nofollow" />
 
   <!-- Google Tag Manager -->
@@ -50,7 +50,6 @@
   var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
   ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
 
-
     ttq.load('D9GHBK3C77U79CKFAJ00');
     ttq.page();
   }(window, document, 'ttq');
@@ -61,19 +60,28 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Geist+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Sistema de gama (atmósfera, insignia, barrido entre páginas) -->
+  <link rel="stylesheet" href="assets/gama.css" />
 
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: { sans: ['Inter', '-apple-system', 'sans-serif'] },
+          fontFamily: {
+            display: ['Archivo', 'sans-serif'],
+            mono: ['Geist Mono', 'monospace'],
+            sans: ['Inter', '-apple-system', 'sans-serif'],
+          },
           colors: {
-            night: '#0b0b0c', raised: '#17171c', card: '#1c1c22',
-            ink: '#ffffff', sec: '#a1a1aa', ter: '#8a8a92',
-            accent: { DEFAULT: '#0066ff', hover: '#2b7fff', soft: 'rgba(0,102,255,0.12)' },
+            night: '#07080A', raised: '#111318', card: '#16181D',
+            ink: '#F2F1EC',
+            sec: 'rgba(242,241,236,.66)',
+            ter: 'rgba(242,241,236,.50)',
+            accent: { DEFAULT: '#C8F02A', hover: '#E4FF6B', soft: 'rgba(200,240,42,.14)' },
             wa: { DEFAULT: '#25D366', dark: '#1DA851' },
-            hairline: 'rgba(255,255,255,0.12)',
+            hairline: 'rgba(242,241,236,.14)',
           },
           borderRadius: { bento: '24px' },
         },
@@ -82,14 +90,15 @@
   </script>
   <style>
     html { -webkit-tap-highlight-color: transparent; }
-    body { background: #0b0b0c; }
-    ::selection { background: rgba(0,102,255,.35); }
-    .bento { border-radius: 24px; border: 1px solid rgba(255,255,255,.12); background: #17171c;
-             box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 20px 60px rgba(0,0,0,.5); }
-    input, select { background: #1c1c22; border: 1px solid rgba(255,255,255,.12); color: #fff; }
-    input:focus, select:focus { outline: none; border-color: #0066ff; }
-    input:focus-visible, select:focus-visible { outline: 2px solid #2b7fff; outline-offset: 2px; }
-    button:focus-visible, a:focus-visible { outline: 2px solid #2b7fff; outline-offset: 2px; }
+    body { background: #07080A; }
+    ::selection { background: rgba(200,240,42,.35); }
+    .bento { border-radius: 24px; border: 1px solid rgba(242,241,236,.14); background: #16181D;
+             box-shadow: inset 0 1px 0 rgba(242,241,236,.06), 0 20px 60px rgba(0,0,0,.5); }
+    .btn-sharp { border-radius: 2px !important; }
+    input, select { background: #16181D; border: 1px solid rgba(242,241,236,.14); color: #F2F1EC; }
+    input:focus, select:focus { outline: none; border-color: #C8F02A; }
+    input:focus-visible, select:focus-visible { outline: 2px solid #E4FF6B; outline-offset: 2px; }
+    button:focus-visible, a:focus-visible { outline: 2px solid #E4FF6B; outline-offset: 2px; }
     input::placeholder { color: #8a8a92; }
     input[aria-invalid="true"], select[aria-invalid="true"] { border-color: #f87171; }
     #btnPagar:disabled { background: #2a2f3a; color: #b8bcc4; cursor: not-allowed; }
@@ -103,26 +112,29 @@
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WG74VTMW"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
-  <header class="sticky top-0 z-50 bg-night/90 backdrop-blur-md border-b border-hairline">
+  <!-- Atmósfera de fondo (gama = carrito, verde neón) -->
+  <div class="mpx-ambient" aria-hidden="true"><div class="mpx-grain"></div></div>
+
+  <header class="sticky top-0 z-50 bg-night/90 backdrop-blur-md border-b" style="border-color:rgba(242,241,236,.14)">
     <nav class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
-        <a href="index.html#inicio" class="flex items-center gap-2">
-          <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-accent text-white"><i class="fa-solid fa-glasses"></i></span>
-          <span class="text-lg font-extrabold tracking-tight">Market Plus <span class="text-accent">X</span></span>
+        <a href="index.html#inicio" class="flex items-center gap-3">
+          <img src="assets/logo-wordmark.png" alt="Market Plus X" class="h-8 w-auto" />
         </a>
-        <span class="inline-flex items-center gap-2 text-sm font-semibold text-sec">
-          <i class="fa-solid fa-lock text-accent"></i> Pago seguro
+        <span class="mpx-gama-badge" aria-hidden="true"></span>
+        <span class="inline-flex items-center gap-2 text-sm font-semibold font-mono" style="color:rgba(242,241,236,.66)">
+          <i class="fa-solid fa-lock" style="color:#C8F02A"></i> Pago seguro
         </span>
       </div>
     </nav>
   </header>
 
   <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Finalizar compra</h1>
+    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight font-display">Finalizar compra</h1>
 
     <div id="checkoutVacio" class="hidden mt-8 bento p-8 text-center">
-      <p class="text-sec">Tu carrito está vacío.</p>
-      <a href="index.html#modelos" class="mt-4 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-bold text-white hover:bg-accent-hover transition">
+      <p style="color:rgba(242,241,236,.50)">Tu carrito está vacío.</p>
+      <a href="index.html#modelos" class="mt-4 inline-flex items-center gap-2 btn-sharp px-6 py-3 text-sm font-bold font-mono text-night transition" style="background:#C8F02A">
         Ver modelos <i class="fa-solid fa-arrow-right text-xs"></i>
       </a>
     </div>
@@ -130,29 +142,29 @@
     <div id="checkoutContenido" class="mt-8 grid lg:grid-cols-5 gap-8">
       <!-- Datos del cliente -->
       <div class="lg:col-span-3 bento p-6 sm:p-7">
-        <h2 class="text-lg font-bold">Tus datos</h2>
+        <h2 class="text-lg font-bold font-display">Tus datos</h2>
         <form id="formCheckout" class="mt-5 space-y-4" novalidate>
           <div>
-            <label for="nombre" class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Nombre completo</label>
+            <label for="nombre" class="block text-xs font-semibold uppercase tracking-wide font-mono mb-1.5" style="color:rgba(242,241,236,.50)">Nombre completo</label>
             <input type="text" id="nombre" name="nombre" autocomplete="name" required aria-describedby="formError" class="w-full rounded-xl px-4 py-3 text-sm" placeholder="Como aparece en tu documento" />
           </div>
           <div class="grid sm:grid-cols-2 gap-4">
             <div>
-              <label for="email" class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Email</label>
+              <label for="email" class="block text-xs font-semibold uppercase tracking-wide font-mono mb-1.5" style="color:rgba(242,241,236,.50)">Email</label>
               <input type="email" id="email" name="email" autocomplete="email" inputmode="email" required aria-describedby="formError" class="w-full rounded-xl px-4 py-3 text-sm" placeholder="tucorreo@ejemplo.com" />
             </div>
             <div>
-              <label for="telefono" class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Teléfono / WhatsApp</label>
+              <label for="telefono" class="block text-xs font-semibold uppercase tracking-wide font-mono mb-1.5" style="color:rgba(242,241,236,.50)">Teléfono / WhatsApp</label>
               <input type="tel" id="telefono" name="telefono" autocomplete="tel" inputmode="tel" required aria-describedby="formError" class="w-full rounded-xl px-4 py-3 text-sm" placeholder="300 123 4567" />
             </div>
           </div>
           <div>
-            <label for="direccion" class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Dirección de envío</label>
+            <label for="direccion" class="block text-xs font-semibold uppercase tracking-wide font-mono mb-1.5" style="color:rgba(242,241,236,.50)">Dirección de envío</label>
             <input type="text" id="direccion" name="direccion" autocomplete="street-address" required aria-describedby="formError" class="w-full rounded-xl px-4 py-3 text-sm" placeholder="Calle, número, barrio" />
           </div>
           <div class="grid sm:grid-cols-2 gap-4">
             <div>
-              <label for="ciudad" class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Ciudad</label>
+              <label for="ciudad" class="block text-xs font-semibold uppercase tracking-wide font-mono mb-1.5" style="color:rgba(242,241,236,.50)">Ciudad</label>
               <select id="ciudad" name="ciudad" autocomplete="address-level2" required aria-describedby="formError" class="w-full rounded-xl px-4 py-3 text-sm">
                 <option value="">Selecciona tu ciudad</option>
                 <option value="Bogotá D.C.">Bogotá D.C.</option>
@@ -168,11 +180,11 @@
               </select>
             </div>
             <div id="ciudadOtraWrap" class="hidden">
-              <label for="ciudadOtra" class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">¿Cuál?</label>
+              <label for="ciudadOtra" class="block text-xs font-semibold uppercase tracking-wide font-mono mb-1.5" style="color:rgba(242,241,236,.50)">¿Cuál?</label>
               <input type="text" id="ciudadOtra" name="ciudadOtra" autocomplete="address-level2" aria-describedby="formError" class="w-full rounded-xl px-4 py-3 text-sm" placeholder="Nombre de tu ciudad" />
             </div>
             <div>
-              <label for="departamento" class="block text-xs font-semibold uppercase tracking-wide text-ter mb-1.5">Departamento</label>
+              <label for="departamento" class="block text-xs font-semibold uppercase tracking-wide font-mono mb-1.5" style="color:rgba(242,241,236,.50)">Departamento</label>
               <input type="text" id="departamento" name="departamento" autocomplete="address-level1" class="w-full rounded-xl px-4 py-3 text-sm" placeholder="Opcional" />
             </div>
           </div>
@@ -183,17 +195,17 @@
       <!-- Resumen -->
       <div class="lg:col-span-2">
         <div class="bento p-6 sm:p-7 sticky top-24">
-          <h2 class="text-lg font-bold">Resumen del pedido</h2>
+          <h2 class="text-lg font-bold font-display">Resumen del pedido</h2>
           <div id="resumenItems" class="mt-4 space-y-3"></div>
-          <div class="mt-5 pt-4 border-t border-hairline space-y-2 text-sm">
-            <div class="flex justify-between text-sec"><span>Subtotal</span><span id="resumenSubtotal">$0</span></div>
-            <div class="flex justify-between text-sec"><span>Envío</span><span id="resumenEnvio">Selecciona tu ciudad</span></div>
-            <div class="flex justify-between text-lg font-extrabold pt-2 border-t border-hairline"><span>Total</span><span id="resumenTotal">$0</span></div>
+          <div class="mt-5 pt-4 border-t" style="border-color:rgba(242,241,236,.14); space-y-2 text-sm">
+            <div class="flex justify-between" style="color:rgba(242,241,236,.66)"><span>Subtotal</span><span id="resumenSubtotal">$0</span></div>
+            <div class="flex justify-between" style="color:rgba(242,241,236,.66)"><span>Envío</span><span id="resumenEnvio">Selecciona tu ciudad</span></div>
+            <div class="flex justify-between text-lg font-extrabold pt-2 border-t font-display" style="border-color:rgba(242,241,236,.14)"><span>Total</span><span id="resumenTotal">$0</span></div>
           </div>
-          <button id="btnPagar" type="submit" form="formCheckout" class="mt-6 w-full inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-4 text-base font-bold text-white hover:bg-accent-hover transition disabled:cursor-not-allowed">
+          <button id="btnPagar" type="submit" form="formCheckout" class="mt-6 w-full inline-flex items-center justify-center gap-2 btn-sharp px-6 py-4 text-base font-bold font-mono text-night transition disabled:cursor-not-allowed" style="background:#C8F02A">
             <i class="fa-solid fa-lock"></i> Pagar con Bold
           </button>
-          <p class="mt-3 text-xs text-ter text-center">Tarjeta, PSE, Nequi o Bancolombia. Tienes 15 minutos para completar el pago.</p>
+          <p class="mt-3 text-xs text-center font-mono" style="color:rgba(242,241,236,.50)">Tarjeta, PSE, Nequi o Bancolombia. Tienes 15 minutos para completar el pago.</p>
         </div>
       </div>
     </div>
@@ -240,7 +252,7 @@
         if (!p.envioGratis) todoEnvioGratis = false;
         return `
           <div class="flex justify-between gap-3 text-sm">
-            <span class="text-sec">${item.qty}× ${p.nombre}</span>
+            <span style="color:rgba(242,241,236,.66)">${item.qty}× ${p.nombre}</span>
             <span class="font-semibold whitespace-nowrap">${fmt(p.precio * item.qty)}</span>
           </div>`;
       }).join('');

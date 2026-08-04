@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<html lang="es" class="scroll-smooth" data-gama="pdp">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Deportiva Ciclismo | Gafas Inteligentes con Cámara — Market Plus X</title>
   <meta name="description" content="Gafas inteligentes Deportiva Ciclismo: diseño aerodinámico, cámara 2K con estabilización EIS, lentes espejo, IPX4 y audio open-ear. Graba tus rutas con manos libres. Contra entrega y envíos a toda Colombia." />
-  <meta name="theme-color" content="#0b0b0c" />
+  <meta name="theme-color" content="#07080A" />
   <meta name="robots" content="index,follow" />
 
   <!-- Open Graph -->
@@ -68,31 +68,43 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@80,200..900&family=Geist+Mono:wght@400..700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Sistema de gama (atmósfera, cinta, insignia, barrido entre páginas) -->
+  <link rel="stylesheet" href="assets/gama.css" />
 
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          fontFamily: {
+            display: ['Archivo', 'sans-serif'],
+            mono:    ['Geist Mono', 'monospace'],
+            sans:    ['Inter', '-apple-system', 'sans-serif'],
+          },
           colors: {
-            night: '#0b0b0c', raised: '#17171c', card: '#1c1c22',
-            ink: '#ffffff',
-            accent: { DEFAULT: '#0066ff', dark: '#2b7fff', hover: '#2b7fff', soft: 'rgba(0,102,255,0.12)' },
-            wa: { DEFAULT: '#25D366', dark: '#1DA851' },
-            hairline: 'rgba(255,255,255,0.12)',
+            night:  '#07080A',
+            raised: '#111318',
+            card:   '#16181D',
+            ink:    '#F2F1EC',
+            sec:    'rgba(242,241,236,.66)',
+            ter:    'rgba(242,241,236,.50)',
+            accent: { DEFAULT: '#C8F02A', hover: '#E4FF6B', soft: 'rgba(200,240,42,.14)' },
+            wa:     { DEFAULT: '#25D366', dark: '#1DA851' },
+            hairline: 'rgba(242,241,236,.14)',
           },
         },
       },
     };
   </script>
   <style>
-    body { background: #0b0b0c; }
-    ::selection { background: rgba(0,102,255,.35); }
+    body { background: #07080A; }
+    ::selection { background: rgba(200,240,42,.35); }
     html { -webkit-tap-highlight-color: transparent; }
-    .btn-outline { background: rgba(0,102,255,.08); border: 1.5px solid #0066ff; transition: background .3s ease, box-shadow .3s ease; }
-    .btn-outline:hover { background: rgba(0,102,255,.18); box-shadow: 0 0 20px rgba(0,102,255,.18); }
-    button:focus-visible, a:focus-visible, [role="radio"]:focus-visible { outline: 2px solid #2b7fff; outline-offset: 2px; }
+    .btn-sharp { border-radius: 2px !important; }
+    .btn-outline { background: rgba(200,240,42,.08); border: 1.5px solid #C8F02A; transition: background .3s ease, box-shadow .3s ease; }
+    .btn-outline:hover { background: rgba(200,240,42,.18); box-shadow: 0 0 20px rgba(200,240,42,.18); }
+    button:focus-visible, a:focus-visible, [role="radio"]:focus-visible { outline: 2px solid #E4FF6B; outline-offset: 2px; }
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
   </style>
 </head>
@@ -104,21 +116,24 @@
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
 
+  <!-- Atmósfera de fondo (gama = pdp, naranja incandescente) -->
+  <div class="mpx-ambient" aria-hidden="true"><div class="mpx-grain"></div></div>
+
   <!-- NAVBAR -->
-  <header class="sticky top-0 z-50 bg-night/80 backdrop-blur-md border-b border-white/15">
+  <header class="sticky top-0 z-50 bg-night/80 backdrop-blur-md" style="border-bottom-color:rgba(242,241,236,.14)">
     <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <a href="index.html#inicio" class="flex items-center gap-2">
-          <span class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-accent text-white shadow-sm"><i class="fa-solid fa-glasses"></i></span>
-          <span class="text-lg font-extrabold tracking-tight">Market Plus <span class="text-accent">X</span></span>
+          <img src="assets/logo-wordmark.png" alt="Market Plus X" class="h-8 w-auto" />
         </a>
         <div class="flex items-center gap-3">
-          <a href="index.html#modelos" class="inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-ink transition">
+          <span class="mpx-gama-badge" aria-hidden="true"></span>
+          <a href="index.html#modelos" class="inline-flex items-center gap-2 text-sm font-mono font-semibold transition" style="color:rgba(242,241,236,.66)">
             <i class="fa-solid fa-arrow-left"></i> <span class="hidden sm:inline">Volver a la tienda</span>
           </a>
-          <button id="carritoBtn" class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl text-zinc-400 hover:text-ink hover:bg-white/5" aria-label="Ver carrito">
+          <button id="carritoBtn" class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl transition" style="color:rgba(242,241,236,.66)" aria-label="Ver carrito">
             <i class="fa-solid fa-cart-shopping"></i>
-            <span id="carritoBadge" class="hidden absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent text-white text-[10px] font-bold">0</span>
+            <span id="carritoBadge" class="hidden absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent text-night text-[10px] font-bold">0</span>
           </button>
         </div>
       </div>
@@ -126,16 +141,16 @@
   </header>
 
   <!-- HERO -->
-  <section class="border-b border-white/15 bg-gradient-to-b from-accent-soft to-night">
+  <section class="relative mpx-rise" style="border-bottom-color:rgba(242,241,236,.14);">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid lg:grid-cols-2 gap-10 items-center">
       <div>
-        <span class="inline-flex items-center gap-2 rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold text-accent">
+        <span class="inline-flex items-center gap-2 rounded-full bg-accent-soft px-3 py-1 text-xs font-mono font-semibold text-accent">
           <i class="fa-solid fa-bicycle"></i> Edición Especializada · Ciclismo
         </span>
-        <h1 class="mt-4 text-4xl sm:text-5xl font-extrabold tracking-tight leading-[1.1]">Deportiva Ciclismo</h1>
-        <p class="mt-4 text-lg text-zinc-400">Diseño aerodinámico envolvente con <strong class="text-ink">cámara 2K estabilizada</strong> y lentes espejo. Graba cada ruta en primera persona, sin soltar el manubrio y con los oídos libres para el tráfico.</p>
-        <p class="mt-5 text-3xl font-extrabold">$359.900 <span class="text-base font-medium text-zinc-500">COP</span></p>
-        <ul class="mt-5 grid grid-cols-2 gap-2 text-sm text-zinc-300">
+        <h1 class="mt-4 text-4xl sm:text-5xl font-display font-extrabold tracking-tight leading-[1.1]">Deportiva Ciclismo</h1>
+        <p class="mt-4 text-lg" style="color:rgba(242,241,236,.66)">Diseño aerodinámico envolvente con <strong class="text-ink">cámara 2K estabilizada</strong> y lentes espejo. Graba cada ruta en primera persona, sin soltar el manubrio y con los oídos libres para el tráfico.</p>
+        <p class="mt-5 text-3xl font-mono font-extrabold">$359.900 <span class="text-base font-medium" style="color:rgba(242,241,236,.50)">COP</span></p>
+        <ul class="mt-5 grid grid-cols-2 gap-2 text-sm" style="color:rgba(242,241,236,.66)">
           <li class="flex items-center gap-2"><i class="fa-solid fa-wind text-accent"></i> Diseño aerodinámico</li>
           <li class="flex items-center gap-2"><i class="fa-solid fa-camera text-accent"></i> Cámara 2K · 8MP</li>
           <li class="flex items-center gap-2"><i class="fa-solid fa-video text-accent"></i> Estabilización EIS</li>
@@ -145,7 +160,7 @@
         </ul>
 
         <div role="radiogroup" aria-label="Color" class="mt-5 flex items-center gap-2">
-          <span class="text-xs text-zinc-500" aria-hidden="true">2 colores:</span>
+          <span class="text-xs font-mono" style="color:rgba(242,241,236,.50)" aria-hidden="true">2 colores:</span>
           <button type="button" role="radio" aria-checked="true" title="Negra / Lente Naranja"
                   data-color-img="assets/dep-roja-estudio.jpg" data-target="deportiva-hero-img" data-group="deportiva" data-sku="MPX-G-DEP-NAR"
                   class="w-11 h-9 p-0 rounded-lg overflow-hidden border-2 border-accent bg-white">
@@ -154,7 +169,7 @@
           </button>
           <button type="button" role="radio" aria-checked="false" title="Negra / Lente Negro"
                   data-color-img="assets/dep-negra.jpg" data-target="deportiva-hero-img" data-group="deportiva" data-sku="MPX-G-DEP-NEG"
-                  class="w-11 h-9 p-0 rounded-lg overflow-hidden border border-hairline bg-white transition">
+                  class="w-11 h-9 p-0 rounded-lg overflow-hidden bg-white transition" style="border-color:rgba(242,241,236,.14)">
             <img src="assets/dep-negra.jpg" alt="" loading="lazy" class="w-full h-full object-cover" />
             <span class="sr-only">Negra / Lente Negro</span>
           </button>
@@ -162,26 +177,26 @@
 
         <div class="mt-5 flex flex-col sm:flex-row gap-3">
           <button data-add-to-cart data-sku="MPX-G-DEP-NAR" data-sku-group="deportiva"
-             class="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-7 py-4 text-base font-bold text-white shadow-lg hover:bg-accent-hover transition">
+             class="btn-sharp inline-flex items-center justify-center gap-2 bg-accent px-7 py-4 text-base font-mono font-bold text-night shadow-lg hover:bg-accent-hover transition">
             <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
           </button>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20comprar%20las%20gafas%20Deportiva%20Ciclismo%20($359.900)"
              target="_blank" rel="noopener"
-             class="inline-flex items-center justify-center gap-2 rounded-full bg-wa px-7 py-4 text-base font-bold text-night shadow-lg shadow-wa/20 hover:bg-wa-dark transition">
+             class="btn-sharp inline-flex items-center justify-center gap-2 bg-wa px-7 py-4 text-base font-mono font-bold text-night shadow-lg hover:bg-wa-dark transition" style="box-shadow:0 0 20px rgba(37,211,102,.20)">
             <i class="fa-brands fa-whatsapp text-xl"></i> Comprar por WhatsApp
           </a>
         </div>
-        <a href="#galeria" class="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-accent hover:text-accent-hover transition">
+        <a href="#galeria" class="mt-3 inline-flex items-center gap-2 text-sm font-mono font-semibold text-accent hover:text-accent-hover transition">
           Ver galería <i class="fa-solid fa-arrow-down text-xs"></i>
         </a>
-        <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-zinc-500">
+        <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm font-mono" style="color:rgba(242,241,236,.50)">
           <span><i class="fa-solid fa-truck-fast text-accent mr-1"></i> Contra entrega a nivel nacional</span>
           <span><i class="fa-solid fa-map-location-dot text-accent mr-1"></i> Envíos a toda Colombia</span>
         </div>
       </div>
       <div>
-        <img id="deportiva-hero-img" src="assets/dep-roja-estudio.jpg" alt="Gafas Deportiva Ciclismo Market Plus X — montura negra, lente espejo naranja y cámara integrada" class="rounded-3xl border border-white/15 shadow-xl w-full object-contain bg-white" />
-        <p class="mt-3 text-center text-xs text-zinc-500">Foto real del producto — montura negra, lente espejo y cámara frontal.</p>
+        <img id="deportiva-hero-img" src="assets/dep-roja-estudio.jpg" alt="Gafas Deportiva Ciclismo Market Plus X — montura negra, lente espejo naranja y cámara integrada" class="rounded-3xl w-full object-contain bg-white shadow-xl" style="border-color:rgba(242,241,236,.14)" />
+        <p class="mt-3 text-center text-xs font-mono" style="color:rgba(242,241,236,.50)">Foto real del producto — montura negra, lente espejo y cámara frontal.</p>
       </div>
     </div>
   </section>
@@ -190,60 +205,60 @@
   <section id="galeria" class="py-16">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-2xl mb-8">
-        <h2 class="text-3xl font-extrabold tracking-tight">Galería real</h2>
-        <p class="mt-3 text-zinc-400">Fotos reales del producto y de las gafas en acción. Toca una imagen para ampliarla.</p>
+        <h2 class="text-3xl font-display font-extrabold tracking-tight">Galería real</h2>
+        <p class="mt-3" style="color:rgba(242,241,236,.66)">Fotos reales del producto y de las gafas en acción. Toca una imagen para ampliarla.</p>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <img src="assets/dep-roja.jpg" alt="Deportiva Ciclismo negra con lente espejo rojo/naranja y cámara frontal" loading="lazy" class="gallery-img rounded-2xl border border-white/15 cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover bg-raised" />
-        <img src="assets/dep-negra.jpg" alt="Deportiva Ciclismo negra, vista tres cuartos" loading="lazy" class="gallery-img rounded-2xl border border-white/15 cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover bg-raised" />
-        <img src="assets/dep-detalle.jpg" alt="Detalle de la montura y el lente de la Deportiva Ciclismo" loading="lazy" class="gallery-img rounded-2xl border border-white/15 cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover" />
-        <img src="assets/dep-ciclista-1.jpg" alt="Ciclista en ruta de montaña usando las gafas deportivas" loading="lazy" class="gallery-img rounded-2xl border border-white/15 cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover" />
-        <img src="assets/dep-ciclista-2.jpg" alt="Ciclista descendiendo en sendero de montaña con las gafas" loading="lazy" class="gallery-img rounded-2xl border border-white/15 cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover" />
-        <img src="assets/dep-roja-estudio.jpg" alt="Deportiva Ciclismo en estudio con lente espejo naranja" loading="lazy" class="gallery-img rounded-2xl border border-white/15 cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover bg-raised" />
-        <img src="assets/dep-life-1.jpg" alt="Persona usando las gafas deportivas al aire libre" loading="lazy" class="gallery-img rounded-2xl border border-white/15 cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover" />
-        <img src="assets/dep-life-2.jpg" alt="Deportista usando las gafas en una pista de atletismo" loading="lazy" class="gallery-img rounded-2xl border border-white/15 cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover" />
-        <img src="assets/dep-tienda.jpg" alt="Las gafas deportivas exhibidas en tienda física" loading="lazy" class="gallery-img rounded-2xl border border-white/15 cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover" />
+        <img src="assets/dep-roja.jpg" alt="Deportiva Ciclismo negra con lente espejo rojo/naranja y cámara frontal" loading="lazy" class="gallery-img rounded-2xl cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover bg-raised" style="border-color:rgba(242,241,236,.14)" />
+        <img src="assets/dep-negra.jpg" alt="Deportiva Ciclismo negra, vista tres cuartos" loading="lazy" class="gallery-img rounded-2xl cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover bg-raised" style="border-color:rgba(242,241,236,.14)" />
+        <img src="assets/dep-detalle.jpg" alt="Detalle de la montura y el lente de la Deportiva Ciclismo" loading="lazy" class="gallery-img rounded-2xl cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover" style="border-color:rgba(242,241,236,.14)" />
+        <img src="assets/dep-ciclista-1.jpg" alt="Ciclista en ruta de montaña usando las gafas deportivas" loading="lazy" class="gallery-img rounded-2xl cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover" style="border-color:rgba(242,241,236,.14)" />
+        <img src="assets/dep-ciclista-2.jpg" alt="Ciclista descendiendo en sendero de montaña con las gafas" loading="lazy" class="gallery-img rounded-2xl cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover" style="border-color:rgba(242,241,236,.14)" />
+        <img src="assets/dep-roja-estudio.jpg" alt="Deportiva Ciclismo en estudio con lente espejo naranja" loading="lazy" class="gallery-img rounded-2xl cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover bg-raised" style="border-color:rgba(242,241,236,.14)" />
+        <img src="assets/dep-life-1.jpg" alt="Persona usando las gafas deportivas al aire libre" loading="lazy" class="gallery-img rounded-2xl cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover" style="border-color:rgba(242,241,236,.14)" />
+        <img src="assets/dep-life-2.jpg" alt="Deportista usando las gafas en una pista de atletismo" loading="lazy" class="gallery-img rounded-2xl cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover" style="border-color:rgba(242,241,236,.14)" />
+        <img src="assets/dep-tienda.jpg" alt="Las gafas deportivas exhibidas en tienda física" loading="lazy" class="gallery-img rounded-2xl cursor-zoom-in hover:opacity-90 transition w-full h-56 object-cover" style="border-color:rgba(242,241,236,.14)" />
       </div>
     </div>
   </section>
 
   <!-- POR QUÉ / BENEFICIOS -->
-  <section class="py-16 bg-raised border-y border-white/15">
+  <section class="py-16 bg-raised" style="border-top-color:rgba(242,241,236,.14);border-bottom-color:rgba(242,241,236,.14)">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-2xl mb-10">
-        <h2 class="text-3xl font-extrabold tracking-tight">Hechas para rodar</h2>
-        <p class="mt-3 text-zinc-400">Lo que necesitas en cada salida, sin sacar el celular.</p>
+        <h2 class="text-3xl font-display font-extrabold tracking-tight">Hechas para rodar</h2>
+        <p class="mt-3" style="color:rgba(242,241,236,.66)">Lo que necesitas en cada salida, sin sacar el celular.</p>
       </div>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="rounded-2xl border border-white/15 bg-card p-6 shadow-sm">
+        <div class="rounded-2xl bg-card p-6 shadow-sm" style="border-color:rgba(242,241,236,.14)">
           <span class="inline-flex w-12 h-12 items-center justify-center rounded-xl bg-accent-soft text-accent text-xl"><i class="fa-solid fa-wind"></i></span>
           <h3 class="mt-4 font-bold">Diseño aerodinámico</h3>
-          <p class="mt-2 text-sm text-zinc-400">Montura envolvente y ligera que se ajusta firme en velocidad y descensos.</p>
+          <p class="mt-2 text-sm" style="color:rgba(242,241,236,.66)">Montura envolvente y ligera que se ajusta firme en velocidad y descensos.</p>
         </div>
-        <div class="rounded-2xl border border-white/15 bg-card p-6 shadow-sm">
+        <div class="rounded-2xl bg-card p-6 shadow-sm" style="border-color:rgba(242,241,236,.14)">
           <span class="inline-flex w-12 h-12 items-center justify-center rounded-xl bg-accent-soft text-accent text-xl"><i class="fa-solid fa-video"></i></span>
           <h3 class="mt-4 font-bold">Graba estable en 2K</h3>
-          <p class="mt-2 text-sm text-zinc-400">Cámara con estabilización EIS para que el video no salga movido en terreno irregular.</p>
+          <p class="mt-2 text-sm" style="color:rgba(242,241,236,.66)">Cámara con estabilización EIS para que el video no salga movido en terreno irregular.</p>
         </div>
-        <div class="rounded-2xl border border-white/15 bg-card p-6 shadow-sm">
+        <div class="rounded-2xl bg-card p-6 shadow-sm" style="border-color:rgba(242,241,236,.14)">
           <span class="inline-flex w-12 h-12 items-center justify-center rounded-xl bg-accent-soft text-accent text-xl"><i class="fa-solid fa-shield-halved"></i></span>
           <h3 class="mt-4 font-bold">Seguridad en la vía</h3>
-          <p class="mt-2 text-sm text-zinc-400">Evidencia en video ante cualquier incidente y audio open-ear que no tapa el tráfico.</p>
+          <p class="mt-2 text-sm" style="color:rgba(242,241,236,.66)">Evidencia en video ante cualquier incidente y audio open-ear que no tapa el tráfico.</p>
         </div>
-        <div class="rounded-2xl border border-white/15 bg-card p-6 shadow-sm">
+        <div class="rounded-2xl bg-card p-6 shadow-sm" style="border-color:rgba(242,241,236,.14)">
           <span class="inline-flex w-12 h-12 items-center justify-center rounded-xl bg-accent-soft text-accent text-xl"><i class="fa-solid fa-droplet-slash"></i></span>
           <h3 class="mt-4 font-bold">Resistencia IPX4</h3>
-          <p class="mt-2 text-sm text-zinc-400">Soportan sudor y salpicaduras. No sumergibles ni aptas para lluvia torrencial.</p>
+          <p class="mt-2 text-sm" style="color:rgba(242,241,236,.66)">Soportan sudor y salpicaduras. No sumergibles ni aptas para lluvia torrencial.</p>
         </div>
-        <div class="rounded-2xl border border-white/15 bg-card p-6 shadow-sm">
+        <div class="rounded-2xl bg-card p-6 shadow-sm" style="border-color:rgba(242,241,236,.14)">
           <span class="inline-flex w-12 h-12 items-center justify-center rounded-xl bg-accent-soft text-accent text-xl"><i class="fa-solid fa-bolt"></i></span>
           <h3 class="mt-4 font-bold">Conectividad rápida</h3>
-          <p class="mt-2 text-sm text-zinc-400">Bluetooth 5.3 + WiFi para descargar tus videos directo al celular, sin cables.</p>
+          <p class="mt-2 text-sm" style="color:rgba(242,241,236,.66)">Bluetooth 5.3 + WiFi para descargar tus videos directo al celular, sin cables.</p>
         </div>
-        <div class="rounded-2xl border border-white/15 bg-card p-6 shadow-sm">
+        <div class="rounded-2xl bg-card p-6 shadow-sm" style="border-color:rgba(242,241,236,.14)">
           <span class="inline-flex w-12 h-12 items-center justify-center rounded-xl bg-accent-soft text-accent text-xl"><i class="fa-solid fa-glasses"></i></span>
           <h3 class="mt-4 font-bold">Lentes espejo</h3>
-          <p class="mt-2 text-sm text-zinc-400">Protección solar con acabado espejo deportivo y buena visibilidad en ruta.</p>
+          <p class="mt-2 text-sm" style="color:rgba(242,241,236,.66)">Protección solar con acabado espejo deportivo y buena visibilidad en ruta.</p>
         </div>
       </div>
     </div>
@@ -252,25 +267,24 @@
   <!-- CTA FINAL -->
   <section class="py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="rounded-3xl bg-raised border border-white/15 p-8 sm:p-12 text-center text-white">
-        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">¿Listo para grabar tu próxima ruta?</h2>
-        <p class="mt-3 text-zinc-400">Escríbenos por WhatsApp y un asesor real te ayuda con tu pedido. Contra entrega a toda Colombia.</p>
+      <div class="rounded-3xl bg-raised p-8 sm:p-12 text-center" style="border-color:rgba(242,241,236,.14)">
+        <h2 class="text-2xl sm:text-3xl font-display font-extrabold tracking-tight text-ink">¿Listo para grabar tu próxima ruta?</h2>
+        <p class="mt-3" style="color:rgba(242,241,236,.66)">Escríbenos por WhatsApp y un asesor real te ayuda con tu pedido. Contra entrega a toda Colombia.</p>
         <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20comprar%20las%20gafas%20Deportiva%20Ciclismo%20($359.900)"
            target="_blank" rel="noopener"
-           class="mt-6 inline-flex items-center gap-3 rounded-full bg-wa px-8 py-4 text-base font-bold text-night hover:bg-wa-dark transition">
+           class="btn-sharp mt-6 inline-flex items-center gap-3 bg-wa px-8 py-4 text-base font-mono font-bold text-night hover:bg-wa-dark transition">
           <i class="fa-brands fa-whatsapp text-xl"></i> Comprar por WhatsApp
         </a>
-        <p class="mt-4 text-sm text-zinc-500"><a href="index.html#modelos" class="hover:text-white transition">← Ver los demás modelos</a></p>
+        <p class="mt-4 text-sm font-mono" style="color:rgba(242,241,236,.50)"><a href="index.html#modelos" class="hover:text-ink transition">← Ver los demás modelos</a></p>
       </div>
     </div>
   </section>
 
   <!-- FOOTER -->
-  <footer class="border-t border-white/15 bg-card">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-zinc-500">
+  <footer class="bg-card" style="border-top-color:rgba(242,241,236,.14)">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm font-mono" style="color:rgba(242,241,236,.50)">
       <a href="index.html#inicio" class="flex items-center gap-2">
-        <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-accent text-white"><i class="fa-solid fa-glasses"></i></span>
-        <span class="font-extrabold text-ink">Market Plus <span class="text-accent">X</span></span>
+        <img src="assets/logo-wordmark.png" alt="Market Plus X" class="h-7 w-auto" />
       </a>
       <p>© <span id="year"></span> Market Plus X · Hecho en Colombia 🇨🇴</p>
     </div>
@@ -279,7 +293,7 @@
   <!-- BOTÓN FLOTANTE WHATSAPP -->
   <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20comprar%20las%20gafas%20Deportiva%20Ciclismo%20($359.900)"
      target="_blank" rel="noopener"
-     class="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-wa px-5 py-4 font-bold text-night shadow-2xl shadow-wa/30 hover:bg-wa-dark transition md:hidden">
+     class="btn-sharp fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 bg-wa px-5 py-4 font-mono font-bold text-night shadow-2xl hover:bg-wa-dark transition md:hidden" style="box-shadow:0 0 20px rgba(37,211,102,.30)">
     <i class="fa-brands fa-whatsapp text-xl"></i> WhatsApp
   </a>
 

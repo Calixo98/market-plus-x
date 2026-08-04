@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<html lang="es" class="scroll-smooth" data-gama="home">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Market Plus X | Gafas Inteligentes con Cámara 2K e IA — Colombia</title>
   <meta name="description" content="Gafas inteligentes con cámara 2K 8MP, IA, audio y estabilización EIS. Graba en POV con manos libres. Contra entrega, garantía y envíos a toda Colombia. Asesoría por WhatsApp." />
-  <meta name="theme-color" content="#0b0b0c" />
+  <meta name="theme-color" content="#07080A" />
 
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -69,31 +69,38 @@
   <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
-  <!-- Google Fonts: Inter -->
+  <!-- Google Fonts: Archivo (display), Geist Mono (ui), Inter (body) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@80,200..900&family=Geist+Mono:wght@400..700&family=Inter:wght@400..900&display=swap" rel="stylesheet" />
+
+  <!-- Sistema de gama (atmósfera, cinta, insignia, barrido entre páginas) -->
+  <link rel="stylesheet" href="assets/gama.css" />
 
   <!-- GSAP 3 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
   <script>
-    // Design tokens v3 (ver DESIGN_V3.md)
+    // Design tokens v3 — Lima Ácido (ver DESIGN_V3.md)
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: { sans: ['Inter', '-apple-system', 'sans-serif'] },
+          fontFamily: {
+            display: ['Archivo', 'sans-serif'],
+            mono:    ['Geist Mono', 'monospace'],
+            sans:    ['Inter', '-apple-system', 'sans-serif'],
+          },
           colors: {
-            night:  '#0b0b0c',
-            raised: '#17171c',
-            card:   '#1c1c22',
-            ink:    '#ffffff',
-            sec:    '#a1a1aa',
-            ter:    '#8a8a92',
-            accent: { DEFAULT: '#0066ff', hover: '#2b7fff', soft: 'rgba(0,102,255,0.12)' },
-            wa:     { DEFAULT: '#25D366', dark: '#1DA851' },
-            hairline: 'rgba(255,255,255,0.12)',
+            night:   '#07080A',
+            raised:  '#111318',
+            card:    '#16181D',
+            ink:     '#F2F1EC',
+            sec:     'rgba(242,241,236,.66)',
+            ter:     'rgba(242,241,236,.50)',
+            accent:  { DEFAULT: '#C8F02A', hover: '#E4FF6B', soft: 'rgba(200,240,42,.14)' },
+            wa:      { DEFAULT: '#25D366', dark: '#1DA851' },
+            hairline:'rgba(242,241,236,.14)',
           },
           borderRadius: { bento: '24px' },
         },
@@ -103,41 +110,46 @@
 
   <style>
     html { -webkit-tap-highlight-color: transparent; }
-    body { background: #0b0b0c; }
-    ::selection { background: rgba(0,102,255,.35); }
+    body { background: #07080A; color: #F2F1EC; }
+    ::selection { background: rgba(200,240,42,.35); }
     ::-webkit-scrollbar { width: 10px; }
-    ::-webkit-scrollbar-track { background: #0b0b0c; }
+    ::-webkit-scrollbar-track { background: #07080A; }
     ::-webkit-scrollbar-thumb { background: #2a2a30; border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #0066ff; }
-    button:focus-visible, a:focus-visible, [role="radio"]:focus-visible { outline: 2px solid #2b7fff; outline-offset: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: #C8F02A; }
+    button:focus-visible, a:focus-visible, [role="radio"]:focus-visible { outline: 2px solid #E4FF6B; outline-offset: 2px; }
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
     /* Glass */
-    .glass { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); background: rgba(28,28,34,.65); }
+    .glass { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); background: rgba(17,19,24,.65); }
 
     /* Bento card */
-    .bento { border-radius: 24px; border: 1px solid rgba(255,255,255,.12); background: #17171c;
-             box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 20px 60px rgba(0,0,0,.5);
+    .bento { border-radius: 24px; border: 1px solid rgba(242,241,236,.14); background: #111318;
+             box-shadow: inset 0 1px 0 rgba(242,241,236,.06), 0 20px 60px rgba(0,0,0,.5);
              transition: transform .3s ease, border-color .3s ease; }
-    .bento:hover { transform: translateY(-4px); border-color: rgba(0,102,255,.45); }
+    .bento:hover { transform: translateY(-4px); border-color: rgba(200,240,42,.45); }
 
-    /* Display typography */
-    .display { font-size: clamp(2.1rem, 8vw, 5.5rem); font-weight: 900; letter-spacing: -0.03em; line-height: 1.02; }
-    .h2v3 { font-size: clamp(1.9rem, 4vw, 3rem); font-weight: 800; letter-spacing: -0.02em; }
+    /* CTA sharp button (2px radius) */
+    .btn-sharp { border-radius: 2px; transition: background .2s ease, box-shadow .2s ease; }
+    .btn-sharp:hover { box-shadow: 0 0 24px rgba(200,240,42,.25); }
+    .btn-sharp:disabled { background: #2a2f3a; color: #7b7c7c; cursor: not-allowed; }
 
-    /* Glow del producto (único uso decorativo del acento) */
-    .glow { background: radial-gradient(closest-side, rgba(0,102,255,.14), transparent 70%); }
+    /* Outline button */
+    .btn-outline { background: rgba(200,240,42,.08); border: 1.5px solid #C8F02A; transition: background .3s ease, box-shadow .3s ease; border-radius: 2px; }
+    .btn-outline:hover { background: rgba(200,240,42,.18); box-shadow: 0 0 20px rgba(200,240,42,.18); }
 
-    /* Botón secundario con contorno azul (reemplaza el glass sutil, poco visible) */
-    .btn-outline { background: rgba(0,102,255,.08); border: 1.5px solid #0066ff; transition: background .3s ease, box-shadow .3s ease; }
-    .btn-outline:hover { background: rgba(0,102,255,.18); box-shadow: 0 0 20px rgba(0,102,255,.18); }
+    /* Display typography — Archivo */
+    .display { font-family: 'Archivo', sans-serif; font-size: clamp(2.1rem, 8vw, 5.5rem); font-weight: 900; letter-spacing: -0.04em; line-height: 1.02; }
+    .h2v3 { font-family: 'Archivo', sans-serif; font-size: clamp(1.9rem, 4vw, 3rem); font-weight: 800; letter-spacing: -0.02em; }
 
-    /* Viñeta: funde los bordes de fotos con fondo claro hacia el negro del tema */
+    /* Glow del producto */
+    .glow { background: radial-gradient(closest-side, rgba(200,240,42,.14), transparent 70%); }
+
+    /* Viñeta: funde bordes */
     .photo-vignette { position: relative; }
-    .photo-vignette img { filter: saturate(.55) brightness(.82) contrast(1.03); }
+    .photo-vignette img { filter: saturate(.6) brightness(.85) contrast(1.05); }
     .photo-vignette::after {
       content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 1;
-      background: radial-gradient(85% 75% at 50% 38%, transparent 8%, rgba(11,11,12,.55) 45%, #0b0b0c 82%);
+      background: radial-gradient(85% 75% at 50% 38%, transparent 8%, rgba(7,8,10,.55) 45%, #07080A 82%);
     }
     .photo-vignette .anatomy-point { z-index: 2; }
 
@@ -153,13 +165,13 @@
     @keyframes marquee { to { transform: translateX(-50%); } }
 
     /* Callouts de anatomía */
-    .callout-dot { width: 10px; height: 10px; border-radius: 9999px; background: rgba(255,255,255,.4);
-                   box-shadow: 0 0 0 4px rgba(255,255,255,.12); transition: all .3s ease; }
-    .callout-line { background: rgba(255,255,255,.25); transition: background .3s ease; }
-    .anatomy-step { border-left: 2px solid rgba(255,255,255,.1); transition: border-color .3s ease, opacity .3s ease; opacity: .55; }
-    .anatomy-step.active { border-color: #0066ff; opacity: 1; }
-    .anatomy-point.active .callout-dot { background: #0066ff; box-shadow: 0 0 0 5px rgba(0,102,255,.25); }
-    .anatomy-point.active .callout-line { background: rgba(0,102,255,.7); }
+    .callout-dot { width: 10px; height: 10px; border-radius: 9999px; background: rgba(242,241,236,.4);
+                   box-shadow: 0 0 0 4px rgba(242,241,236,.12); transition: all .3s ease; }
+    .callout-line { background: rgba(242,241,236,.25); transition: background .3s ease; }
+    .anatomy-step { border-left: 2px solid rgba(242,241,236,.1); transition: border-color .3s ease, opacity .3s ease; opacity: .55; }
+    .anatomy-step.active { border-color: #C8F02A; opacity: 1; }
+    .anatomy-point.active .callout-dot { background: #C8F02A; box-shadow: 0 0 0 5px rgba(200,240,42,.25); }
+    .anatomy-point.active .callout-line { background: rgba(200,240,42,.7); }
 
     /* Acordeón FAQ */
     .faq-content { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
@@ -175,25 +187,25 @@
   </style>
 </head>
 
-<body class="font-sans text-ink antialiased bg-night">
+<body class="font-sans antialiased bg-night text-ink">
 
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WG74VTMW"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
 
+  <!-- Atmósfera de fondo (cambia con data-gama en <html>) -->
+  <div class="mpx-ambient" aria-hidden="true"><div class="mpx-grain"></div></div>
+
   <!-- ========================= HEADER FLOTANTE ========================= -->
   <header id="navbar" class="fixed top-0 inset-x-0 z-50 transition-all duration-300 border-b border-transparent">
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
-        <a href="#inicio" class="flex items-center gap-2">
-          <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-accent text-white">
-            <i class="fa-solid fa-glasses"></i>
-          </span>
-          <span class="text-lg font-extrabold tracking-tight">Market Plus <span class="text-accent">X</span></span>
+        <a href="#inicio" class="flex items-center gap-3">
+          <img src="assets/logo-wordmark.png" alt="Market Plus X" class="h-8 w-auto" />
         </a>
 
-        <ul class="hidden md:flex items-center gap-8 text-sm font-medium text-sec">
+        <ul class="hidden md:flex items-center gap-8 text-sm font-mono font-medium" style="color:rgba(242,241,236,.66)">
           <li><a href="#experiencia" class="hover:text-ink transition">Experiencia</a></li>
           <li><a href="#anatomia" class="hover:text-ink transition">Anatomía</a></li>
           <li><a href="#modelos" class="hover:text-ink transition">Modelos</a></li>
@@ -201,16 +213,18 @@
           <li><a href="#faq" class="hover:text-ink transition">FAQ</a></li>
         </ul>
 
+        <span class="mpx-gama-badge" aria-hidden="true"></span>
+
         <div class="flex items-center gap-2">
           <a href="#modelos"
-             class="hidden sm:inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover transition">
+             class="btn-sharp hidden sm:inline-flex items-center gap-2 bg-accent px-5 py-2.5 text-sm font-mono font-bold text-night hover:bg-accent-hover transition">
             Ver Modelos
           </a>
-          <button id="carritoBtn" class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl text-sec hover:text-ink hover:bg-white/5" aria-label="Ver carrito">
+          <button id="carritoBtn" class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl" style="color:rgba(242,241,236,.66);" aria-label="Ver carrito">
             <i class="fa-solid fa-cart-shopping"></i>
-            <span id="carritoBadge" class="hidden absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent text-white text-[10px] font-bold">0</span>
+            <span id="carritoBadge" class="hidden absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent text-night text-[10px] font-bold">0</span>
           </button>
-          <button id="menuBtn" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl text-sec hover:text-ink hover:bg-white/5" aria-label="Abrir menú">
+          <button id="menuBtn" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl" style="color:rgba(242,241,236,.66);" aria-label="Abrir menú">
             <i class="fa-solid fa-bars"></i>
           </button>
         </div>
@@ -218,8 +232,8 @@
     </nav>
 
     <!-- Menú móvil -->
-    <div id="mobileMenu" class="hidden md:hidden glass border-t border-hairline">
-      <div class="px-4 py-3 space-y-1 text-sm font-medium text-sec">
+    <div id="mobileMenu" class="hidden md:hidden glass border-t" style="border-color:rgba(242,241,236,.14);">
+      <div class="px-4 py-3 space-y-1 text-sm font-mono" style="color:rgba(242,241,236,.66);">
         <a href="#experiencia" class="block py-2 hover:text-ink">La experiencia</a>
         <a href="#anatomia" class="block py-2 hover:text-ink">Anatomía del dispositivo</a>
         <a href="#modelos" class="block py-2 hover:text-ink">Modelos y precios</a>
@@ -229,70 +243,94 @@
     </div>
   </header>
 
-  <!-- ========================= HERO ========================= -->
-  <section id="inicio" class="relative pt-32 pb-16 sm:pt-40 overflow-hidden">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <span class="reveal inline-flex items-center gap-2 rounded-full border border-hairline glass px-4 py-1.5 text-xs font-semibold text-sec">
-        <span class="w-2 h-2 rounded-full bg-accent"></span> Tienda colombiana · Contra entrega disponible
-      </span>
+  <!-- ========================= HERO — MURO ÁCIDO ========================= -->
+  <section id="inicio" class="relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16 sm:pt-36">
+      <div class="grid lg:grid-cols-2 gap-10 items-center">
+        <!-- Columna izquierda: texto -->
+        <div>
+          <span class="reveal inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-mono font-semibold" style="border-color:rgba(7,8,10,.2); color:rgba(7,8,10,.7);">
+            Tienda colombiana · Contra entrega disponible
+          </span>
 
-      <h1 class="reveal display mt-7">
-        Registra tu mundo. <br class="hidden sm:inline" />Libera tus manos.
-      </h1>
+          <h1 class="reveal display mt-6 text-night">
+            Registra tu mundo.<br />Libera tus manos.
+          </h1>
 
-      <p class="reveal mt-6 text-base sm:text-xl text-sec max-w-2xl mx-auto font-normal">
-        Smart Glasses con IA nativa y audio direccional. Diseñadas para el rendimiento, construidas para el día a día.
-      </p>
+          <p class="reveal mt-5 text-base sm:text-lg max-w-lg" style="color:rgba(7,8,10,.75);">
+            Smart Glasses con IA nativa y audio direccional. Diseñadas para el rendimiento, construidas para el día a día.
+          </p>
 
-      <div class="reveal mt-9 flex flex-col sm:flex-row gap-3 justify-center">
-        <a href="#modelos"
-           class="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-8 py-4 text-base font-bold text-white hover:bg-accent-hover transition">
-          Ver Modelos
-        </a>
-        <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20para%20elegir%20mis%20gafas%20inteligentes"
-           target="_blank" rel="noopener"
-           class="inline-flex items-center justify-center gap-2 rounded-full bg-wa hover:bg-wa-dark px-8 py-4 text-base font-bold text-night transition">
-          <i class="fa-brands fa-whatsapp text-xl"></i> Asesoría por WhatsApp
-        </a>
-      </div>
+          <!-- Tarjeta de propuesta de valor -->
+          <div class="reveal mt-8 bg-night rounded-bento p-6 sm:p-7 border" style="border-color:rgba(242,241,236,.14);">
+            <ul class="space-y-3 text-sm" style="color:rgba(242,241,236,.66);">
+              <li class="flex gap-3 items-start">
+                <span class="inline-flex items-center justify-center w-6 h-6 rounded-sm bg-accent text-night text-xs font-bold flex-shrink-0 mt-0.5">1</span>
+                <span><strong class="text-ink">Cámara 2K · 8MP</strong> con estabilización EIS de 6 ejes — video POV estable, incluso en movimiento.</span>
+              </li>
+              <li class="flex gap-3 items-start">
+                <span class="inline-flex items-center justify-center w-6 h-6 rounded-sm bg-accent text-night text-xs font-bold flex-shrink-0 mt-0.5">2</span>
+                <span><strong class="text-ink">IA integrada</strong> — asistente de voz, traducción en tiempo real, lectura de texto y navegación.</span>
+              </li>
+              <li class="flex gap-3 items-start">
+                <span class="inline-flex items-center justify-center w-6 h-6 rounded-sm bg-accent text-night text-xs font-bold flex-shrink-0 mt-0.5">3</span>
+                <span><strong class="text-ink">Audio open-ear</strong> — música, llamadas y GPS sin tapar tus oídos. IPX4, BT 5.3 + WiFi.</span>
+              </li>
+            </ul>
+            <div class="mt-5 flex flex-col sm:flex-row gap-3">
+              <a href="#modelos"
+                 class="btn-sharp inline-flex items-center justify-center gap-2 bg-accent px-7 py-3.5 text-sm font-mono font-bold text-night hover:bg-accent-hover transition">
+                Ver modelos y precios
+              </a>
+              <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20para%20elegir%20mis%20gafas%20inteligentes"
+                 target="_blank" rel="noopener"
+                 class="btn-sharp inline-flex items-center justify-center gap-2 bg-wa px-7 py-3.5 text-sm font-mono font-bold text-night hover:bg-wa-dark transition">
+                <i class="fa-brands fa-whatsapp text-lg"></i> Asesoría por WhatsApp
+              </a>
+            </div>
+          </div>
 
-      <!-- Producto flotante con glow y parallax -->
-      <div class="relative mt-14">
-        <div class="glow absolute inset-x-0 -top-10 bottom-0 -z-10"></div>
-        <div id="heroImgWrap" class="hero-float photo-vignette mx-auto max-w-3xl rounded-bento overflow-hidden border border-hairline shadow-2xl">
-          <img id="heroImg" src="assets/modelo-standard.jpeg"
-               alt="Gafas inteligentes Market Plus X — foto real del producto"
-               class="mx-auto w-full object-cover" />
+          <!-- Franja de confianza -->
+          <div class="reveal mt-6 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono" style="color:rgba(7,8,10,.65);">
+            <div class="flex items-center gap-2"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Contra entrega</div>
+            <div class="flex items-center gap-2"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg> Garantía incluida</div>
+            <div class="flex items-center gap-2"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg> Toda Colombia</div>
+            <div class="flex items-center gap-2"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg> Resistencia IPX4</div>
+          </div>
+        </div>
+
+        <!-- Columna derecha: producto -->
+        <div class="reveal flex justify-center lg:justify-end">
+          <div id="heroImgWrap" class="hero-float photo-vignette max-w-lg w-full rounded-bento overflow-hidden border shadow-2xl" style="border-color:rgba(242,241,236,.14);">
+            <img id="heroImg" src="assets/modelo-standard.jpeg"
+                 alt="Gafas inteligentes Market Plus X — foto real del producto"
+                 class="w-full object-cover" />
+          </div>
         </div>
       </div>
-
-      <!-- Franja de confianza -->
-      <div class="reveal mt-12 grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm border-t border-hairline pt-8">
-        <div class="flex items-center justify-center gap-2 text-sec"><i class="fa-solid fa-truck-fast text-accent"></i> Contra entrega</div>
-        <div class="flex items-center justify-center gap-2 text-sec"><i class="fa-solid fa-shield-halved text-accent"></i> Garantía incluida</div>
-        <div class="flex items-center justify-center gap-2 text-sec"><i class="fa-solid fa-map-location-dot text-accent"></i> Toda Colombia</div>
-        <div class="flex items-center justify-center gap-2 text-sec"><i class="fa-solid fa-droplet-slash text-accent"></i> Resistente IPX4</div>
-      </div>
     </div>
   </section>
 
-  <!-- ========================= STATS ========================= -->
-  <section class="border-y border-hairline bg-raised/50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-      <div><p class="text-2xl font-extrabold">2K · 8MP</p><p class="text-sm text-sec">Cámara con IA</p></div>
-      <div><p class="text-2xl font-extrabold">IPX4</p><p class="text-sm text-sec">Resiste salpicaduras y sudor</p></div>
-      <div><p class="text-2xl font-extrabold">EIS 6 ejes</p><p class="text-sm text-sec">Estabilización anti-shake</p></div>
-      <div><p class="text-2xl font-extrabold">BT 5.3 + WiFi</p><p class="text-sm text-sec">Descarga al celular</p></div>
+  <!-- ========================= CINTA DE SPECS ========================= -->
+  <div class="mpx-ticker">
+    <div class="mpx-ticker-track" aria-hidden="true">
+      <span class="mpx-ticker-set">
+        <span>CÁMARA 2K · 8MP</span><span>·</span><span>ESTABILIZACIÓN EIS 6 EJES</span><span>·</span><span>IPX4</span><span>·</span><span>BLUETOOTH 5.3 + WIFI</span><span>·</span><span>IA INTEGRADA</span><span>·</span><span>CONTRA ENTREGA</span><span>·</span><span>ENVÍO NACIONAL</span><span>·</span><span>GARANTÍA INCLUIDA</span><span>·</span>
+      </span>
+      <span class="mpx-ticker-set">
+        <span>CÁMARA 2K · 8MP</span><span>·</span><span>ESTABILIZACIÓN EIS 6 EJES</span><span>·</span><span>IPX4</span><span>·</span><span>BLUETOOTH 5.3 + WIFI</span><span>·</span><span>IA INTEGRADA</span><span>·</span><span>CONTRA ENTREGA</span><span>·</span><span>ENVÍO NACIONAL</span><span>·</span><span>GARANTÍA INCLUIDA</span><span>·</span>
+      </span>
     </div>
-  </section>
+    <p class="sr-only">Cámara 2K · 8MP. Estabilización EIS 6 ejes. IPX4. Bluetooth 5.3 + WiFi. IA integrada. Contra entrega. Envío nacional. Garantía incluida.</p>
+  </div>
 
   <!-- ========================= BENTO: THE DUAL EXPERIENCE ========================= -->
   <section id="experiencia" class="py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-2xl mb-12 reveal">
-        <p class="text-xs font-semibold uppercase tracking-[0.08em] text-ter">The Dual Experience</p>
-        <h2 class="h2v3 mt-3">Un dispositivo, dos mundos</h2>
-        <p class="mt-4 text-sec">Para los que ruedan y para los que crean. Elige tu experiencia.</p>
+        <p class="text-xs font-mono font-semibold uppercase tracking-[0.08em] text-accent">The Dual Experience</p>
+        <h2 class="h2v3 mt-3 text-ink">Un dispositivo, dos mundos</h2>
+        <p class="mt-4" style="color:rgba(242,241,236,.66);">Para los que ruedan y para los que crean. Elige tu experiencia.</p>
       </div>
 
       <div class="grid md:grid-cols-2 gap-4 lg:gap-6">
@@ -302,20 +340,20 @@
                class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-80 group-hover:scale-[1.02] transition duration-500" />
           <div class="absolute inset-0 bg-gradient-to-t from-night via-night/60 to-transparent"></div>
           <div class="relative p-7 sm:p-9">
-            <p class="text-xs font-semibold uppercase tracking-[0.08em] text-accent">Sport Edition</p>
-            <h3 class="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight">Velocidad, ruta y evidencia</h3>
-            <ul class="mt-4 space-y-2 text-sm text-sec">
+            <p class="text-xs font-mono font-semibold uppercase tracking-[0.08em] text-accent">Sport Edition</p>
+            <h3 class="mt-2 text-2xl sm:text-3xl font-bold font-display text-ink tracking-tight">Velocidad, ruta y evidencia</h3>
+            <ul class="mt-4 space-y-2 text-sm" style="color:rgba(242,241,236,.66);">
               <li class="flex gap-2"><i class="fa-solid fa-check text-accent mt-0.5"></i> Grabación 2K estabilizada (EIS) en terreno irregular</li>
               <li class="flex gap-2"><i class="fa-solid fa-check text-accent mt-0.5"></i> Seguridad en ruta: evidencia en video, oídos libres</li>
               <li class="flex gap-2"><i class="fa-solid fa-check text-accent mt-0.5"></i> Diseño aerodinámico envolvente · $359.900 COP</li>
             </ul>
             <div class="mt-6 flex flex-wrap gap-3">
-              <a href="deportiva.html" class="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-bold text-white hover:bg-accent-hover transition">
+              <a href="deportiva.html" class="btn-sharp inline-flex items-center gap-2 bg-accent px-6 py-3 text-sm font-mono font-bold text-night hover:bg-accent-hover transition">
                 Descubrir Sport <i class="fa-solid fa-arrow-right text-xs"></i>
               </a>
               <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Deportiva%20Ciclismo%20($359.900)"
                  target="_blank" rel="noopener"
-                 class="inline-flex items-center gap-2 rounded-full bg-wa hover:bg-wa-dark px-6 py-3 text-sm font-bold text-night transition">
+                 class="btn-sharp inline-flex items-center gap-2 bg-wa px-6 py-3 text-sm font-mono font-bold text-night hover:bg-wa-dark transition">
                 <i class="fa-brands fa-whatsapp"></i> Asesoría
               </a>
             </div>
@@ -328,15 +366,15 @@
                class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-80 group-hover:scale-[1.02] transition duration-500" />
           <div class="absolute inset-0 bg-gradient-to-t from-night via-night/60 to-transparent"></div>
           <div class="relative p-7 sm:p-9">
-            <p class="text-xs font-semibold uppercase tracking-[0.08em] text-accent">Casual Pro & Ultra</p>
-            <h3 class="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight">Crea sin sacar el celular</h3>
-            <ul class="mt-4 space-y-2 text-sm text-sec">
+            <p class="text-xs font-mono font-semibold uppercase tracking-[0.08em] text-accent">Casual Pro & Ultra</p>
+            <h3 class="mt-2 text-2xl sm:text-3xl font-bold font-display text-ink tracking-tight">Crea sin sacar el celular</h3>
+            <ul class="mt-4 space-y-2 text-sm" style="color:rgba(242,241,236,.66);">
               <li class="flex gap-2"><i class="fa-solid fa-check text-accent mt-0.5"></i> POV discreto para vlogs urbanos, 2K/4K</li>
               <li class="flex gap-2"><i class="fa-solid fa-check text-accent mt-0.5"></i> Batería extendida de hasta 12 horas</li>
               <li class="flex gap-2"><i class="fa-solid fa-check text-accent mt-0.5"></i> Descarga vía Wi-Fi directo a la galería del celular</li>
             </ul>
             <div class="mt-6">
-              <a href="#modelos" class="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-bold text-white hover:bg-accent-hover transition">
+              <a href="#modelos" class="btn-sharp inline-flex items-center gap-2 bg-accent px-6 py-3 text-sm font-mono font-bold text-night hover:bg-accent-hover transition">
                 Ver Casual Pro & Ultra <i class="fa-solid fa-arrow-right text-xs"></i>
               </a>
             </div>
@@ -347,79 +385,79 @@
       <!-- Tiles menores -->
       <div class="grid sm:grid-cols-3 gap-4 lg:gap-6 mt-4 lg:mt-6">
         <div class="reveal bento p-7">
-          <span class="inline-flex w-11 h-11 items-center justify-center rounded-xl bg-accent-soft text-accent text-lg"><i class="fa-solid fa-language"></i></span>
-          <h3 class="mt-4 font-bold">IA al alcance de tu vista</h3>
-          <p class="mt-2 text-sm text-sec">Asistente de voz, traducción de doble vía en tiempo real, lectura de texto y navegación.</p>
+          <span class="inline-flex w-11 h-11 items-center justify-center rounded-sm bg-accent-soft text-accent text-lg"><i class="fa-solid fa-language"></i></span>
+          <h3 class="mt-4 font-bold font-mono text-ink">IA al alcance de tu vista</h3>
+          <p class="mt-2 text-sm" style="color:rgba(242,241,236,.66);">Asistente de voz, traducción de doble vía en tiempo real, lectura de texto y navegación.</p>
         </div>
         <div class="reveal bento p-7">
-          <span class="inline-flex w-11 h-11 items-center justify-center rounded-xl bg-accent-soft text-accent text-lg"><i class="fa-solid fa-droplet-slash"></i></span>
-          <h3 class="mt-4 font-bold">Resistencia IPX4 honesta</h3>
-          <p class="mt-2 text-sm text-sec">Soportan sudor y salpicaduras. No son sumergibles ni aptas para lluvia torrencial.</p>
+          <span class="inline-flex w-11 h-11 items-center justify-center rounded-sm bg-accent-soft text-accent text-lg"><i class="fa-solid fa-droplet-slash"></i></span>
+          <h3 class="mt-4 font-bold font-mono text-ink">Resistencia IPX4 honesta</h3>
+          <p class="mt-2 text-sm" style="color:rgba(242,241,236,.66);">Soportan sudor y salpicaduras. No son sumergibles ni aptas para lluvia torrencial.</p>
         </div>
         <div class="reveal bento p-7">
-          <span class="inline-flex w-11 h-11 items-center justify-center rounded-xl bg-accent-soft text-accent text-lg"><i class="fa-solid fa-bolt"></i></span>
-          <h3 class="mt-4 font-bold">Conectividad instantánea</h3>
-          <p class="mt-2 text-sm text-sec">Bluetooth 5.3 + WiFi de alta velocidad: tus fotos "vuelan" al álbum del teléfono en segundos.</p>
+          <span class="inline-flex w-11 h-11 items-center justify-center rounded-sm bg-accent-soft text-accent text-lg"><i class="fa-solid fa-bolt"></i></span>
+          <h3 class="mt-4 font-bold font-mono text-ink">Conectividad instantánea</h3>
+          <p class="mt-2 text-sm" style="color:rgba(242,241,236,.66);">Bluetooth 5.3 + WiFi de alta velocidad: tus fotos "vuelan" al álbum del teléfono en segundos.</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- ========================= ANATOMÍA DEL DISPOSITIVO ========================= -->
-  <section id="anatomia" class="py-24 border-y border-hairline bg-raised/40">
+  <section id="anatomia" class="py-24 border-y" style="border-color:rgba(242,241,236,.14); background:rgba(17,19,24,.4);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-2xl mb-12 reveal">
-        <p class="text-xs font-semibold uppercase tracking-[0.08em] text-ter">Anatomía del dispositivo</p>
-        <h2 class="h2v3 mt-3">Cada milímetro tiene una función</h2>
-        <p class="mt-4 text-sec">Hardware real, sin adornos. Esto es lo que llevas puesto.</p>
+        <p class="text-xs font-mono font-semibold uppercase tracking-[0.08em] text-accent">Anatomía del dispositivo</p>
+        <h2 class="h2v3 mt-3 text-ink">Cada milímetro tiene una función</h2>
+        <p class="mt-4" style="color:rgba(242,241,236,.66);">Hardware real, sin adornos. Esto es lo que llevas puesto.</p>
       </div>
 
       <div class="grid lg:grid-cols-2 gap-10 items-start">
         <!-- Imagen con callouts (sticky en desktop) -->
         <div class="lg:sticky lg:top-24">
-          <div class="relative photo-vignette rounded-bento overflow-hidden border border-hairline">
+          <div class="relative photo-vignette rounded-bento overflow-hidden border" style="border-color:rgba(242,241,236,.14);">
             <img src="assets/modelo-standard.jpeg" alt="Anatomía de las gafas Market Plus X — foto real" loading="lazy" class="w-full object-cover" />
             <!-- Callout 1: cámara -->
             <div id="point-camara" class="anatomy-point absolute" style="left: 40%; top: 30%;">
               <span class="callout-dot block"></span>
               <span class="callout-line absolute left-[4px] top-[10px] w-px h-14 block"></span>
-              <span class="absolute left-2 top-[64px] text-[11px] font-semibold uppercase tracking-[0.08em] text-ink whitespace-nowrap drop-shadow">Micro-cámara HD</span>
+              <span class="absolute left-2 top-[64px] text-[11px] font-mono font-semibold uppercase tracking-[0.08em] text-ink whitespace-nowrap drop-shadow">Micro-cámara HD</span>
             </div>
-            <!-- Callout 2: zona táctil (cuerpo de la patilla) -->
+            <!-- Callout 2: zona táctil -->
             <div id="point-touch" class="anatomy-point absolute" style="left: 69%; top: 41%;">
               <span class="callout-dot block"></span>
               <span class="callout-line absolute left-[4px] top-[10px] w-px h-10 block"></span>
-              <span class="absolute left-2 top-[48px] text-[11px] font-semibold uppercase tracking-[0.08em] text-ink whitespace-nowrap drop-shadow">Zona táctil</span>
+              <span class="absolute left-2 top-[48px] text-[11px] font-mono font-semibold uppercase tracking-[0.08em] text-ink whitespace-nowrap drop-shadow">Zona táctil</span>
             </div>
-            <!-- Callout 3: open-ear (punta de la misma patilla) -->
+            <!-- Callout 3: open-ear -->
             <div id="point-audio" class="anatomy-point absolute" style="left: 93%; top: 63%;">
               <span class="callout-dot block"></span>
               <span class="callout-line absolute left-[4px] top-[10px] w-px h-8 block"></span>
-              <span class="absolute right-2 top-[40px] text-right text-[11px] font-semibold uppercase tracking-[0.08em] text-ink whitespace-nowrap drop-shadow">Open-Ear dual</span>
+              <span class="absolute right-2 top-[40px] text-right text-[11px] font-mono font-semibold uppercase tracking-[0.08em] text-ink whitespace-nowrap drop-shadow">Open-Ear dual</span>
             </div>
           </div>
-          <p class="mt-3 text-center text-xs text-ter">Foto real del producto — sin renders.</p>
+          <p class="mt-3 text-center text-xs font-mono" style="color:rgba(242,241,236,.50);">Foto real del producto — sin renders.</p>
         </div>
 
         <!-- Steps -->
         <div class="space-y-10 lg:py-10">
           <div class="anatomy-step pl-6" data-point="point-camara">
-            <p class="text-xs font-semibold uppercase tracking-[0.08em] text-accent">01 · Cámara</p>
-            <h3 class="mt-2 text-xl font-bold">Micro-cámara HD frontal</h3>
-            <p class="mt-2 text-sm text-sec">POV real en 2K · 8MP (hasta 32MP interpolados) con lente multicapa y luz indicadora de grabación visible: graba con confianza y transparencia. Estabilización EIS de 6 ejes para que nada salga movido.</p>
+            <p class="text-xs font-mono font-semibold uppercase tracking-[0.08em] text-accent">01 · Cámara</p>
+            <h3 class="mt-2 text-xl font-bold font-display text-ink">Micro-cámara HD frontal</h3>
+            <p class="mt-2 text-sm" style="color:rgba(242,241,236,.66);">POV real en 2K · 8MP (hasta 32MP interpolados) con lente multicapa y luz indicadora de grabación visible: graba con confianza y transparencia. Estabilización EIS de 6 ejes para que nada salga movido.</p>
           </div>
           <div class="anatomy-step pl-6" data-point="point-audio">
-            <p class="text-xs font-semibold uppercase tracking-[0.08em] text-accent">02 · Audio</p>
-            <h3 class="mt-2 text-xl font-bold">Altavoces duales Open-Ear</h3>
-            <p class="mt-2 text-sm text-sec">Música, llamadas y GPS sin tapar tus oídos: sigues escuchando la calle y el tráfico. Doble micrófono con cancelación de ruido para que tu voz llegue nítida.</p>
+            <p class="text-xs font-mono font-semibold uppercase tracking-[0.08em] text-accent">02 · Audio</p>
+            <h3 class="mt-2 text-xl font-bold font-display text-ink">Altavoces duales Open-Ear</h3>
+            <p class="mt-2 text-sm" style="color:rgba(242,241,236,.66);">Música, llamadas y GPS sin tapar tus oídos: sigues escuchando la calle y el tráfico. Doble micrófono con cancelación de ruido para que tu voz llegue nítida.</p>
           </div>
           <div class="anatomy-step pl-6" data-point="point-touch">
-            <p class="text-xs font-semibold uppercase tracking-[0.08em] text-accent">03 · Control</p>
-            <h3 class="mt-2 text-xl font-bold">Zona táctil inteligente</h3>
-            <p class="mt-2 text-sm text-sec">Un toque en la patilla para foto o video, deslizar para volumen. Manos libres de verdad: nunca más sacar el celular en plena ruta.</p>
+            <p class="text-xs font-mono font-semibold uppercase tracking-[0.08em] text-accent">03 · Control</p>
+            <h3 class="mt-2 text-xl font-bold font-display text-ink">Zona táctil inteligente</h3>
+            <p class="mt-2 text-sm" style="color:rgba(242,241,236,.66);">Un toque en la patilla para foto o video, deslizar para volumen. Manos libres de verdad: nunca más sacar el celular en plena ruta.</p>
           </div>
           <p class="text-sm">
-            <a href="assets/ficha-tecnica.jpg" target="_blank" rel="noopener" class="inline-flex items-center gap-2 font-semibold text-accent hover:text-accent-hover">
+            <a href="assets/ficha-tecnica.jpg" target="_blank" rel="noopener" class="inline-flex items-center gap-2 font-mono font-semibold text-accent hover:text-accent-hover">
               <i class="fa-solid fa-file-lines"></i> Ver ficha técnica completa
             </a>
           </p>
@@ -432,188 +470,188 @@
   <section id="modelos" class="py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-2xl mb-12 reveal">
-        <p class="text-xs font-semibold uppercase tracking-[0.08em] text-ter">Modelos</p>
-        <h2 class="h2v3 mt-3">Elige tu modelo</h2>
-        <p class="mt-4 text-sec">Precios transparentes en pesos colombianos (COP). Todos incluyen garantía y opción de contra entrega.</p>
+        <p class="text-xs font-mono font-semibold uppercase tracking-[0.08em] text-accent">Modelos</p>
+        <h2 class="h2v3 mt-3 text-ink">Elige tu modelo</h2>
+        <p class="mt-4" style="color:rgba(242,241,236,.66);">Precios transparentes en pesos colombianos (COP). Todos incluyen garantía y opción de contra entrega.</p>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
 
         <!-- Standard -->
         <div class="reveal bento flex flex-col p-6">
-          <img src="assets/modelo-pro.png" alt="Gafas Market Plus X Casual Standard — cámara 8MP 2 en 1" loading="lazy" class="rounded-2xl border border-hairline mb-4 h-36 w-full object-contain object-center bg-white/[.03]" />
-          <h3 class="text-lg font-bold">Casual Standard</h3>
-          <p class="mt-1 text-sm text-ter">El punto de entrada ideal.</p>
-          <p class="mt-4 text-3xl font-extrabold">$319.000 <span class="text-sm font-medium text-ter">COP</span></p>
-          <ul class="mt-4 space-y-1.5 text-sm text-sec flex-1">
+          <img src="assets/modelo-pro.png" alt="Gafas Market Plus X Casual Standard — cámara 8MP 2 en 1" loading="lazy" class="rounded-sm border mb-4 h-36 w-full object-contain object-center" style="border-color:rgba(242,241,236,.14); background:rgba(242,241,236,.03);" />
+          <h3 class="text-lg font-bold font-mono text-ink">Casual Standard</h3>
+          <p class="mt-1 text-sm" style="color:rgba(242,241,236,.50);">El punto de entrada ideal.</p>
+          <p class="mt-4 text-3xl font-bold font-display text-ink">$319.000 <span class="text-sm font-mono font-medium" style="color:rgba(242,241,236,.50);">COP</span></p>
+          <ul class="mt-4 space-y-1.5 text-sm" style="color:rgba(242,241,236,.66);" flex-1">
             <li><i class="fa-solid fa-camera text-accent mr-2"></i> Cámara 2K · 8MP</li>
             <li><i class="fa-solid fa-battery-half text-accent mr-2"></i> Batería ~6h de uso</li>
             <li><i class="fa-solid fa-droplet-slash text-accent mr-2"></i> Resistencia IPX4</li>
           </ul>
           <button data-add-to-cart data-sku="MPX-G-STD"
-             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition">
+             class="btn-sharp mt-5 inline-flex items-center justify-center gap-2 bg-accent px-4 py-3 text-sm font-mono font-bold text-night hover:bg-accent-hover transition">
             <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
           </button>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Casual%20Standard%20($319.000)"
              target="_blank" rel="noopener"
-             class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-night hover:bg-wa-dark transition">
+             class="btn-sharp mt-2 inline-flex items-center justify-center gap-2 bg-wa px-4 py-3 text-sm font-mono font-bold text-night hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
           </a>
         </div>
 
         <!-- Pro (Más vendido) -->
-        <div class="reveal bento relative flex flex-col p-6 !border-accent/50 lg:scale-105">
-          <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-xs font-bold text-white whitespace-nowrap">★ Más vendido</span>
-          <img src="assets/modelo-standard.jpeg" alt="Gafas Market Plus X Casual Pro" loading="lazy" class="rounded-2xl border border-hairline mb-4 h-36 w-full object-cover object-center" />
-          <h3 class="text-lg font-bold">Casual Pro</h3>
-          <p class="mt-1 text-sm text-ter">El equilibrio perfecto.</p>
-          <p class="mt-4 text-3xl font-extrabold">$359.000 <span class="text-sm font-medium text-ter">COP</span></p>
-          <ul class="mt-4 space-y-1.5 text-sm text-sec flex-1">
+        <div class="reveal bento relative flex flex-col p-6" style="border-color:rgba(200,240,42,.5);">
+          <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-xs font-mono font-bold text-night whitespace-nowrap">★ Más vendido</span>
+          <img src="assets/modelo-standard.jpeg" alt="Gafas Market Plus X Casual Pro" loading="lazy" class="rounded-sm border mb-4 h-36 w-full object-cover object-center" style="border-color:rgba(242,241,236,.14);" />
+          <h3 class="text-lg font-bold font-mono text-ink">Casual Pro</h3>
+          <p class="mt-1 text-sm" style="color:rgba(242,241,236,.50);">El equilibrio perfecto.</p>
+          <p class="mt-4 text-3xl font-bold font-display text-ink">$359.000 <span class="text-sm font-mono font-medium" style="color:rgba(242,241,236,.50);">COP</span></p>
+          <ul class="mt-4 space-y-1.5 text-sm" style="color:rgba(242,241,236,.66);" flex-1">
             <li><i class="fa-solid fa-camera text-accent mr-2"></i> Cámara 2K · 8MP</li>
             <li><i class="fa-solid fa-battery-full text-accent mr-2"></i> Batería ~12h de uso</li>
             <li><i class="fa-solid fa-droplet-slash text-accent mr-2"></i> Resistencia IPX4</li>
           </ul>
           <button data-add-to-cart data-sku="MPX-G-PRO"
-             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition">
+             class="btn-sharp mt-5 inline-flex items-center justify-center gap-2 bg-accent px-4 py-3 text-sm font-mono font-bold text-night hover:bg-accent-hover transition">
             <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
           </button>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Casual%20Pro%20($359.000)"
              target="_blank" rel="noopener"
-             class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-night hover:bg-wa-dark transition">
+             class="btn-sharp mt-2 inline-flex items-center justify-center gap-2 bg-wa px-4 py-3 text-sm font-mono font-bold text-night hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
           </a>
         </div>
 
         <!-- Ultra (Tope de gama) -->
         <div class="reveal bento relative flex flex-col p-6">
-          <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-white text-[#0b0b0c] px-3 py-1 text-xs font-bold whitespace-nowrap">Tope de gama</span>
-          <img id="ultra-main-img" src="assets/modelo-ultra-negro.jpeg" alt="Gafas Market Plus X Casual Ultra 4K — negra" loading="lazy" class="rounded-2xl border border-hairline h-[200px] w-full object-contain object-center bg-white/[.03]" />
-          <p class="mt-2 mb-4 text-xs text-ter">Envío gratis a toda Colombia en este modelo.</p>
-          <h3 class="text-lg font-bold">Casual Ultra 4K</h3>
-          <p class="mt-1 text-sm text-ter">Máxima calidad de imagen.</p>
-          <p class="mt-4 text-3xl font-extrabold">$420.000 <span class="text-sm font-medium text-ter">COP</span></p>
-          <ul class="mt-4 space-y-1.5 text-sm text-sec flex-1">
+          <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-ink text-night px-3 py-1 text-xs font-mono font-bold whitespace-nowrap">Tope de gama</span>
+          <img id="ultra-main-img" src="assets/modelo-ultra-negro.jpeg" alt="Gafas Market Plus X Casual Ultra 4K — negra" loading="lazy" class="rounded-sm border h-[200px] w-full object-contain object-center" style="border-color:rgba(242,241,236,.14); background:rgba(242,241,236,.03);" />
+          <p class="mt-2 mb-4 text-xs font-mono" style="color:rgba(242,241,236,.50);">Envío gratis a toda Colombia en este modelo.</p>
+          <h3 class="text-lg font-bold font-mono text-ink">Casual Ultra 4K</h3>
+          <p class="mt-1 text-sm" style="color:rgba(242,241,236,.50);">Máxima calidad de imagen.</p>
+          <p class="mt-4 text-3xl font-bold font-display text-ink">$420.000 <span class="text-sm font-mono font-medium" style="color:rgba(242,241,236,.50);">COP</span></p>
+          <ul class="mt-4 space-y-1.5 text-sm" style="color:rgba(242,241,236,.66);" flex-1">
             <li><i class="fa-solid fa-camera text-accent mr-2"></i> Cámara 4K (alta gama)</li>
             <li><i class="fa-solid fa-battery-full text-accent mr-2"></i> Batería ~12h de uso</li>
             <li><i class="fa-solid fa-droplet-slash text-accent mr-2"></i> Resistencia IPX4</li>
           </ul>
           <button data-add-to-cart data-sku="MPX-G-ULTRA-NEG"
-             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition">
+             class="btn-sharp mt-5 inline-flex items-center justify-center gap-2 bg-accent px-4 py-3 text-sm font-mono font-bold text-night hover:bg-accent-hover transition">
             <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
           </button>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Casual%20Ultra%20($420.000)"
              target="_blank" rel="noopener"
-             class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-night hover:bg-wa-dark transition">
+             class="btn-sharp mt-2 inline-flex items-center justify-center gap-2 bg-wa px-4 py-3 text-sm font-mono font-bold text-night hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
           </a>
         </div>
 
         <!-- Deportiva (Especializado) -->
         <div class="reveal bento relative flex flex-col p-6">
-          <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-soft border border-accent/40 text-accent px-3 py-1 text-xs font-bold whitespace-nowrap">Especializado</span>
-          <img id="deportiva-main-img" src="assets/dep-roja-estudio.jpg" alt="Gafas Deportiva Ciclismo — montura negra lente naranja espejo" loading="lazy" class="rounded-2xl border border-hairline h-36 w-full object-contain object-center bg-white/[.03]" />
+          <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full border px-3 py-1 text-xs font-mono font-bold whitespace-nowrap" style="border-color:rgba(200,240,42,.4); color:#C8F02A; background:rgba(200,240,42,.14);">Especializado</span>
+          <img id="deportiva-main-img" src="assets/dep-roja-estudio.jpg" alt="Gafas Deportiva Ciclismo — montura negra lente naranja espejo" loading="lazy" class="rounded-sm border h-36 w-full object-contain object-center" style="border-color:rgba(242,241,236,.14); background:rgba(242,241,236,.03);" />
           <div role="radiogroup" aria-label="Color" class="mt-2 mb-4 flex items-center gap-2">
-            <span class="text-xs text-ter" aria-hidden="true">2 colores:</span>
+            <span class="text-xs" style="color:rgba(242,241,236,.50);" aria-hidden="true">2 colores:</span>
             <button type="button" role="radio" aria-checked="true" title="Negra / Lente Naranja"
                     data-color-img="assets/dep-roja-estudio.jpg" data-target="deportiva-main-img" data-group="deportiva" data-sku="MPX-G-DEP-NAR"
-                    class="deportiva-thumb w-10 h-8 p-0 rounded-lg overflow-hidden border-2 border-accent">
+                    class="deportiva-thumb w-10 h-8 p-0 rounded-sm overflow-hidden border-2" style="border-color:#C8F02A;">
               <img src="assets/dep-roja-estudio.jpg" alt="" loading="lazy" class="w-full h-full object-cover object-center" />
               <span class="sr-only">Negra / Lente Naranja</span>
             </button>
             <button type="button" role="radio" aria-checked="false" title="Negra / Lente Negro"
                     data-color-img="assets/dep-negra.jpg" data-target="deportiva-main-img" data-group="deportiva" data-sku="MPX-G-DEP-NEG"
-                    class="deportiva-thumb w-10 h-8 p-0 rounded-lg overflow-hidden border border-hairline transition">
+                    class="deportiva-thumb w-10 h-8 p-0 rounded-sm overflow-hidden border transition" style="border-color:rgba(242,241,236,.14);">
               <img src="assets/dep-negra.jpg" alt="" loading="lazy" class="w-full h-full object-cover object-center" />
               <span class="sr-only">Negra / Lente Negro</span>
             </button>
           </div>
-          <h3 class="text-lg font-bold">Deportiva Ciclismo</h3>
-          <p class="mt-1 text-sm text-ter">Diseño aerodinámico.</p>
-          <p class="mt-4 text-3xl font-extrabold">$359.900 <span class="text-sm font-medium text-ter">COP</span></p>
-          <ul class="mt-4 space-y-1.5 text-sm text-sec flex-1">
+          <h3 class="text-lg font-bold font-mono text-ink">Deportiva Ciclismo</h3>
+          <p class="mt-1 text-sm" style="color:rgba(242,241,236,.50);">Diseño aerodinámico.</p>
+          <p class="mt-4 text-3xl font-bold font-display text-ink">$359.900 <span class="text-sm font-mono font-medium" style="color:rgba(242,241,236,.50);">COP</span></p>
+          <ul class="mt-4 space-y-1.5 text-sm" style="color:rgba(242,241,236,.66);" flex-1">
             <li><i class="fa-solid fa-wind text-accent mr-2"></i> Diseño aerodinámico</li>
             <li><i class="fa-solid fa-camera text-accent mr-2"></i> Cámara 2K deportiva</li>
             <li><i class="fa-solid fa-droplet-slash text-accent mr-2"></i> Resistencia IPX4</li>
           </ul>
           <button data-add-to-cart data-sku="MPX-G-DEP-NAR" data-sku-group="deportiva"
-             class="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition">
+             class="btn-sharp mt-5 inline-flex items-center justify-center gap-2 bg-accent px-4 py-3 text-sm font-mono font-bold text-night hover:bg-accent-hover transition">
             <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
           </button>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20Deportiva%20Ciclismo%20($359.900)"
              target="_blank" rel="noopener"
-             class="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-wa px-4 py-3 text-sm font-bold text-night hover:bg-wa-dark transition">
+             class="btn-sharp mt-2 inline-flex items-center justify-center gap-2 bg-wa px-4 py-3 text-sm font-mono font-bold text-night hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
           </a>
-          <a href="deportiva.html" class="mt-2 inline-flex items-center justify-center gap-1 text-sm font-semibold text-accent hover:text-accent-hover transition">
+          <a href="deportiva.html" class="mt-2 inline-flex items-center justify-center gap-1 text-sm font-mono font-semibold text-accent hover:text-accent-hover transition">
             Ver galería y detalles <i class="fa-solid fa-arrow-right text-xs"></i>
           </a>
         </div>
 
       </div>
-      <p class="mt-8 text-center text-sm text-ter"><i class="fa-solid fa-circle-info text-accent mr-1"></i> ¿No sabes cuál elegir? Escríbenos y te asesoramos según tu uso (moto, contenido o tecnología).</p>
+      <p class="mt-8 text-center text-sm font-mono" style="color:rgba(242,241,236,.50);"><i class="fa-solid fa-circle-info text-accent mr-1"></i> ¿No sabes cuál elegir? Escríbenos y te asesoramos según tu uso (moto, contenido o tecnología).</p>
     </div>
   </section>
 
   <!-- ========================= TABLA COMPARATIVA ========================= -->
-  <section id="comparativa" class="py-24 border-y border-hairline bg-raised/40">
+  <section id="comparativa" class="py-24 border-y" style="border-color:rgba(242,241,236,.14); background:rgba(17,19,24,.4);">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-2xl mb-10 reveal">
-        <p class="text-xs font-semibold uppercase tracking-[0.08em] text-ter">Comparativa</p>
-        <h2 class="h2v3 mt-3">Compara y decide claro</h2>
-        <p class="mt-4 text-sec">Sin letra pequeña. Estas son las diferencias reales entre modelos.</p>
+        <p class="text-xs font-mono font-semibold uppercase tracking-[0.08em] text-accent">Comparativa</p>
+        <h2 class="h2v3 mt-3 text-ink">Compara y decide claro</h2>
+        <p class="mt-4" style="color:rgba(242,241,236,.66);">Sin letra pequeña. Estas son las diferencias reales entre modelos.</p>
       </div>
 
-      <div class="reveal overflow-x-auto rounded-bento border border-hairline">
+      <div class="reveal overflow-x-auto rounded-bento border" style="border-color:rgba(242,241,236,.14);">
         <table class="w-full text-sm text-left bg-card min-w-[600px]">
-          <thead class="bg-white/[.03] text-ter uppercase text-xs">
+          <thead style="background:rgba(242,241,236,.03);" class="font-mono text-xs" style="color:rgba(242,241,236,.50);">
             <tr>
-              <th class="px-5 py-4 font-semibold">Característica</th>
-              <th class="px-5 py-4 font-semibold">Standard</th>
+              <th class="px-5 py-4 font-semibold text-ink">Característica</th>
+              <th class="px-5 py-4 font-semibold text-ink">Standard</th>
               <th class="px-5 py-4 font-semibold text-accent">Pro ★</th>
-              <th class="px-5 py-4 font-semibold">Ultra</th>
-              <th class="px-5 py-4 font-semibold">Deportiva</th>
+              <th class="px-5 py-4 font-semibold text-ink">Ultra</th>
+              <th class="px-5 py-4 font-semibold text-ink">Deportiva</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-white/[.06] text-sec">
+          <tbody class="divide-y" style="border-color:rgba(242,241,236,.06); color:rgba(242,241,236,.66);">
             <tr>
-              <td class="px-5 py-4 font-medium text-ink">Precio (COP)</td>
-              <td class="px-5 py-4">$319.000</td>
-              <td class="px-5 py-4 font-semibold text-ink bg-accent-soft">$359.000</td>
-              <td class="px-5 py-4">$420.000</td>
-              <td class="px-5 py-4">$359.900</td>
+              <td class="px-5 py-4 font-medium text-ink font-mono">Precio (COP)</td>
+              <td class="px-5 py-4 font-mono">$319.000</td>
+              <td class="px-5 py-4 font-semibold text-ink font-mono" style="background:rgba(200,240,42,.14);">$359.000</td>
+              <td class="px-5 py-4 font-mono">$420.000</td>
+              <td class="px-5 py-4 font-mono">$359.900</td>
             </tr>
             <tr>
-              <td class="px-5 py-4 font-medium text-ink">Resolución</td>
+              <td class="px-5 py-4 font-medium text-ink font-mono">Resolución</td>
               <td class="px-5 py-4">2K · 8MP</td>
-              <td class="px-5 py-4 font-semibold text-ink bg-accent-soft">2K · 8MP</td>
+              <td class="px-5 py-4 font-semibold text-ink" style="background:rgba(200,240,42,.14);">2K · 8MP</td>
               <td class="px-5 py-4">4K</td>
               <td class="px-5 py-4">2K · 8MP</td>
             </tr>
             <tr>
-              <td class="px-5 py-4 font-medium text-ink">Batería</td>
+              <td class="px-5 py-4 font-medium text-ink font-mono">Batería</td>
               <td class="px-5 py-4">~6h</td>
-              <td class="px-5 py-4 font-semibold text-ink bg-accent-soft">~12h</td>
+              <td class="px-5 py-4 font-semibold text-ink" style="background:rgba(200,240,42,.14);">~12h</td>
               <td class="px-5 py-4">~12h</td>
               <td class="px-5 py-4">~8h</td>
             </tr>
             <tr>
-              <td class="px-5 py-4 font-medium text-ink">Estabilización EIS</td>
+              <td class="px-5 py-4 font-medium text-ink font-mono">Estabilización EIS</td>
               <td class="px-5 py-4"><i class="fa-solid fa-check text-accent"></i></td>
-              <td class="px-5 py-4 bg-accent-soft"><i class="fa-solid fa-check text-accent"></i></td>
-              <td class="px-5 py-4"><i class="fa-solid fa-check text-accent"></i></td>
-              <td class="px-5 py-4"><i class="fa-solid fa-check text-accent"></i></td>
-            </tr>
-            <tr>
-              <td class="px-5 py-4 font-medium text-ink">Resistencia IPX4</td>
-              <td class="px-5 py-4"><i class="fa-solid fa-check text-accent"></i></td>
-              <td class="px-5 py-4 bg-accent-soft"><i class="fa-solid fa-check text-accent"></i></td>
+              <td class="px-5 py-4" style="background:rgba(200,240,42,.14);"><i class="fa-solid fa-check text-accent"></i></td>
               <td class="px-5 py-4"><i class="fa-solid fa-check text-accent"></i></td>
               <td class="px-5 py-4"><i class="fa-solid fa-check text-accent"></i></td>
             </tr>
             <tr>
-              <td class="px-5 py-4 font-medium text-ink">Diseño</td>
+              <td class="px-5 py-4 font-medium text-ink font-mono">Resistencia IPX4</td>
+              <td class="px-5 py-4"><i class="fa-solid fa-check text-accent"></i></td>
+              <td class="px-5 py-4" style="background:rgba(200,240,42,.14);"><i class="fa-solid fa-check text-accent"></i></td>
+              <td class="px-5 py-4"><i class="fa-solid fa-check text-accent"></i></td>
+              <td class="px-5 py-4"><i class="fa-solid fa-check text-accent"></i></td>
+            </tr>
+            <tr>
+              <td class="px-5 py-4 font-medium text-ink font-mono">Diseño</td>
               <td class="px-5 py-4">Casual</td>
-              <td class="px-5 py-4 font-semibold text-ink bg-accent-soft">Casual</td>
+              <td class="px-5 py-4 font-semibold text-ink" style="background:rgba(200,240,42,.14);">Casual</td>
               <td class="px-5 py-4">Casual</td>
               <td class="px-5 py-4">Aerodinámico</td>
             </tr>
@@ -627,42 +665,42 @@
   <section id="prueba" class="py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-2xl mb-12 reveal">
-        <p class="text-xs font-semibold uppercase tracking-[0.08em] text-ter">Prueba real</p>
-        <h2 class="h2v3 mt-3">Míralo en acción</h2>
-        <p class="mt-4 text-sec">Material real grabado con las gafas y lo que dicen nuestros primeros clientes.</p>
+        <p class="text-xs font-mono font-semibold uppercase tracking-[0.08em] text-accent">Prueba real</p>
+        <h2 class="h2v3 mt-3 text-ink">Míralo en acción</h2>
+        <p class="mt-4" style="color:rgba(242,241,236,.66);">Material real grabado con las gafas y lo que dicen nuestros primeros clientes.</p>
       </div>
     </div>
 
     <!-- Marquee de fotos reales -->
     <div class="marquee reveal mb-12">
       <div class="marquee-track">
-        <img src="assets/dep-hero.jpg" alt="Deportiva sobre asfalto" loading="lazy" class="gallery-img h-44 w-auto rounded-2xl border border-hairline cursor-zoom-in object-cover" />
-        <img src="assets/dep-ciclista-1.jpg" alt="Ciclista en montaña" loading="lazy" class="gallery-img h-44 w-auto rounded-2xl border border-hairline cursor-zoom-in object-cover" />
-        <img src="assets/dep-roja.jpg" alt="Deportiva lente rojo" loading="lazy" class="gallery-img h-44 w-auto rounded-2xl border border-hairline cursor-zoom-in object-cover" />
-        <img src="assets/dep-life-1.jpg" alt="Uso al aire libre" loading="lazy" class="gallery-img h-44 w-auto rounded-2xl border border-hairline cursor-zoom-in object-cover" />
-        <img src="assets/dep-tienda.jpg" alt="En tienda física" loading="lazy" class="gallery-img h-44 w-auto rounded-2xl border border-hairline cursor-zoom-in object-cover" />
-        <img src="assets/dep-ciclista-2.jpg" alt="Descenso en sendero" loading="lazy" class="gallery-img h-44 w-auto rounded-2xl border border-hairline cursor-zoom-in object-cover" />
-        <img src="assets/dep-life-2.jpg" alt="En pista de atletismo" loading="lazy" class="gallery-img h-44 w-auto rounded-2xl border border-hairline cursor-zoom-in object-cover" />
-        <img src="assets/disenos-colores.png" alt="Diseños y colores" loading="lazy" class="gallery-img h-44 w-auto rounded-2xl border border-hairline cursor-zoom-in object-cover" />
+        <img src="assets/dep-hero.jpg" alt="Deportiva sobre asfalto" loading="lazy" class="gallery-img h-44 w-auto rounded-sm border cursor-zoom-in object-cover" style="border-color:rgba(242,241,236,.14);" />
+        <img src="assets/dep-ciclista-1.jpg" alt="Ciclista en montaña" loading="lazy" class="gallery-img h-44 w-auto rounded-sm border cursor-zoom-in object-cover" style="border-color:rgba(242,241,236,.14);" />
+        <img src="assets/dep-roja.jpg" alt="Deportiva lente rojo" loading="lazy" class="gallery-img h-44 w-auto rounded-sm border cursor-zoom-in object-cover" style="border-color:rgba(242,241,236,.14);" />
+        <img src="assets/dep-life-1.jpg" alt="Uso al aire libre" loading="lazy" class="gallery-img h-44 w-auto rounded-sm border cursor-zoom-in object-cover" style="border-color:rgba(242,241,236,.14);" />
+        <img src="assets/dep-tienda.jpg" alt="En tienda física" loading="lazy" class="gallery-img h-44 w-auto rounded-sm border cursor-zoom-in object-cover" style="border-color:rgba(242,241,236,.14);" />
+        <img src="assets/dep-ciclista-2.jpg" alt="Descenso en sendero" loading="lazy" class="gallery-img h-44 w-auto rounded-sm border cursor-zoom-in object-cover" style="border-color:rgba(242,241,236,.14);" />
+        <img src="assets/dep-life-2.jpg" alt="En pista de atletismo" loading="lazy" class="gallery-img h-44 w-auto rounded-sm border cursor-zoom-in object-cover" style="border-color:rgba(242,241,236,.14);" />
+        <img src="assets/disenos-colores.png" alt="Diseños y colores" loading="lazy" class="gallery-img h-44 w-auto rounded-sm border cursor-zoom-in object-cover" style="border-color:rgba(242,241,236,.14);" />
         <!-- duplicado para loop infinito -->
-        <img src="assets/dep-hero.jpg" alt="" aria-hidden="true" loading="lazy" class="h-44 w-auto rounded-2xl border border-hairline object-cover" />
-        <img src="assets/dep-ciclista-1.jpg" alt="" aria-hidden="true" loading="lazy" class="h-44 w-auto rounded-2xl border border-hairline object-cover" />
-        <img src="assets/dep-roja.jpg" alt="" aria-hidden="true" loading="lazy" class="h-44 w-auto rounded-2xl border border-hairline object-cover" />
-        <img src="assets/dep-life-1.jpg" alt="" aria-hidden="true" loading="lazy" class="h-44 w-auto rounded-2xl border border-hairline object-cover" />
-        <img src="assets/dep-tienda.jpg" alt="" aria-hidden="true" loading="lazy" class="h-44 w-auto rounded-2xl border border-hairline object-cover" />
-        <img src="assets/dep-ciclista-2.jpg" alt="" aria-hidden="true" loading="lazy" class="h-44 w-auto rounded-2xl border border-hairline object-cover" />
-        <img src="assets/dep-life-2.jpg" alt="" aria-hidden="true" loading="lazy" class="h-44 w-auto rounded-2xl border border-hairline object-cover" />
-        <img src="assets/disenos-colores.png" alt="" aria-hidden="true" loading="lazy" class="h-44 w-auto rounded-2xl border border-hairline object-cover" />
+        <img src="assets/dep-hero.jpg" alt="" aria-hidden="true" loading="lazy" class="h-44 w-auto rounded-sm border object-cover" style="border-color:rgba(242,241,236,.14);" />
+        <img src="assets/dep-ciclista-1.jpg" alt="" aria-hidden="true" loading="lazy" class="h-44 w-auto rounded-sm border object-cover" style="border-color:rgba(242,241,236,.14);" />
+        <img src="assets/dep-roja.jpg" alt="" aria-hidden="true" loading="lazy" class="h-44 w-auto rounded-sm border object-cover" style="border-color:rgba(242,241,236,.14);" />
+        <img src="assets/dep-life-1.jpg" alt="" aria-hidden="true" loading="lazy" class="h-44 w-auto rounded-sm border object-cover" style="border-color:rgba(242,241,236,.14);" />
+        <img src="assets/dep-tienda.jpg" alt="" aria-hidden="true" loading="lazy" class="h-44 w-auto rounded-sm border object-cover" style="border-color:rgba(242,241,236,.14);" />
+        <img src="assets/dep-ciclista-2.jpg" alt="" aria-hidden="true" loading="lazy" class="h-44 w-auto rounded-sm border object-cover" style="border-color:rgba(242,241,236,.14);" />
+        <img src="assets/dep-life-2.jpg" alt="" aria-hidden="true" loading="lazy" class="h-44 w-auto rounded-sm border object-cover" style="border-color:rgba(242,241,236,.14);" />
+        <img src="assets/disenos-colores.png" alt="" aria-hidden="true" loading="lazy" class="h-44 w-auto rounded-sm border object-cover" style="border-color:rgba(242,241,236,.14);" />
       </div>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid lg:grid-cols-2 gap-6 items-start">
-        <!-- Videos reales (contenido existente, sin agregar más) -->
+        <!-- Videos reales -->
         <div class="reveal space-y-5">
           <div class="bento p-5">
-            <p class="text-sm font-semibold text-sec mb-3"><i class="fa-solid fa-video text-accent mr-1"></i> Video real del producto</p>
-            <div class="relative w-full rounded-2xl overflow-hidden border border-hairline" style="padding-bottom: 56.25%; height: 0;">
+            <p class="text-sm font-mono font-semibold mb-3" style="color:rgba(242,241,236,.66);"><i class="fa-solid fa-video text-accent mr-1"></i> Video real del producto</p>
+            <div class="relative w-full rounded-sm overflow-hidden border" style="border-color:rgba(242,241,236,.14); padding-bottom: 56.25%; height: 0;">
               <iframe
                 src="https://drive.google.com/file/d/1dweoRELkat7AWoa0BtY4q0C8w_82o4ui/preview"
                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
@@ -674,91 +712,91 @@
             </div>
           </div>
           <div class="bento p-5">
-            <p class="text-sm font-semibold text-sec mb-3"><i class="fa-solid fa-graduation-cap text-ter mr-1"></i> Tutorial / cómo funciona</p>
-            <video class="w-full rounded-2xl border border-hairline" controls playsinline preload="metadata"
+            <p class="text-sm font-mono font-semibold mb-3" style="color:rgba(242,241,236,.66);"><i class="fa-solid fa-graduation-cap mr-1" style="color:rgba(242,241,236,.50);"></i> Tutorial / cómo funciona</p>
+            <video class="w-full rounded-sm border" controls playsinline preload="metadata" style="border-color:rgba(242,241,236,.14);"
                    poster="assets/uso-pov-poster.jpg">
               <source src="assets/uso-pov.mp4" type="video/mp4">
             </video>
           </div>
         </div>
 
-        <!-- Testimonios (PLACEHOLDER — reemplazar por reseñas reales / capturas de WhatsApp) -->
+        <!-- Testimonios -->
         <div class="space-y-4 reveal">
           <!-- TODO: Reemplaza estos testimonios por reseñas REALES de clientes (idealmente capturas de WhatsApp o Instagram). -->
           <div class="bento p-6">
             <div class="flex items-center gap-1 text-accent text-sm mb-2"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-            <p class="text-sec text-sm">"Las uso para grabar mis rutas en moto. La estabilización es real, el video no sale movido y la batería me aguanta el día."</p>
-            <p class="mt-3 text-sm font-semibold">Andrés R. <span class="font-normal text-ter">· Bogotá</span></p>
+            <p class="text-sm" style="color:rgba(242,241,236,.66);">"Las uso para grabar mis rutas en moto. La estabilización es real, el video no sale movido y la batería me aguanta el día."</p>
+            <p class="mt-3 text-sm font-semibold text-ink">Andrés R. <span class="font-normal" style="color:rgba(242,241,236,.50);">· Bogotá</span></p>
           </div>
           <div class="bento p-6">
             <div class="flex items-center gap-1 text-accent text-sm mb-2"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-            <p class="text-sec text-sm">"Hago vlogs y poder grabar en POV sin trípode me cambió la vida. Paso los videos al celular por WiFi en segundos."</p>
-            <p class="mt-3 text-sm font-semibold">Laura M. <span class="font-normal text-ter">· Medellín</span></p>
+            <p class="text-sm" style="color:rgba(242,241,236,.66);">"Hago vlogs y poder grabar en POV sin trípode me cambió la vida. Paso los videos al celular por WiFi en segundos."</p>
+            <p class="mt-3 text-sm font-semibold text-ink">Laura M. <span class="font-normal" style="color:rgba(242,241,236,.50);">· Medellín</span></p>
           </div>
           <div class="bento p-6">
             <div class="flex items-center gap-1 text-accent text-sm mb-2"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
-            <p class="text-sec text-sm">"Llegaron rápido y pagué contra entrega, eso me dio mucha confianza. La calidad se siente premium."</p>
-            <p class="mt-3 text-sm font-semibold">Julián P. <span class="font-normal text-ter">· Cali</span></p>
+            <p class="text-sm" style="color:rgba(242,241,236,.66);">"Llegaron rápido y pagué contra entrega, eso me dio mucha confianza. La calidad se siente premium."</p>
+            <p class="mt-3 text-sm font-semibold text-ink">Julián P. <span class="font-normal" style="color:rgba(242,241,236,.50);">· Cali</span></p>
           </div>
-          <p class="text-xs text-ter italic">* Reseñas de clientes. Reemplázalas por capturas reales para máxima credibilidad.</p>
+          <p class="text-xs font-mono italic" style="color:rgba(242,241,236,.50);">* Reseñas de clientes. Reemplázalas por capturas reales para máxima credibilidad.</p>
         </div>
       </div>
 
       <!-- Galería real de detalles -->
       <div class="mt-12 reveal">
-        <h3 class="text-lg font-bold mb-4">Detalles reales del producto</h3>
+        <h3 class="text-lg font-bold font-mono text-ink mb-4">Detalles reales del producto</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <img src="assets/ai-vision.png" alt="Funciones de IA: traducción, navegación, reconocimiento" loading="lazy" class="gallery-img rounded-2xl border border-hairline cursor-zoom-in hover:opacity-80 transition w-full h-40 object-cover" />
-          <img src="assets/resolucion-ia.png" alt="Resolución 2K y asistente de IA" loading="lazy" class="gallery-img rounded-2xl border border-hairline cursor-zoom-in hover:opacity-80 transition w-full h-40 object-cover" />
-          <img src="assets/estabilizacion.png" alt="Estabilización EIS anti-shake" loading="lazy" class="gallery-img rounded-2xl border border-hairline cursor-zoom-in hover:opacity-80 transition w-full h-40 object-cover" />
-          <img src="assets/disenos-colores.png" alt="Diseños y colores disponibles" loading="lazy" class="gallery-img rounded-2xl border border-hairline cursor-zoom-in hover:opacity-80 transition w-full h-40 object-cover" />
+          <img src="assets/ai-vision.png" alt="Funciones de IA: traducción, navegación, reconocimiento" loading="lazy" class="gallery-img rounded-sm border cursor-zoom-in hover:opacity-80 transition w-full h-40 object-cover" style="border-color:rgba(242,241,236,.14);" />
+          <img src="assets/resolucion-ia.png" alt="Resolución 2K y asistente de IA" loading="lazy" class="gallery-img rounded-sm border cursor-zoom-in hover:opacity-80 transition w-full h-40 object-cover" style="border-color:rgba(242,241,236,.14);" />
+          <img src="assets/estabilizacion.png" alt="Estabilización EIS anti-shake" loading="lazy" class="gallery-img rounded-sm border cursor-zoom-in hover:opacity-80 transition w-full h-40 object-cover" style="border-color:rgba(242,241,236,.14);" />
+          <img src="assets/disenos-colores.png" alt="Diseños y colores disponibles" loading="lazy" class="gallery-img rounded-sm border cursor-zoom-in hover:opacity-80 transition w-full h-40 object-cover" style="border-color:rgba(242,241,236,.14);" />
         </div>
       </div>
     </div>
   </section>
 
   <!-- ========================= CONFIANZA Y GARANTÍAS ========================= -->
-  <section id="confianza" class="py-24 border-y border-hairline bg-raised/40">
+  <section id="confianza" class="py-24 border-y" style="border-color:rgba(242,241,236,.14); background:rgba(17,19,24,.4);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-2xl mb-12 reveal">
-        <p class="text-xs font-semibold uppercase tracking-[0.08em] text-ter">Confianza</p>
-        <h2 class="h2v3 mt-3">Compra con confianza</h2>
-        <p class="mt-4 text-sec">Somos una tienda colombiana real. Personas reales te responden por WhatsApp.</p>
+        <p class="text-xs font-mono font-semibold uppercase tracking-[0.08em] text-accent">Confianza</p>
+        <h2 class="h2v3 mt-3 text-ink">Compra con confianza</h2>
+        <p class="mt-4" style="color:rgba(242,241,236,.66);">Somos una tienda colombiana real. Personas reales te responden por WhatsApp.</p>
       </div>
 
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         <div class="reveal bento p-7">
-          <span class="inline-flex w-11 h-11 items-center justify-center rounded-xl bg-accent-soft text-accent text-lg"><i class="fa-solid fa-truck-fast"></i></span>
-          <h3 class="mt-4 font-bold">Contra entrega</h3>
-          <p class="mt-2 text-sm text-sec">Paga al recibir, en cualquier ciudad de Colombia. Coordinamos todo por WhatsApp antes de despachar.</p>
+          <span class="inline-flex w-11 h-11 items-center justify-center rounded-sm bg-accent-soft text-accent text-lg"><i class="fa-solid fa-truck-fast"></i></span>
+          <h3 class="mt-4 font-bold font-mono text-ink">Contra entrega</h3>
+          <p class="mt-2 text-sm" style="color:rgba(242,241,236,.66);">Paga al recibir, en cualquier ciudad de Colombia. Coordinamos todo por WhatsApp antes de despachar.</p>
         </div>
         <div class="reveal bento p-7">
-          <span class="inline-flex w-11 h-11 items-center justify-center rounded-xl bg-accent-soft text-accent text-lg"><i class="fa-solid fa-shield-halved"></i></span>
-          <h3 class="mt-4 font-bold">Garantía incluida</h3>
-          <p class="mt-2 text-sm text-sec">Todos los modelos cuentan con garantía. Si algo falla, te respondemos.</p>
+          <span class="inline-flex w-11 h-11 items-center justify-center rounded-sm bg-accent-soft text-accent text-lg"><i class="fa-solid fa-shield-halved"></i></span>
+          <h3 class="mt-4 font-bold font-mono text-ink">Garantía incluida</h3>
+          <p class="mt-2 text-sm" style="color:rgba(242,241,236,.66);">Todos los modelos cuentan con garantía. Si algo falla, te respondemos.</p>
         </div>
         <div class="reveal bento p-7">
-          <span class="inline-flex w-11 h-11 items-center justify-center rounded-xl bg-accent-soft text-accent text-lg"><i class="fa-solid fa-map-location-dot"></i></span>
-          <h3 class="mt-4 font-bold">Envíos a toda Colombia</h3>
-          <p class="mt-2 text-sm text-sec">Despachamos a todo el país con transportadoras confiables y guía de seguimiento.</p>
+          <span class="inline-flex w-11 h-11 items-center justify-center rounded-sm bg-accent-soft text-accent text-lg"><i class="fa-solid fa-map-location-dot"></i></span>
+          <h3 class="mt-4 font-bold font-mono text-ink">Envíos a toda Colombia</h3>
+          <p class="mt-2 text-sm" style="color:rgba(242,241,236,.66);">Despachamos a todo el país con transportadoras confiables y guía de seguimiento.</p>
         </div>
         <div class="reveal bento p-7">
-          <span class="inline-flex w-11 h-11 items-center justify-center rounded-xl bg-accent-soft text-accent text-lg"><i class="fa-solid fa-droplet-slash"></i></span>
-          <h3 class="mt-4 font-bold">Resistencia IPX4</h3>
-          <p class="mt-2 text-sm text-sec">Soportan salpicaduras y sudor. No son sumergibles ni aptas para lluvia torrencial.</p>
+          <span class="inline-flex w-11 h-11 items-center justify-center rounded-sm bg-accent-soft text-accent text-lg"><i class="fa-solid fa-droplet-slash"></i></span>
+          <h3 class="mt-4 font-bold font-mono text-ink">Resistencia IPX4</h3>
+          <p class="mt-2 text-sm" style="color:rgba(242,241,236,.66);">Soportan salpicaduras y sudor. No son sumergibles ni aptas para lluvia torrencial.</p>
         </div>
       </div>
 
       <!-- Privacidad / tratamiento de datos -->
       <div class="mt-6 reveal bento flex flex-col sm:flex-row items-center justify-between gap-4 p-7">
         <div class="flex items-center gap-3">
-          <span class="inline-flex w-11 h-11 items-center justify-center rounded-xl bg-accent-soft text-accent text-lg"><i class="fa-solid fa-user-shield"></i></span>
+          <span class="inline-flex w-11 h-11 items-center justify-center rounded-sm bg-accent-soft text-accent text-lg"><i class="fa-solid fa-user-shield"></i></span>
           <div>
-            <h3 class="font-bold">Tus datos están protegidos</h3>
-            <p class="text-sm text-sec">Tratamos tu información conforme a la Ley 1581 de 2012 (Habeas Data).</p>
+            <h3 class="font-bold font-mono text-ink">Tus datos están protegidos</h3>
+            <p class="text-sm" style="color:rgba(242,241,236,.66);">Tratamos tu información conforme a la Ley 1581 de 2012 (Habeas Data).</p>
           </div>
         </div>
-        <a href="politicas.html#privacidad" class="inline-flex items-center gap-2 rounded-full border border-hairline glass px-5 py-3 text-sm font-semibold text-ink hover:border-accent transition whitespace-nowrap">
+        <a href="politicas.html#privacidad" class="btn-sharp inline-flex items-center gap-2 border px-5 py-3 text-sm font-mono font-semibold text-ink hover:bg-accent-soft transition whitespace-nowrap" style="border-color:rgba(242,241,236,.14);">
           <i class="fa-solid fa-shield-halved text-accent"></i> Política de privacidad y datos
         </a>
       </div>
@@ -769,50 +807,50 @@
   <section id="faq" class="py-24">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12 reveal">
-        <p class="text-xs font-semibold uppercase tracking-[0.08em] text-ter">FAQ</p>
-        <h2 class="h2v3 mt-3">Preguntas frecuentes</h2>
-        <p class="mt-4 text-sec">Resolvemos las dudas más comunes antes de comprar.</p>
+        <p class="text-xs font-mono font-semibold uppercase tracking-[0.08em] text-accent">FAQ</p>
+        <h2 class="h2v3 mt-3 text-ink">Preguntas frecuentes</h2>
+        <p class="mt-4" style="color:rgba(242,241,236,.66);">Resolvemos las dudas más comunes antes de comprar.</p>
       </div>
 
       <div class="space-y-3">
-        <div class="faq-item bento overflow-hidden !rounded-2xl">
+        <div class="faq-item bento overflow-hidden !rounded-sm">
           <button class="faq-trigger w-full flex items-center justify-between gap-4 px-6 py-5 text-left">
-            <span class="font-semibold"><i class="fa-solid fa-tag text-accent mr-3"></i>¿Por qué tienen un precio tan competitivo para todo lo que incluyen?</span>
-            <i class="faq-icon fa-solid fa-chevron-down text-ter transition-transform"></i>
+            <span class="font-semibold font-mono text-ink"><i class="fa-solid fa-tag text-accent mr-3"></i>¿Por qué tienen un precio tan competitivo para todo lo que incluyen?</span>
+            <i class="faq-icon fa-solid fa-chevron-down transition-transform" style="color:rgba(242,241,236,.50);"></i>
           </button>
-          <div class="faq-content px-6 text-sec text-sm"><p class="pb-5">Porque creemos que tecnología real no tiene que costar una fortuna. Cámara 2K/4K, lentes premium multicapa, estabilización EIS, hasta 12h de batería (Pro/Ultra) y conectividad WiFi + BT 5.3 — todo en un solo producto. A eso súmale atención personalizada por WhatsApp y garantía incluida. Es tecnología de verdad, a un precio que tiene sentido.</p></div>
+          <div class="faq-content px-6 text-sm" style="color:rgba(242,241,236,.66);"><p class="pb-5">Porque creemos que tecnología real no tiene que costar una fortuna. Cámara 2K/4K, lentes premium multicapa, estabilización EIS, hasta 12h de batería (Pro/Ultra) y conectividad WiFi + BT 5.3 — todo en un solo producto. A eso súmale atención personalizada por WhatsApp y garantía incluida. Es tecnología de verdad, a un precio que tiene sentido.</p></div>
         </div>
 
-        <div class="faq-item bento overflow-hidden !rounded-2xl">
+        <div class="faq-item bento overflow-hidden !rounded-sm">
           <button class="faq-trigger w-full flex items-center justify-between gap-4 px-6 py-5 text-left">
-            <span class="font-semibold"><i class="fa-solid fa-money-bill-wave text-accent mr-3"></i>¿Cómo sé que el envío es seguro? ¿Hay contra entrega?</span>
-            <i class="faq-icon fa-solid fa-chevron-down text-ter transition-transform"></i>
+            <span class="font-semibold font-mono text-ink"><i class="fa-solid fa-money-bill-wave text-accent mr-3"></i>¿Cómo sé que el envío es seguro? ¿Hay contra entrega?</span>
+            <i class="faq-icon fa-solid fa-chevron-down transition-transform" style="color:rgba(242,241,236,.50);"></i>
           </button>
-          <div class="faq-content px-6 text-sec text-sm"><p class="pb-5">Tenemos <strong class="text-ink">pago contra entrega a nivel nacional</strong>: pagas cuando recibes, sin adelantar nada. Despachamos con guía de seguimiento a toda Colombia y coordinamos todo por WhatsApp con una persona real.</p></div>
+          <div class="faq-content px-6 text-sm" style="color:rgba(242,241,236,.66);"><p class="pb-5">Tenemos <strong class="text-ink">pago contra entrega a nivel nacional</strong>: pagas cuando recibes, sin adelantar nada. Despachamos con guía de seguimiento a toda Colombia y coordinamos todo por WhatsApp con una persona real.</p></div>
         </div>
 
-        <div class="faq-item bento overflow-hidden !rounded-2xl">
+        <div class="faq-item bento overflow-hidden !rounded-sm">
           <button class="faq-trigger w-full flex items-center justify-between gap-4 px-6 py-5 text-left">
-            <span class="font-semibold"><i class="fa-solid fa-cloud-rain text-accent mr-3"></i>¿Resisten el agua / la lluvia?</span>
-            <i class="faq-icon fa-solid fa-chevron-down text-ter transition-transform"></i>
+            <span class="font-semibold font-mono text-ink"><i class="fa-solid fa-cloud-rain text-accent mr-3"></i>¿Resisten el agua / la lluvia?</span>
+            <i class="faq-icon fa-solid fa-chevron-down transition-transform" style="color:rgba(242,241,236,.50);"></i>
           </button>
-          <div class="faq-content px-6 text-sec text-sm"><p class="pb-5">Tienen certificación <strong class="text-ink">IPX4</strong>: resisten sudor y salpicaduras leves, ideales para el día a día en moto y bici. <strong class="text-ink">No son impermeables ni sumergibles</strong>, y no resisten lluvia torrencial. Más detalles en nuestra <a href="politicas.html#garantia" class="text-accent font-semibold hover:text-accent-hover">política de garantía</a>.</p></div>
+          <div class="faq-content px-6 text-sm" style="color:rgba(242,241,236,.66);"><p class="pb-5">Tienen certificación <strong class="text-ink">IPX4</strong>: resisten sudor y salpicaduras leves, ideales para el día a día en moto y bici. <strong class="text-ink">No son impermeables ni sumergibles</strong>, y no resisten lluvia torrencial. Más detalles en nuestra <a href="politicas.html#garantia" class="text-accent font-semibold hover:text-accent-hover">política de garantía</a>.</p></div>
         </div>
 
-        <div class="faq-item bento overflow-hidden !rounded-2xl">
+        <div class="faq-item bento overflow-hidden !rounded-sm">
           <button class="faq-trigger w-full flex items-center justify-between gap-4 px-6 py-5 text-left">
-            <span class="font-semibold"><i class="fa-solid fa-mobile-screen text-accent mr-3"></i>¿Es fácil pasar los videos al celular?</span>
-            <i class="faq-icon fa-solid fa-chevron-down text-ter transition-transform"></i>
+            <span class="font-semibold font-mono text-ink"><i class="fa-solid fa-mobile-screen text-accent mr-3"></i>¿Es fácil pasar los videos al celular?</span>
+            <i class="faq-icon fa-solid fa-chevron-down transition-transform" style="color:rgba(242,241,236,.50);"></i>
           </button>
-          <div class="faq-content px-6 text-sec text-sm"><p class="pb-5">Muy fácil. Desde la app oficial conectas las gafas por <strong class="text-ink">WiFi o Bluetooth 5.3</strong> y descargas tus fotos y videos directo al celular, sin cables, listos para compartir.</p></div>
+          <div class="faq-content px-6 text-sm" style="color:rgba(242,241,236,.66);"><p class="pb-5">Muy fácil. Desde la app oficial conectas las gafas por <strong class="text-ink">WiFi o Bluetooth 5.3</strong> y descargas tus fotos y videos directo al celular, sin cables, listos para compartir.</p></div>
         </div>
 
-        <div class="faq-item bento overflow-hidden !rounded-2xl">
+        <div class="faq-item bento overflow-hidden !rounded-sm">
           <button class="faq-trigger w-full flex items-center justify-between gap-4 px-6 py-5 text-left">
-            <span class="font-semibold"><i class="fa-solid fa-eye text-accent mr-3"></i>¿Sirven si uso gafas con fórmula?</span>
-            <i class="faq-icon fa-solid fa-chevron-down text-ter transition-transform"></i>
+            <span class="font-semibold font-mono text-ink"><i class="fa-solid fa-eye text-accent mr-3"></i>¿Sirven si uso gafas con fórmula?</span>
+            <i class="faq-icon fa-solid fa-chevron-down transition-transform" style="color:rgba(242,241,236,.50);"></i>
           </button>
-          <div class="faq-content px-6 text-sec text-sm"><p class="pb-5">Sí. Están disponibles con lentes graduados para <strong class="text-ink">miopía</strong> o progresivos para <strong class="text-ink">presbicia</strong>. Escríbenos por WhatsApp y te explicamos cómo pedirlas con tu fórmula.</p></div>
+          <div class="faq-content px-6 text-sm" style="color:rgba(242,241,236,.66);"><p class="pb-5">Sí. Están disponibles con lentes graduados para <strong class="text-ink">miopía</strong> o progresivos para <strong class="text-ink">presbicia</strong>. Escríbenos por WhatsApp y te explicamos cómo pedirlas con tu fórmula.</p></div>
         </div>
       </div>
     </div>
@@ -824,34 +862,33 @@
       <div class="reveal bento relative overflow-hidden p-10 sm:p-16 text-center">
         <div class="glow absolute inset-x-0 top-0 h-64 -z-0"></div>
         <div class="relative">
-          <h2 class="display !text-[clamp(2rem,5vw,3.5rem)]">¿Listo para registrar tu mundo?</h2>
-          <p class="mt-4 text-sec max-w-xl mx-auto">Escríbenos por WhatsApp y un asesor real te ayuda a elegir el modelo perfecto para ti.</p>
+          <h2 class="font-display text-ink" style="font-size:clamp(2rem,5vw,3.5rem); font-weight:900; letter-spacing:-0.04em;">¿Listo para registrar tu mundo?</h2>
+          <p class="mt-4" style="color:rgba(242,241,236,.66); max-width:36rem; margin-left:auto; margin-right:auto;">Escríbenos por WhatsApp y un asesor real te ayuda a elegir el modelo perfecto para ti.</p>
           <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20para%20elegir%20mis%20gafas%20inteligentes"
              target="_blank" rel="noopener"
-             class="mt-8 inline-flex items-center gap-3 rounded-full bg-wa px-10 py-5 text-lg font-bold text-night hover:bg-wa-dark transition">
+             class="btn-sharp mt-8 inline-flex items-center gap-3 bg-wa px-10 py-5 text-lg font-mono font-bold text-night hover:bg-wa-dark transition">
             <i class="fa-brands fa-whatsapp text-2xl"></i> Hablar con un asesor
           </a>
-          <p class="mt-5 text-sm text-ter"><i class="fa-solid fa-truck-fast mr-1 text-accent"></i> Pago contra entrega a toda Colombia · Envíos con guía de seguimiento</p>
+          <p class="mt-5 text-sm font-mono" style="color:rgba(242,241,236,.50);"><i class="fa-solid fa-truck-fast mr-1 text-accent"></i> Pago contra entrega a toda Colombia · Envíos con guía de seguimiento</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- ========================= FOOTER ========================= -->
-  <footer class="border-t border-hairline">
+  <footer class="border-t" style="border-color:rgba(242,241,236,.14);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
         <div class="sm:col-span-2 lg:col-span-1">
-          <a href="#inicio" class="flex items-center gap-2">
-            <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-accent text-white"><i class="fa-solid fa-glasses"></i></span>
-            <span class="text-lg font-extrabold">Market Plus <span class="text-accent">X</span></span>
+          <a href="#inicio" class="flex items-center gap-3">
+            <img src="assets/logo-wordmark.png" alt="Market Plus X" class="h-8 w-auto" />
           </a>
-          <p class="mt-4 text-sm text-ter max-w-xs">Gafas inteligentes con cámara e IA. Tecnología real, atención real y envíos a toda Colombia.</p>
+          <p class="mt-4 text-sm" style="color:rgba(242,241,236,.50); max-width:16rem;">Gafas inteligentes con cámara e IA. Tecnología real, atención real y envíos a toda Colombia.</p>
         </div>
 
         <div>
-          <h4 class="text-sm font-semibold uppercase tracking-wide text-ter">Tienda</h4>
-          <ul class="mt-4 space-y-2 text-sm text-sec">
+          <h4 class="text-sm font-mono font-semibold uppercase tracking-wide" style="color:rgba(242,241,236,.50);">Tienda</h4>
+          <ul class="mt-4 space-y-2 text-sm" style="color:rgba(242,241,236,.66);">
             <li><a href="#modelos" class="hover:text-ink transition">Modelos y precios</a></li>
             <li><a href="#comparativa" class="hover:text-ink transition">Comparar modelos</a></li>
             <li><a href="deportiva.html" class="hover:text-ink transition">Sport Edition</a></li>
@@ -860,8 +897,8 @@
         </div>
 
         <div>
-          <h4 class="text-sm font-semibold uppercase tracking-wide text-ter">Contacto</h4>
-          <ul class="mt-4 space-y-2 text-sm text-sec">
+          <h4 class="text-sm font-mono font-semibold uppercase tracking-wide" style="color:rgba(242,241,236,.50);">Contacto</h4>
+          <ul class="mt-4 space-y-2 text-sm" style="color:rgba(242,241,236,.66);">
             <li><a href="https://wa.me/573229320982" target="_blank" rel="noopener" class="hover:text-ink transition"><i class="fa-brands fa-whatsapp text-wa mr-2"></i>+57 322 932 0982</a></li>
             <li><a href="https://instagram.com/marketplusx98" target="_blank" rel="noopener" class="hover:text-ink transition"><i class="fa-brands fa-instagram mr-2"></i>@marketplusx98</a></li>
             <li><a href="https://www.tiktok.com/@market.plus.x" target="_blank" rel="noopener" class="hover:text-ink transition"><i class="fa-brands fa-tiktok mr-2"></i>@market.plus.x</a></li>
@@ -869,8 +906,8 @@
         </div>
 
         <div>
-          <h4 class="text-sm font-semibold uppercase tracking-wide text-ter">Legal</h4>
-          <ul class="mt-4 space-y-2 text-sm text-sec">
+          <h4 class="text-sm font-mono font-semibold uppercase tracking-wide" style="color:rgba(242,241,236,.50);">Legal</h4>
+          <ul class="mt-4 space-y-2 text-sm" style="color:rgba(242,241,236,.66);">
             <li><a href="politicas.html#garantia" class="hover:text-ink transition">Garantía (90 días)</a></li>
             <li><a href="politicas.html#devoluciones" class="hover:text-ink transition">Cambios y devoluciones</a></li>
             <li><a href="politicas.html#privacidad" class="hover:text-ink transition">Política de privacidad</a></li>
@@ -880,7 +917,7 @@
         </div>
       </div>
 
-      <div class="mt-10 pt-6 border-t border-hairline flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ter">
+      <div class="mt-10 pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono" style="border-color:rgba(242,241,236,.14); color:rgba(242,241,236,.50);">
         <p>© <span id="year"></span> Market Plus X. Todos los derechos reservados.</p>
         <p>Hecho en Colombia 🇨🇴</p>
       </div>
@@ -890,14 +927,14 @@
   <!-- ========================= BOTÓN FLOTANTE WHATSAPP ========================= -->
   <a href="https://wa.me/573229320982?text=Hola%20Market%20Plus%20X,%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20las%20gafas%20inteligentes"
      target="_blank" rel="noopener"
-     class="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-wa px-5 py-4 font-bold text-night shadow-2xl shadow-wa/30 hover:bg-wa-dark transition md:hidden">
+     class="btn-sharp fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 bg-wa px-5 py-4 font-mono font-bold text-night shadow-2xl hover:bg-wa-dark transition md:hidden" style="box-shadow:0 4px 24px rgba(37,211,102,.3);">
     <i class="fa-brands fa-whatsapp text-xl"></i> WhatsApp
   </a>
 
   <!-- ========================= LIGHTBOX ========================= -->
   <div id="lightbox" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/85 p-4">
-    <button id="lightboxClose" class="absolute top-4 right-4 text-white text-2xl" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
-    <img id="lightboxImg" src="" alt="" class="max-h-[90vh] max-w-[95vw] rounded-2xl" />
+    <button id="lightboxClose" class="absolute top-4 right-4 text-ink text-2xl" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+    <img id="lightboxImg" src="" alt="" class="max-h-[90vh] max-w-[95vw] rounded-sm" />
   </div>
 
   <!-- ========================= JAVASCRIPT ========================= -->
@@ -934,9 +971,6 @@
     menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
     mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.add('hidden')));
 
-    // Selector de color: centralizado en carrito.js (ver [data-color-img] ahí),
-    // para que index.html y deportiva.html compartan la misma lógica.
-
     // Acordeón FAQ
     document.querySelectorAll('.faq-trigger').forEach(trigger => {
       trigger.addEventListener('click', () => {
@@ -966,6 +1000,22 @@
     function closeLightbox() { lightbox.classList.add('hidden'); lightbox.classList.remove('flex'); }
     document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
     lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+
+    // Cambio de gama al llegar a #modelos (Lima -> Violeta). Es un simple
+    // cambio de atributo, no una animacion en si (la transicion suave de
+    // color la hace el CSS via @property, ver assets/gama.css) — por eso
+    // corre siempre, independiente de GSAP y de prefers-reduced-motion.
+    const modelosEl = document.getElementById('modelos');
+    if (modelosEl && window.IntersectionObserver) {
+      const gamaObserver = new IntersectionObserver(
+        entries => {
+          const enModelos = entries.some(e => e.isIntersecting);
+          document.documentElement.dataset.gama = enModelos ? 'catalogo' : 'home';
+        },
+        { rootMargin: '-45% 0px -45% 0px' } // dispara cuando la seccion cruza el centro de la pantalla
+      );
+      gamaObserver.observe(modelosEl);
+    }
 
     // GSAP: reveals + parallax del hero + anatomía por scroll
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

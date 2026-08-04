@@ -1,53 +1,83 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-gama="home">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pedidos | Market Plus X</title>
+  <meta name="theme-color" content="#07080A" />
   <meta name="robots" content="noindex,nofollow" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Geist+Mono:wght@400;500;600;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Sistema de gama (atmósfera de fondo) -->
+  <link rel="stylesheet" href="assets/gama.css" />
   <script>
-    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: {
-      night: '#0b0b0c', raised: '#17171c', card: '#1c1c22', ink: '#ffffff', sec: '#a1a1aa', ter: '#8a8a92',
-      accent: { DEFAULT: '#0066ff', hover: '#2b7fff' }, hairline: 'rgba(255,255,255,0.12)',
-      okc: '#25D366', badc: '#f87171',
-    } } } };
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Archivo', 'sans-serif'],
+            mono: ['Geist Mono', 'monospace'],
+            sans: ['Inter', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            night: '#07080A', raised: '#111318', card: '#16181D',
+            ink: '#F2F1EC',
+            sec: 'rgba(242,241,236,.66)',
+            ter: 'rgba(242,241,236,.50)',
+            accent: { DEFAULT: '#C8F02A', hover: '#E4FF6B' },
+            hairline: 'rgba(242,241,236,.14)',
+            okc: '#25D366', badc: '#f87171',
+          },
+        },
+      },
+    };
   </script>
   <style>
-    body { background: #0b0b0c; }
-    input { background: #1c1c22; border: 1px solid rgba(255,255,255,.12); color: #fff; }
-    input:focus-visible, button:focus-visible { outline: 2px solid #2b7fff; outline-offset: 2px; }
+    body { background: #07080A; }
+    .btn-sharp { border-radius: 2px !important; }
+    input { background: #16181D; border: 1px solid rgba(242,241,236,.14); color: #F2F1EC; }
+    input:focus-visible, button:focus-visible { outline: 2px solid #E4FF6B; outline-offset: 2px; }
     th, td { padding: 10px 12px; text-align: left; white-space: nowrap; }
-    tr { border-bottom: 1px solid rgba(255,255,255,.12); }
+    tr { border-bottom: 1px solid rgba(242,241,236,.14); }
   </style>
 </head>
 <body class="font-sans text-ink antialiased bg-night min-h-screen p-6">
 
+  <!-- Atmósfera de fondo -->
+  <div class="mpx-ambient" aria-hidden="true"><div class="mpx-grain"></div></div>
+
   <div class="max-w-6xl mx-auto">
-    <h1 class="text-2xl font-extrabold">Pedidos — Market Plus X</h1>
-    <p class="mt-1 text-sm text-ter">Vista interna. No compartas el enlace ni el token.</p>
+    <header class="flex items-center justify-between mb-6">
+      <a href="index.html#inicio" class="flex items-center gap-3">
+        <img src="assets/logo-wordmark.png" alt="Market Plus X" class="h-8 w-auto" />
+      </a>
+      <span class="mpx-gama-badge" aria-hidden="true"></span>
+      <h1 class="text-2xl font-extrabold font-display">Pedidos</h1>
+    </header>
+    <p class="mt-1 text-sm" style="color:rgba(242,241,236,.50)">Vista interna. No compartas el enlace ni el token.</p>
 
     <div class="mt-6 flex flex-wrap gap-3 items-end">
       <div>
-        <label for="token" class="block text-xs font-semibold uppercase text-ter mb-1.5">Token de administrador</label>
+        <label for="token" class="block text-xs font-semibold uppercase font-mono mb-1.5" style="color:rgba(242,241,236,.50)">Token de administrador</label>
         <input type="password" id="token" autocomplete="off" class="rounded-lg px-3 py-2 text-sm w-72" placeholder="Pega tu ADMIN_TOKEN" />
       </div>
-      <button id="btnCargar" class="rounded-lg bg-accent px-5 py-2 text-sm font-bold hover:bg-accent-hover transition">Cargar pedidos</button>
-      <span id="estado" role="status" class="text-sm text-ter"></span>
+      <button id="btnCargar" class="btn-sharp px-5 py-2 text-sm font-bold font-mono text-night transition" style="background:#C8F02A">Cargar pedidos</button>
+      <span id="estado" role="status" class="text-sm" style="color:rgba(242,241,236,.50)"></span>
     </div>
 
-    <div class="mt-6 overflow-x-auto rounded-xl border border-hairline">
+    <div class="mt-6 overflow-x-auto rounded-xl border" style="border-color:rgba(242,241,236,.14)">
       <table class="w-full text-sm">
         <caption class="sr-only">Pedidos recibidos, del más reciente al más antiguo</caption>
-        <thead class="bg-card text-ter uppercase text-xs">
+        <thead class="bg-card" style="color:rgba(242,241,236,.50); text-transform:uppercase; font-size:0.75rem">
           <tr>
             <th scope="col">Fecha</th><th scope="col">Estado</th><th scope="col">Referencia</th><th scope="col">Cliente</th><th scope="col">Teléfono</th>
             <th scope="col">Ciudad</th><th scope="col">Dirección</th><th scope="col">Productos</th><th scope="col">Total</th>
           </tr>
         </thead>
-        <tbody id="filas"><tr><td colspan="9" class="text-ter">Ingresa el token y carga los pedidos.</td></tr></tbody>
+        <tbody id="filas"><tr><td colspan="9" style="color:rgba(242,241,236,.50)">Ingresa el token y carga los pedidos.</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -76,7 +106,7 @@
         if (!res.ok || !data.ok) throw new Error(data.error || 'Error al cargar pedidos');
 
         if (data.pedidos.length === 0) {
-          filas.innerHTML = '<tr><td colspan="9" class="text-ter">Sin pedidos todavía.</td></tr>';
+          filas.innerHTML = '<tr><td colspan="9" style="color:rgba(242,241,236,.50)">Sin pedidos todavía.</td></tr>';
         } else {
           filas.innerHTML = data.pedidos.map(p => `
             <tr>
