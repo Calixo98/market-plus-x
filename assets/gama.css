@@ -91,18 +91,14 @@ html[data-gama] {
 }
 
 /* ---------- Insignia de gama en el header ----------
-   Puramente decorativa (aria-hidden en el HTML) — cambia sola al
-   cambiar data-gama, sin JS. Oculta en móvil por espacio. */
+   Era un adorno de diseño (mostraba el nombre interno de la paleta,
+   ej. "GAMA 01 — LIMA ÁCIDO") sin valor para el cliente real — se
+   deja oculta permanentemente. El markup (aria-hidden) sigue en las
+   6 páginas por si se quiere reactivar; con display:none no renderiza
+   en ningún ancho. */
 .mpx-gama-badge {
-  display: none;
-  align-items: center; gap: 8px; padding: 6px 12px;
-  border: 1px solid rgba(242,241,236,.16); border-radius: 999px;
-  font-size: 9.5px; letter-spacing: .2em; color: rgba(242,241,236,.5);
-  white-space: nowrap; flex: 0 0 auto;
+  display: none !important;
 }
-.mpx-gama-badge::before { content: var(--g-label); }
-@media (min-width: 900px) { .mpx-gama-badge { display: inline-flex; } }
-[data-gama="marca"] .mpx-gama-badge { color: rgba(7,8,10,.5); border-color: rgba(7,8,10,.16); }
 
 /* ---------- Cinta en movimiento (ticker de specs) ----------
    Reutiliza el mismo patrón de @keyframes marquee que ya existe
