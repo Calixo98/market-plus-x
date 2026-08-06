@@ -7,7 +7,7 @@
       "nombre": "Casual Standard",
       "subtitulo": "El punto de entrada ideal.",
       "precio": 319000,
-      "imagen": "assets/modelo-pro.png",
+      "imagen": "assets/modelo-casual-standard.png",
       "stockInicial": 3,
       "envioGratis": false
     },
@@ -16,7 +16,7 @@
       "nombre": "Casual Pro",
       "subtitulo": "El equilibrio perfecto.",
       "precio": 359000,
-      "imagen": "assets/modelo-standard.jpeg",
+      "imagen": "assets/modelo-casual-pro.jpeg",
       "stockInicial": 1,
       "envioGratis": false
     },
