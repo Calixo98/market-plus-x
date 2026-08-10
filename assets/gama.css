@@ -48,6 +48,14 @@ html[data-gama] {
   --g1: #FFFFFF; --g2: #F2F1EC; --g3: #C8C6BC; --g-blob2: 200,198,188;
   --g-base: #F2F1EC; --g-label: "GAMA 05 — HUESO";
 }
+/* MK Racing (catálogo RC): terroso/óxido a propósito, para no confundirse
+   con "pdp" (naranja incandescente). --g2 sobre --g-base da 5.66:1 —
+   calculado con la fórmula WCAG, no estimado (la cinta pinta texto
+   --g-base sobre fondo --g2, así que es la combinación que importa). */
+[data-gama="racing"] {
+  --g1: #E0A868; --g2: #C9793C; --g3: #7A4520; --g-blob2: 90,60,30;
+  --g-base: #1A0E06; --g-label: "GAMA 06 — TIERRA ÓXIDO";
+}
 
 /* ---------- Fondo con atmósfera ----------
    Capa fija detrás de todo el contenido. No intercepta clics ni

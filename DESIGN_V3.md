@@ -99,9 +99,9 @@ Regla: los CTAs principales pasan de píldora (`rounded-full`) a esquina recta
 
 ## Sistema de "gama" (assets/gama.css)
 
-Capa compartida por las 6 páginas que agrega atmósfera de fondo, insignia de
+Capa compartida por las 8 páginas que agrega atmósfera de fondo, insignia de
 sección y barrido de transición entre páginas. Vive en un solo archivo para no
-repetir 6 veces la misma deriva que ya tenía el sitio.
+repetir la misma deriva que ya tenía el sitio.
 
 **Regla de oro: el CTA (`accent`, lima `#C8F02A`) nunca cambia entre gamas.**
 Solo cambia el color de *ambiente* — fondo, mancha, insignia, hover de borde.
@@ -115,6 +115,7 @@ Por eso `assets/gama.css` no toca ningún `tailwind.config`.
 | `checkout.html` / `pago-respuesta.html` | `carrito` | Verde Neón `#2BE332` |
 | `politicas.html` | `marca` | Hueso `#F2F1EC` (solo el brillo del encabezado — ver nota abajo) |
 | `admin-pedidos.html` | `home` | Lima Ácido |
+| `racing.html` / `racing-producto.html` | `racing` | Tierra Óxido `#C9793C` (línea MK Racing — ver nota abajo) |
 
 El cambio de gama dentro de `index.html` lo hace un `IntersectionObserver` (no
 GSAP, no `prefers-reduced-motion` — es un cambio de atributo, no una
@@ -133,6 +134,14 @@ una versión más conservadora: el contenido se queda en el tema oscuro ya
 auditado, y la gama Hueso solo se expresa en el brillo superior del
 encabezado (`color-mix(in srgb, var(--g2) 20%, transparent)`) y en la
 insignia del header.
+
+**Nota sobre `racing.html`/`racing-producto.html` (Gama 06 — Tierra Óxido):**
+paleta terrosa/óxido a propósito, para no confundirse con `pdp` (Naranja
+Incandescente). `.mpx-ticker` pinta `background: var(--g2)` con `color:
+var(--g-base)`, así que la cinta invierte con la gama — se calculó el ratio
+con la fórmula WCAG (no se estimó a ojo): `--g2 #C9793C` sobre `--g-base
+#1A0E06` da **5.66:1**, por encima del mínimo de 4.5:1. El CTA principal
+sigue siendo lima `#C8F02A`, como en el resto del sitio.
 
 **Barrido entre páginas:** `@view-transition { navigation: auto; }` +
 `::view-transition-old/new(root)`, puro CSS. Sin soporte (Firefox hoy) la

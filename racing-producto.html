@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth" data-gama="racing">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="pageTitle">MK Racing | Market Plus X</title>
+  <meta name="theme-color" content="#1A0E06" />
+  <meta name="robots" content="index,follow" />
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-WG74VTMW');</script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Google tag (gtag.js) — GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0QH4MFCW2X"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-0QH4MFCW2X');
+  </script>
+  <!-- End GA4 -->
+
+  <!-- Meta Pixel -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '2724794924558492');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=2724794924558492&ev=PageView&noscript=1" alt="" /></noscript>
+  <!-- Fin Meta Pixel -->
+
+  <!-- TikTok Pixel Code Start -->
+  <script>
+  !function (w, d, t) {
+    w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
+  var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
+  ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
+
+    ttq.load('D9GHBK3C77U79CKFAJ00');
+    ttq.page();
+  }(window, document, 'ttq');
+  </script>
+  <!-- TikTok Pixel Code End -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@80,200..900&family=Geist+Mono:wght@400..700&family=Inter:wght@400..900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/gama.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Archivo', 'sans-serif'],
+            mono:    ['Geist Mono', 'monospace'],
+            sans:    ['Inter', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            night:   '#07080A', raised: '#111318', card: '#16181D',
+            ink:     '#F2F1EC',
+            sec:     'rgba(242,241,236,.66)',
+            ter:     'rgba(242,241,236,.50)',
+            accent:  { DEFAULT: '#C8F02A', hover: '#E4FF6B', soft: 'rgba(200,240,42,.14)' },
+            wa:      { DEFAULT: '#25D366', dark: '#1DA851' },
+            hairline:'rgba(242,241,236,.14)',
+          },
+          borderRadius: { bento: '24px' },
+        },
+      },
+    };
+  </script>
+  <style>
+    html { -webkit-tap-highlight-color: transparent; }
+    body { background: #07080A; }
+    ::selection { background: rgba(200,240,42,.35); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .bento { border-radius: 24px; border: 1px solid rgba(242,241,236,.14); background: #111318; }
+    .btn-sharp { border-radius: 2px; transition: background .2s ease; }
+    .btn-sharp:disabled { background: #2a2f3a; color: #7b7c7c; cursor: not-allowed; }
+    button:focus-visible, a:focus-visible, [role="radio"]:focus-visible { outline: 2px solid #E4FF6B; outline-offset: 2px; }
+    .thumb-active { outline: 2px solid #C9793C; outline-offset: -2px; }
+    #lightbox { position: fixed; inset: 0; z-index: 90; background: rgba(7,8,10,.92); display: none; align-items: center; justify-content: center; padding: 24px; }
+    #lightbox.is-open { display: flex; }
+  </style>
+</head>
+
+<body class="font-sans text-ink antialiased">
+
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WG74VTMW"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <!-- Metricool -->
+  <img src="https://tracker.metricool.com/c3po.jpg?hash=91a6ef2368b466dede96ca5dda04598c" alt="" style="display:none" />
+  <!-- Fin Metricool -->
+
+  <div class="mpx-ambient" aria-hidden="true"><div class="mpx-grain"></div></div>
+
+  <header class="sticky top-0 z-50 bg-night/90 backdrop-blur-md border-b" style="border-color:rgba(242,241,236,.14);">
+    <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="index.html#inicio" class="flex items-center gap-2">
+          <img src="assets/logo-wordmark.png" alt="Market Plus X" class="h-8 w-auto" />
+        </a>
+        <div class="flex items-center gap-3">
+          <span class="mpx-gama-badge" aria-hidden="true"></span>
+          <a href="racing.html" class="inline-flex items-center gap-2 text-sm font-mono font-semibold transition" style="color:rgba(242,241,236,.66)">
+            <i class="fa-solid fa-arrow-left"></i> <span class="hidden sm:inline">MK Racing</span>
+          </a>
+          <button id="carritoBtn" class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl transition" style="color:rgba(242,241,236,.66)" aria-label="Ver carrito">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span id="carritoBadge" class="hidden absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent text-night text-[10px] font-bold">0</span>
+          </button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="ficha" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <p style="color:rgba(242,241,236,.5);">Cargando…</p>
+  </main>
+
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada">
+    <button id="lightboxClose" class="absolute top-5 right-5 w-11 h-11 rounded-full flex items-center justify-center text-2xl" style="color:#F2F1EC;" aria-label="Cerrar">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <img id="lightboxImg" src="" alt="" class="max-w-full max-h-full object-contain" />
+  </div>
+
+  <footer class="border-t mt-10" style="border-color:rgba(242,241,236,.14);">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex items-center justify-between">
+      <img src="assets/logo-wordmark.png" alt="Market Plus X" class="h-7 w-auto" />
+      <p class="text-xs font-mono" style="color:rgba(242,241,236,.5);">© <span id="year"></span> Market Plus X · MK Racing</p>
+    </div>
+  </footer>
+
+  <a href="https://wa.me/573229320982" target="_blank" rel="noopener"
+     class="sm:hidden fixed bottom-5 right-5 z-40 w-14 h-14 rounded-full bg-wa flex items-center justify-center shadow-2xl"
+     aria-label="Escríbenos por WhatsApp">
+    <i class="fa-brands fa-whatsapp text-2xl text-night"></i>
+  </a>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const fmt = n => '$' + Number(n).toLocaleString('es-CO');
+    const waUrl = (nombre, sku, precio) => `https://wa.me/573229320982?text=${encodeURIComponent(`Hola, me interesa el ${nombre} (${sku}) de ${fmt(precio)}. ¿Sigue disponible?`)}`;
+
+    function instrumentarWhatsApp() {
+      document.querySelectorAll('a[href*="wa.me"]:not([data-tracked])').forEach(el => {
+        el.dataset.tracked = '1';
+        el.addEventListener('click', () => {
+          if (window.fbq) fbq('track', 'Contact');
+          if (window.gtag) gtag('event', 'contact_whatsapp');
+          if (window.ttq) ttq.track('Contact');
+        });
+      });
+    }
+
+    function inyectarJsonLd(p, precio, disponible) {
+      const data = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: p.nombre,
+        sku: p.sku,
+        description: p.diferenciador,
+        brand: { '@type': 'Brand', name: 'Marketplus Racing' },
+        image: [p.imagenes.hero, ...p.imagenes.galeria].map(u => new URL(u, location.href).href),
+        offers: {
+          '@type': 'Offer',
+          price: precio,
+          priceCurrency: 'COP',
+          availability: disponible ? 'https://schema.org/InStock' : 'https://schema.org/SoldOut',
+          url: location.href,
+        },
+      };
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.textContent = JSON.stringify(data);
+      document.head.appendChild(script);
+    }
+
+    let RC, PRODUCTOS, STOCK;
+
+    async function cargar() {
+      const params = new URLSearchParams(location.search);
+      const sku = params.get('sku');
+      const [rc, productos, stockResp] = await Promise.all([
+        fetch('rc-crawlers.json').then(r => r.json()),
+        fetch('productos.json').then(r => r.json()),
+        fetch('api/stock').then(r => r.json()).catch(() => ({ stock: {} })),
+      ]);
+      RC = rc; PRODUCTOS = productos; STOCK = stockResp.stock || {};
+
+      const p = RC.productos.find(x => x.sku === sku);
+      if (!p) { location.replace('racing.html'); return; }
+      pintar(p);
+    }
+
+    function precioDe(sku) {
+      const row = PRODUCTOS.productos.find(x => x.sku === sku);
+      return row ? row.precio : null;
+    }
+
+    function pintar(p) {
+      const esVendidoOMostrador = p.estado !== 'disponible';
+      const precio = esVendidoOMostrador ? p.precio_historico : precioDe(p.sku);
+      const stock = STOCK[p.sku];
+      const agotado = !esVendidoOMostrador && stock === 0;
+
+      document.title = `${p.nombre} | MK Racing | Market Plus X`;
+      document.getElementById('pageTitle').textContent = document.title;
+
+      // Variante de color (solo el grupo Beige/Gris la usa)
+      let variantesHTML = '';
+      if (p.grupo_variantes) {
+        const hermanos = RC.productos.filter(x => x.grupo_variantes === p.grupo_variantes);
+        variantesHTML = `
+          <div role="radiogroup" aria-label="Color" class="mt-4 flex items-center gap-2">
+            <span class="text-xs font-mono" style="color:rgba(242,241,236,.5);" aria-hidden="true">Color:</span>
+            ${hermanos.map(h => `
+              <button type="button" role="radio" aria-checked="${h.sku === p.sku}" title="${esc(h.color)}"
+                      data-variante-sku="${esc(h.sku)}"
+                      class="px-3 py-1.5 rounded-full border text-xs font-mono transition"
+                      style="${h.sku === p.sku ? 'border-color:#C9793C;color:#E0A868;' : 'border-color:rgba(242,241,236,.2);color:rgba(242,241,236,.6);'}">
+                ${esc(h.color)}
+              </button>`).join('')}
+          </div>`;
+      }
+
+      const specsHTML = Object.entries(p.specs).map(([k, v]) => `
+        <div class="grid grid-cols-[minmax(120px,.8fr)_1.2fr] gap-4 py-3 border-t" style="border-color:rgba(242,241,236,.12); font-size:12.5px;">
+          <span style="color:rgba(242,241,236,.55);">${esc(k)}</span>
+          <span class="text-ink">${esc(v)}</span>
+        </div>`).join('');
+
+      const claimsHTML = (p.claims_fabricante || []).length ? `
+        <div class="mt-6 bento p-5">
+          <p class="text-xs font-mono uppercase tracking-wide mb-3" style="color:#E0A868;">Según el fabricante</p>
+          ${p.claims_fabricante.map(c => `
+            <p class="flex items-start gap-2 text-xs mb-2" style="color:rgba(242,241,236,.6);"><i class="fa-solid ${esc(c.icono)} mt-0.5"></i> ${esc(c.texto)}</p>`).join('')}
+        </div>` : '';
+
+      const incluyeHTML = (p.incluye || []).length ? `
+        <div class="mt-6">
+          <p class="text-xs font-mono uppercase tracking-wide mb-3" style="color:rgba(242,241,236,.5);">Incluye en la caja</p>
+          <div class="grid grid-cols-2 gap-2 text-sm" style="color:rgba(242,241,236,.7);">
+            ${p.incluye.map(i => `<span class="flex items-center gap-2"><i class="fa-solid fa-check" style="color:#C9793C;"></i> ${esc(i)}</span>`).join('')}
+          </div>
+        </div>` : '';
+
+      const galeriaImgs = [p.imagenes.hero, ...p.imagenes.galeria];
+      const thumbsHTML = galeriaImgs.map((src, i) => `
+        <button type="button" class="thumb aspect-square rounded-sm overflow-hidden border ${i === 0 ? 'thumb-active' : ''}" data-src="${esc(src)}" style="border-color:rgba(242,241,236,.14);" aria-label="Ver foto ${i+1}">
+          <img src="${esc(src)}" alt="" loading="lazy" class="w-full h-full object-cover" />
+        </button>`).join('');
+
+      let ctaHTML;
+      if (esVendidoOMostrador) {
+        ctaHTML = p.estado === 'vendido'
+          ? `<a href="${waUrl(p.nombre, p.sku, precio || 0)}" target="_blank" rel="noopener" class="btn-sharp w-full inline-flex items-center justify-center gap-2 border px-6 py-4 text-sm font-mono font-bold" style="border-color:rgba(242,241,236,.3); color:#F2F1EC;">Avísame si vuelve</a>`
+          : `<p class="text-sm font-mono" style="color:rgba(242,241,236,.5);">Unidad de exhibición — no disponible para compra.</p>`;
+      } else {
+        ctaHTML = `
+          <button data-add-to-cart data-sku="${esc(p.sku)}" ${agotado ? 'disabled' : ''}
+             class="btn-sharp flex-1 inline-flex items-center justify-center gap-2 px-6 py-4 text-sm font-mono font-bold text-night transition" style="background:${agotado ? '' : '#C8F02A'};">
+            <i class="fa-solid ${agotado ? 'fa-ban' : 'fa-cart-plus'}"></i> ${agotado ? 'Agotado' : 'Agregar al carrito'}
+          </button>
+          <a href="${waUrl(p.nombre, p.sku, precio)}" target="_blank" rel="noopener"
+             class="btn-sharp flex-1 inline-flex items-center justify-center gap-2 bg-wa px-6 py-4 text-sm font-mono font-bold text-night hover:bg-wa-dark transition">
+            <i class="fa-brands fa-whatsapp"></i> Lo quiero por WhatsApp
+          </a>`;
+      }
+
+      document.getElementById('ficha').innerHTML = `
+        <div class="flex items-center gap-2 text-xs font-mono mb-6" style="color:rgba(242,241,236,.5);">
+          <a href="racing.html" style="color:rgba(242,241,236,.5);" class="hover:text-ink">← MK Racing</a>
+          <span>/</span><span style="color:#E0A868;">${esc((RC.familias.find(f=>f.id===p.familia)||{}).nombre || '')}</span>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-10">
+          <div>
+            <div class="aspect-square rounded-bento overflow-hidden border" style="border-color:rgba(242,241,236,.14); background:rgba(242,241,236,.03);">
+              <img id="mainImg" src="${esc(p.imagenes.hero)}" alt="${esc(p.nombre)}" class="w-full h-full object-cover cursor-zoom-in" />
+            </div>
+            <div class="mt-3 grid grid-cols-6 gap-2">${thumbsHTML}</div>
+          </div>
+          <div>
+            ${esVendidoOMostrador ? `<span class="inline-block rounded-full px-3 py-1 text-[10px] font-mono font-bold mb-3" style="background:rgba(242,241,236,.12); color:#F2F1EC;">${p.estado === 'vendido' ? 'Vendido' : 'Unidad de exhibición'}</span>` : ''}
+            <h1 class="text-3xl sm:text-4xl font-extrabold font-display tracking-tight">${esc(p.nombre)}</h1>
+            <p class="mt-3 text-sm" style="color:rgba(242,241,236,.65);">${esc(p.angulo_venta)}</p>
+            ${variantesHTML}
+            <p class="mt-5 text-3xl font-bold font-display text-ink">${precio != null ? fmt(precio) : '—'} <span class="text-sm font-mono font-medium" style="color:rgba(242,241,236,.5);">COP</span></p>
+            <p class="mt-1 text-xs font-mono" style="color:rgba(242,241,236,.5);">Envío incluido · Paga al recibir</p>
+            <div class="mt-5 flex flex-wrap gap-3">${ctaHTML}</div>
+            <p class="mt-3 text-xs font-mono" style="color:rgba(242,241,236,.45);">+14 años · Garantía ${p.garantia_dias} días de fábrica</p>
+            ${claimsHTML}
+            ${incluyeHTML}
+            <div class="mt-8">
+              <p class="text-xs font-mono uppercase tracking-wide mb-1" style="color:rgba(242,241,236,.5);">Especificaciones</p>
+              ${specsHTML}
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Galería: swap + lightbox
+      document.querySelectorAll('.thumb').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.getElementById('mainImg').src = btn.dataset.src;
+          document.querySelectorAll('.thumb').forEach(t => t.classList.remove('thumb-active'));
+          btn.classList.add('thumb-active');
+        });
+      });
+      document.getElementById('mainImg').addEventListener('click', () => {
+        document.getElementById('lightboxImg').src = document.getElementById('mainImg').src;
+        document.getElementById('lightbox').classList.add('is-open');
+      });
+
+      // Swatch de variante: re-navega a la ficha del hermano y re-evalua stock,
+      // en vez de solo cambiar la imagen — asi el boton de compra siempre
+      // refleja el stock real de la variante que se esta viendo.
+      document.querySelectorAll('[data-variante-sku]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sku = btn.dataset.varianteSku;
+          if (sku === p.sku) return;
+          history.replaceState(null, '', `racing-producto?sku=${encodeURIComponent(sku)}`);
+          const hermano = RC.productos.find(x => x.sku === sku);
+          pintar(hermano);
+        });
+      });
+
+      inyectarJsonLd(p, precio, !agotado && !esVendidoOMostrador);
+      instrumentarWhatsApp();
+    }
+
+    document.getElementById('lightboxClose').addEventListener('click', () => document.getElementById('lightbox').classList.remove('is-open'));
+    document.getElementById('lightbox').addEventListener('click', e => { if (e.target.id === 'lightbox') e.currentTarget.classList.remove('is-open'); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('is-open'); });
+
+    cargar();
+  </script>
+
+  <script src="carrito.js"></script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+[
+  {
+    "sku": "MPX-RC-P12-ROJ",
+    "imagenes": {
+      "card": "assets/rc/MPX-RC-P12-ROJ/card.webp",
+      "hero": "assets/rc/MPX-RC-P12-ROJ/01-hero.webp",
+      "galeria": [
+        "assets/rc/MPX-RC-P12-ROJ/02.webp",
+        "assets/rc/MPX-RC-P12-ROJ/03.webp",
+        "assets/rc/MPX-RC-P12-ROJ/04.webp",
+        "assets/rc/MPX-RC-P12-ROJ/05.webp",
+        "assets/rc/MPX-RC-P12-ROJ/06.webp"
+      ]
+    }
+  },
+  {
+    "sku": "MPX-RC-P12-AMA",
+    "imagenes": {
+      "card": "assets/rc/MPX-RC-P12-AMA/card.webp",
+      "hero": "assets/rc/MPX-RC-P12-AMA/01-hero.webp",
+      "galeria": [
+        "assets/rc/MPX-RC-P12-AMA/02.webp",
+        "assets/rc/MPX-RC-P12-AMA/03.webp",
+        "assets/rc/MPX-RC-P12-AMA/04.webp",
+        "assets/rc/MPX-RC-P12-AMA/05.webp",
+        "assets/rc/MPX-RC-P12-AMA/06.webp"
+      ]
+    }
+  },
+  {
+    "sku": "MPX-RC-M10-CAB",
+    "imagenes": {
+      "card": "assets/rc/MPX-RC-M10-CAB/card.webp",
+      "hero": "assets/rc/MPX-RC-M10-CAB/01-hero.webp",
+      "galeria": [
+        "assets/rc/MPX-RC-M10-CAB/02.webp",
+        "assets/rc/MPX-RC-M10-CAB/03.webp",
+        "assets/rc/MPX-RC-M10-CAB/04.webp",
+        "assets/rc/MPX-RC-M10-CAB/05.webp",
+        "assets/rc/MPX-RC-M10-CAB/06.webp"
+      ]
+    }
+  },
+  {
+    "sku": "MPX-RC-C12-128",
+    "imagenes": {
+      "card": "assets/rc/MPX-RC-C12-128/card.webp",
+      "hero": "assets/rc/MPX-RC-C12-128/01-hero.webp",
+      "galeria": [
+        "assets/rc/MPX-RC-C12-128/02.webp",
+        "assets/rc/MPX-RC-C12-128/03.webp",
+        "assets/rc/MPX-RC-C12-128/04.webp",
+        "assets/rc/MPX-RC-C12-128/05.webp",
+        "assets/rc/MPX-RC-C12-128/06.webp"
+      ]
+    }
+  },
+  {
+    "sku": "MPX-RC-M10-LON",
+    "imagenes": {
+      "card": "assets/rc/MPX-RC-M10-LON/card.webp",
+      "hero": "assets/rc/MPX-RC-M10-LON/01-hero.webp",
+      "galeria": [
+        "assets/rc/MPX-RC-M10-LON/02.webp",
+        "assets/rc/MPX-RC-M10-LON/03.webp",
+        "assets/rc/MPX-RC-M10-LON/04.webp",
+        "assets/rc/MPX-RC-M10-LON/05.webp",
+        "assets/rc/MPX-RC-M10-LON/06.webp"
+      ]
+    }
+  },
+  {
+    "sku": "MPX-RC-T12-99S",
+    "imagenes": {
+      "card": "assets/rc/MPX-RC-T12-99S/card.webp",
+      "hero": "assets/rc/MPX-RC-T12-99S/01-hero.webp",
+      "galeria": [
+        "assets/rc/MPX-RC-T12-99S/02.webp",
+        "assets/rc/MPX-RC-T12-99S/03.webp",
+        "assets/rc/MPX-RC-T12-99S/04.webp",
+        "assets/rc/MPX-RC-T12-99S/05.webp",
+        "assets/rc/MPX-RC-T12-99S/06.webp"
+      ]
+    }
+  },
+  {
+    "sku": "MPX-RC-P12-PRO",
+    "imagenes": {
+      "card": "assets/rc/MPX-RC-P12-PRO/card.webp",
+      "hero": "assets/rc/MPX-RC-P12-PRO/01-hero.webp",
+      "galeria": [
+        "assets/rc/MPX-RC-P12-PRO/02.webp",
+        "assets/rc/MPX-RC-P12-PRO/03.webp",
+        "assets/rc/MPX-RC-P12-PRO/04.webp",
+        "assets/rc/MPX-RC-P12-PRO/05.webp",
+        "assets/rc/MPX-RC-P12-PRO/06.webp"
+      ]
+    }
+  },
+  {
+    "sku": "MPX-RC-M10-BEI",
+    "imagenes": {
+      "card": "assets/rc/MPX-RC-M10-BEI/card.webp",
+      "hero": "assets/rc/MPX-RC-M10-BEI/01-hero.webp",
+      "galeria": [
+        "assets/rc/MPX-RC-M10-BEI/02.webp",
+        "assets/rc/MPX-RC-M10-BEI/03.webp",
+        "assets/rc/MPX-RC-M10-BEI/04.webp",
+        "assets/rc/MPX-RC-M10-BEI/05.webp",
+        "assets/rc/MPX-RC-M10-BEI/06.webp"
+      ]
+    }
+  },
+  {
+    "sku": "MPX-RC-M10-GRI",
+    "imagenes": null
+  },
+  {
+    "sku": "MPX-RC-P12-82S",
+    "imagenes": {
+      "card": "assets/rc/MPX-RC-P12-82S/card.webp",
+      "hero": "assets/rc/MPX-RC-P12-82S/01-hero.webp",
+      "galeria": [
+        "assets/rc/MPX-RC-P12-82S/02.webp",
+        "assets/rc/MPX-RC-P12-82S/03.webp",
+        "assets/rc/MPX-RC-P12-82S/04.webp",
+        "assets/rc/MPX-RC-P12-82S/05.webp",
+        "assets/rc/MPX-RC-P12-82S/06.webp"
+      ]
+    }
+  },
+  {
+    "sku": "MPX-RC-M10-VER",
+    "imagenes": {
+      "card": "assets/rc/MPX-RC-M10-VER/card.webp",
+      "hero": "assets/rc/MPX-RC-M10-VER/01-hero.webp",
+      "galeria": [
+        "assets/rc/MPX-RC-M10-VER/02.webp",
+        "assets/rc/MPX-RC-M10-VER/03.webp",
+        "assets/rc/MPX-RC-M10-VER/04.webp",
+        "assets/rc/MPX-RC-M10-VER/05.webp",
+        "assets/rc/MPX-RC-M10-VER/06.webp"
+      ]
+    }
+  },
+  {
+    "sku": "MPX-RC-P12-GRU",
+    "imagenes": {
+      "card": "assets/rc/MPX-RC-P12-GRU/card.webp",
+      "hero": "assets/rc/MPX-RC-P12-GRU/01-hero.webp",
+      "galeria": [
+        "assets/rc/MPX-RC-P12-GRU/02.webp",
+        "assets/rc/MPX-RC-P12-GRU/03.webp",
+        "assets/rc/MPX-RC-P12-GRU/04.webp",
+        "assets/rc/MPX-RC-P12-GRU/05.webp",
+        "assets/rc/MPX-RC-P12-GRU/06.webp"
+      ]
+    }
+  }
+]
