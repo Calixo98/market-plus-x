@@ -54,7 +54,7 @@
       "precio": 521000,
       "imagen": "assets/rc/MPX-RC-P12-ROJ/card.webp",
       "stockInicial": 1,
-      "envioGratis": true
+      "envioGratis": false
     },
     {
       "sku": "MPX-RC-P12-AMA",
@@ -63,7 +63,7 @@
       "precio": 541000,
       "imagen": "assets/rc/MPX-RC-P12-AMA/card.webp",
       "stockInicial": 1,
-      "envioGratis": true
+      "envioGratis": false
     },
     {
       "sku": "MPX-RC-M10-CAB",
@@ -72,7 +72,7 @@
       "precio": 600000,
       "imagen": "assets/rc/MPX-RC-M10-CAB/card.webp",
       "stockInicial": 1,
-      "envioGratis": true
+      "envioGratis": false
     },
     {
       "sku": "MPX-RC-C12-128",
@@ -81,7 +81,7 @@
       "precio": 499000,
       "imagen": "assets/rc/MPX-RC-C12-128/card.webp",
       "stockInicial": 1,
-      "envioGratis": true
+      "envioGratis": false
     },
     {
       "sku": "MPX-RC-P12-GRU",
@@ -90,7 +90,7 @@
       "precio": 629000,
       "imagen": "assets/rc/MPX-RC-P12-GRU/card.webp",
       "stockInicial": 1,
-      "envioGratis": true
+      "envioGratis": false
     },
     {
       "sku": "MPX-RC-M10-LON",
@@ -99,7 +99,7 @@
       "precio": 528000,
       "imagen": "assets/rc/MPX-RC-M10-LON/card.webp",
       "stockInicial": 1,
-      "envioGratis": true
+      "envioGratis": false
     },
     {
       "sku": "MPX-RC-T12-99S",
@@ -108,7 +108,7 @@
       "precio": 594000,
       "imagen": "assets/rc/MPX-RC-T12-99S/card.webp",
       "stockInicial": 1,
-      "envioGratis": true
+      "envioGratis": false
     },
     {
       "sku": "MPX-RC-P12-PRO",
@@ -117,7 +117,7 @@
       "precio": 629000,
       "imagen": "assets/rc/MPX-RC-P12-PRO/card.webp",
       "stockInicial": 1,
-      "envioGratis": true
+      "envioGratis": false
     },
     {
       "sku": "MPX-RC-M10-BEI",
@@ -126,7 +126,7 @@
       "precio": 515000,
       "imagen": "assets/rc/MPX-RC-M10-BEI/card.webp",
       "stockInicial": 1,
-      "envioGratis": true
+      "envioGratis": false
     },
     {
       "sku": "MPX-RC-M10-GRI",
@@ -135,7 +135,7 @@
       "precio": 515000,
       "imagen": "assets/rc-foto-pendiente.svg",
       "stockInicial": 1,
-      "envioGratis": true
+      "envioGratis": false
     }
   ]
 }
