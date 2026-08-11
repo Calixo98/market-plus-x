@@ -266,6 +266,24 @@
           </div>
         </div>` : '';
 
+      const relacionados = RC.productos
+        .filter(x => x.estado === 'disponible' && x.familia === p.familia && x.sku !== p.sku && x.variante_primaria !== false)
+        .sort((a, b) => a.orden - b.orden);
+      const relacionadosHTML = relacionados.length ? `
+        <div class="mt-12 pt-8 border-t" style="border-color:rgba(242,241,236,.14);">
+          <p class="text-xs font-mono uppercase tracking-wide mb-4" style="color:rgba(242,241,236,.5);">Más de ${esc((RC.familias.find(f=>f.id===p.familia)||{}).nombre || 'esta familia')}</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            ${relacionados.map(r => `
+              <a href="racing-producto?sku=${encodeURIComponent(r.sku)}" class="bento p-3 hover:border-white/30 transition" style="border-color:rgba(242,241,236,.14);">
+                <div class="aspect-square rounded-sm overflow-hidden mb-2" style="background:rgba(242,241,236,.03);">
+                  <img src="${esc(r.imagenes.card)}" alt="${esc(r.nombre)}" loading="lazy" class="w-full h-full object-cover" />
+                </div>
+                <p class="text-xs font-mono font-semibold text-ink line-clamp-2">${esc(r.nombre)}</p>
+                <p class="mt-1 text-sm font-bold font-display text-ink">${fmt(precioDe(r.sku))}</p>
+              </a>`).join('')}
+          </div>
+        </div>` : '';
+
       const galeriaImgs = [p.imagenes.hero, ...p.imagenes.galeria];
       const thumbsHTML = galeriaImgs.map((src, i) => `
         <button type="button" class="thumb aspect-square rounded-sm overflow-hidden border ${i === 0 ? 'thumb-active' : ''}" data-src="${esc(src)}" style="border-color:rgba(242,241,236,.14);" aria-label="Ver foto ${i+1}">
@@ -318,6 +336,7 @@
             </div>
           </div>
         </div>
+        ${relacionadosHTML}
       `;
 
       // Galería: swap + lightbox
