@@ -510,7 +510,7 @@
       "escala": "1:10 · 39 x 20 x 19 cm · 1,3 kg",
       "traccion": "4WD permanente",
       "control": "2.4 GHz · alcance 50–80 m, según fabricante",
-      "bateria": "2x LiPo 7.4V 500 mAh · ~40 min total · carga ~180 min",
+      "bateria": "LiPo 7.4V 500 mAh · carga ~180 min",
       "color": "Beige militar",
       "specs_card": [
         {
@@ -518,8 +518,8 @@
           "texto": "El más grande: 39 cm"
         },
         {
-          "icono": "fa-car-battery",
-          "texto": "2 baterías LiPo"
+          "icono": "fa-box-open",
+          "texto": "Lona, galón, pala y repuesto"
         },
         {
           "icono": "fa-lightbulb",
@@ -530,11 +530,12 @@
         "Escala": "1:10 · 39 x 20 x 19 cm · 1,3 kg",
         "Tracción": "4WD permanente",
         "Control": "2.4 GHz · alcance 50–80 m, según fabricante",
-        "Batería": "2x LiPo 7.4V 500 mAh · ~40 min total · carga ~180 min",
+        "Batería": "LiPo 7.4V 500 mAh · carga ~180 min",
         "Color": "Beige militar",
         "Referencia técnica": "D888"
       },
       "incluye": [
+        "Batería LiPo 7.4V 500 mAh",
         "Lona canvas removible",
         "Galón",
         "Pala",
@@ -581,12 +582,12 @@
       "color": "Gris",
       "specs_card": [
         {
-          "icono": "fa-ruler-combined",
-          "texto": "39 cm · 1,3 kg"
+          "icono": "fa-car-battery",
+          "texto": "Doble batería LiPo"
         },
         {
-          "icono": "fa-car-battery",
-          "texto": "2 baterías LiPo"
+          "icono": "fa-ruler-combined",
+          "texto": "39 cm · 1,3 kg"
         },
         {
           "icono": "fa-truck-monster",
@@ -596,18 +597,18 @@
       "specs": {
         "Escala": "1:10 · 39 x 20 x 19 cm · 1,3 kg",
         "Tracción": "4WD permanente",
-        "Batería": "2x LiPo 7.4V 500 mAh incluidas",
+        "Batería": "2x LiPo 7.4V 500 mAh incluidas — doble batería",
         "Color": "Gris",
         "Referencia técnica": "D888"
       },
       "incluye": [
-        "2 baterías LiPo",
+        "2 baterías LiPo 7.4V 500 mAh",
         "Cargador USB",
         "Manual"
       ],
       "claims_fabricante": [],
-      "diferenciador": "Mismo chasis que el Beige — variante de color.",
-      "angulo_venta": "La opción gris para quien prefiere un tono más neutro.",
+      "diferenciador": "Doble batería de fábrica: trae dos LiPo en vez de una, así que se juega el doble antes de tener que recargar.",
+      "angulo_venta": "Mismo chasis 1:10 del Beige, pero con dos baterías en vez de una — para el que no quiere parar a esperar la carga a mitad de juego.",
       "edad_minima": 14,
       "garantia_dias": 30,
       "foto_pendiente": true,

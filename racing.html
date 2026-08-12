@@ -313,6 +313,17 @@
       const stock = STOCK[p.sku];
       const agotado = stock === 0;
       const tieneVariante = p.grupo_variantes && p.variante_primaria;
+      // Las variantes de un grupo pueden NO costar lo mismo (el Gris trae
+      // doble batería y vale más que el Beige). La tarjeta muestra el precio
+      // del primario, así que si los hermanos difieren hay que decir "desde"
+      // — si no, el cliente ve un precio en la grilla y otro al entrar.
+      const preciosGrupo = tieneVariante
+        ? RC.productos
+            .filter(x => x.grupo_variantes === p.grupo_variantes && x.estado === 'disponible')
+            .map(x => PRECIOS[x.sku])
+            .filter(v => v != null)
+        : [];
+      const precioDesde = preciosGrupo.length > 1 && new Set(preciosGrupo).size > 1;
       return `
         <article class="bento card-in flex flex-col overflow-hidden">
           <a href="racing-producto?sku=${encodeURIComponent(p.sku)}" class="block aspect-[4/3] overflow-hidden" style="background:rgba(242,241,236,.03);">
@@ -325,7 +336,7 @@
             </div>
             <a href="racing-producto?sku=${encodeURIComponent(p.sku)}" class="font-bold font-mono text-ink hover:text-accent transition">${esc(p.nombre)}${tieneVariante ? ' <span class="font-normal" style="color:rgba(242,241,236,.5);">/ Gris</span>' : ''}</a>
             <p class="text-xs" style="color:rgba(242,241,236,.6);">${esc(p.diferenciador)}</p>
-            <p class="text-2xl font-bold font-display text-ink mt-auto">${precio != null ? fmt(precio) : '—'}</p>
+            <p class="text-2xl font-bold font-display text-ink mt-auto">${precioDesde ? '<span class="text-sm font-mono font-medium" style="color:rgba(242,241,236,.5);">desde </span>' : ''}${precio != null ? fmt(Math.min(...(precioDesde ? preciosGrupo : [precio]))) : '—'}</p>
             <button data-add-to-cart data-sku="${esc(p.sku)}" ${agotado ? 'disabled' : ''}
                class="btn-sharp inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-mono font-bold text-night transition" style="background:${agotado ? '' : '#C8F02A'};">
               <i class="fa-solid ${agotado ? 'fa-ban' : 'fa-cart-plus'}"></i> ${agotado ? 'Agotado' : 'Agregar al carrito'}
