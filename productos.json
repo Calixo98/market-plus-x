@@ -67,7 +67,7 @@
     },
     {
       "sku": "MPX-RC-M10-CAB",
-      "nombre": "Campero Militar 1:10 Cabrestante",
+      "nombre": "Todoterreno Militar 1:10 Cabrestante",
       "subtitulo": "Cabrestante eléctrico funcional.",
       "precio": 600000,
       "imagen": "assets/rc/MPX-RC-M10-CAB/card.webp",
@@ -94,9 +94,9 @@
     },
     {
       "sku": "MPX-RC-M10-LON",
-      "nombre": "Campero Militar 1:10 Cabrestante + Lona",
+      "nombre": "Todoterreno Militar 1:10 Cabrestante + Lona",
       "subtitulo": "Chasis de marco de aleación.",
-      "precio": 528000,
+      "precio": 600000,
       "imagen": "assets/rc/MPX-RC-M10-LON/card.webp",
       "stockInicial": 1,
       "envioGratis": false
@@ -111,17 +111,8 @@
       "envioGratis": false
     },
     {
-      "sku": "MPX-RC-P12-PRO",
-      "nombre": "Pickup Crawler 1:12 PRO Metal Gris",
-      "subtitulo": "Componentes reforzados en metal.",
-      "precio": 629000,
-      "imagen": "assets/rc/MPX-RC-P12-PRO/card.webp",
-      "stockInicial": 1,
-      "envioGratis": false
-    },
-    {
       "sku": "MPX-RC-M10-BEI",
-      "nombre": "Campero Militar 1:10 Beige",
+      "nombre": "Todoterreno Militar 1:10 Beige",
       "subtitulo": "El más grande del catálogo.",
       "precio": 515000,
       "imagen": "assets/rc/MPX-RC-M10-BEI/card.webp",
@@ -130,10 +121,19 @@
     },
     {
       "sku": "MPX-RC-M10-GRI",
-      "nombre": "Campero Militar 1:10 Gris Doble Batería",
+      "nombre": "Todoterreno Militar 1:10 Gris",
       "subtitulo": "Mismo chasis que el Beige, en gris.",
       "precio": 515000,
       "imagen": "assets/rc-foto-pendiente.svg",
+      "stockInicial": 1,
+      "envioGratis": false
+    },
+    {
+      "sku": "MPX-RC-P12-82S",
+      "nombre": "Pickup Crawler 1:12 Gris",
+      "subtitulo": "Mismo linaje que la Pickup Roja, en gris.",
+      "precio": 574000,
+      "imagen": "assets/rc/MPX-RC-P12-82S/card.webp",
       "stockInicial": 1,
       "envioGratis": false
     }

@@ -12,7 +12,7 @@
     },
     {
       "id": "militar-1-10",
-      "nombre": "Campero Militar 1:10",
+      "nombre": "Todoterreno Militar 1:10",
       "descripcion": "El tamaño más grande del catálogo.",
       "icono": "fa-truck-monster"
     }
@@ -263,9 +263,9 @@
       "nombre": "Pickup Crawler 1:12 PRO Metal Gris",
       "slug": "pickup-crawler-1-12-pro-metal-gris",
       "familia": "pickup-1-12",
-      "estado": "disponible",
+      "estado": "vendido",
       "pieza_unica": true,
-      "orden": 8,
+      "orden": 103,
       "destacado": false,
       "escala": "1:12 · 36 x 16 x 16 cm",
       "traccion": "4WD · dos velocidades",
@@ -300,8 +300,8 @@
         "Manual"
       ],
       "claims_fabricante": [],
-      "diferenciador": "Amortiguadores, soportes, bielas y varillas en metal, no plástico. Versión reforzada de la plataforma que ya vendió dos veces.",
-      "angulo_venta": "El upgrade natural para quien vio la Pickup Gris agotada. Mismo linaje, componentes reforzados.",
+      "diferenciador": "Vendida — la versión reforzada en metal de la familia Pickup Crawler 1:12.",
+      "angulo_venta": "Prueba social real: esta unidad ya se vendió, y es la versión con componentes reforzados en metal de la Pickup Crawler 1:12.",
       "edad_minima": 14,
       "garantia_dias": 30,
       "imagenes": {
@@ -314,7 +314,8 @@
           "assets/rc/MPX-RC-P12-PRO/05.webp",
           "assets/rc/MPX-RC-P12-PRO/06.webp"
         ]
-      }
+      },
+      "precio_historico": 629000
     },
     {
       "sku": "MPX-RC-C12-128",
@@ -376,8 +377,8 @@
     },
     {
       "sku": "MPX-RC-M10-CAB",
-      "nombre": "Campero Militar 1:10 Cabrestante",
-      "slug": "campero-militar-1-10-cabrestante",
+      "nombre": "Todoterreno Militar 1:10 Cabrestante",
+      "slug": "todoterreno-militar-1-10-cabrestante",
       "familia": "militar-1-10",
       "estado": "disponible",
       "pieza_unica": true,
@@ -440,8 +441,8 @@
     },
     {
       "sku": "MPX-RC-M10-LON",
-      "nombre": "Campero Militar 1:10 Cabrestante + Lona",
-      "slug": "campero-militar-1-10-cabrestante-lona",
+      "nombre": "Todoterreno Militar 1:10 Cabrestante + Lona",
+      "slug": "todoterreno-militar-1-10-cabrestante-lona",
       "familia": "militar-1-10",
       "estado": "disponible",
       "pieza_unica": true,
@@ -499,8 +500,8 @@
     },
     {
       "sku": "MPX-RC-M10-BEI",
-      "nombre": "Campero Militar 1:10 Beige",
-      "slug": "campero-militar-1-10-beige",
+      "nombre": "Todoterreno Militar 1:10 Beige",
+      "slug": "todoterreno-militar-1-10-beige",
       "familia": "militar-1-10",
       "estado": "disponible",
       "pieza_unica": true,
@@ -566,8 +567,8 @@
     },
     {
       "sku": "MPX-RC-M10-GRI",
-      "nombre": "Campero Militar 1:10 Gris Doble Batería",
-      "slug": "campero-militar-1-10-gris",
+      "nombre": "Todoterreno Militar 1:10 Gris",
+      "slug": "todoterreno-militar-1-10-gris",
       "familia": "militar-1-10",
       "estado": "disponible",
       "pieza_unica": true,
@@ -623,20 +624,38 @@
       "nombre": "Pickup Crawler 1:12 Gris",
       "slug": "pickup-crawler-1-12-gris-vendida",
       "familia": "pickup-1-12",
-      "estado": "vendido",
+      "estado": "disponible",
       "pieza_unica": true,
-      "orden": 100,
-      "precio_historico": 574000,
+      "orden": 8,
       "color": "Gris",
-      "specs_card": [],
+      "specs_card": [
+        {
+          "icono": "fa-truck-pickup",
+          "texto": "Pickup Crawler 1:12"
+        },
+        {
+          "icono": "fa-palette",
+          "texto": "Gris"
+        },
+        {
+          "icono": "fa-star",
+          "texto": "Pieza única"
+        }
+      ],
       "specs": {
+        "Escala": "1:12",
         "Color": "Gris",
         "Referencia técnica": "MN-82S"
       },
-      "incluye": [],
+      "incluye": [
+        "Mando 2.4 GHz",
+        "Batería",
+        "Cargador",
+        "Manual"
+      ],
       "claims_fabricante": [],
-      "diferenciador": "Vendida — misma familia que la Pickup Roja disponible.",
-      "angulo_venta": "Prueba social real: esta unidad ya se vendió.",
+      "diferenciador": "Mismo linaje que la Pickup Roja disponible, en gris — la versión estándar de la familia.",
+      "angulo_venta": "La opción gris de entrada a la familia Pickup Crawler 1:12, sin el refuerzo en metal de la PRO.",
       "edad_minima": 14,
       "garantia_dias": 30,
       "imagenes": {
