@@ -49,7 +49,7 @@
     },
     {
       "sku": "MPX-RC-P12-ROJ",
-      "nombre": "Pickup Crawler 1:12 Roja",
+      "nombre": "Todoterreno Pickup Crawler 1:12 Roja",
       "subtitulo": "Última en rojo — la gemela ya se vendió.",
       "precio": 521000,
       "imagen": "assets/rc/MPX-RC-P12-ROJ/card.webp",
@@ -58,7 +58,7 @@
     },
     {
       "sku": "MPX-RC-P12-AMA",
-      "nombre": "Pickup Crawler 1:12 Amarilla",
+      "nombre": "Todoterreno Pickup Crawler 1:12 Amarilla",
       "subtitulo": "El más compacto, con doble batería de fábrica.",
       "precio": 541000,
       "imagen": "assets/rc/MPX-RC-P12-AMA/card.webp",
@@ -76,7 +76,7 @@
     },
     {
       "sku": "MPX-RC-C12-128",
-      "nombre": "Campero Crawler 1:12 Motor 390",
+      "nombre": "Todoterreno Campero Crawler 1:12 Motor 390",
       "subtitulo": "Más torque que el resto del catálogo.",
       "precio": 864000,
       "imagen": "assets/rc/MPX-RC-C12-128/card.webp",
@@ -85,7 +85,7 @@
     },
     {
       "sku": "MPX-RC-P12-GRU",
-      "nombre": "Pickup Grúa 1:12 Amarilla",
+      "nombre": "Todoterreno Pickup Grúa 1:12 Amarilla",
       "subtitulo": "Brazo de grúa funcional con gancho metálico.",
       "precio": 629000,
       "imagen": "assets/rc/MPX-RC-P12-GRU/card.webp",
@@ -130,7 +130,7 @@
     },
     {
       "sku": "MPX-RC-P12-82S",
-      "nombre": "Pickup Crawler 1:12 Gris",
+      "nombre": "Todoterreno Pickup Crawler 1:12 Gris",
       "subtitulo": "Mismo linaje que la Pickup Roja, en gris.",
       "precio": 574000,
       "imagen": "assets/rc/MPX-RC-P12-82S/card.webp",

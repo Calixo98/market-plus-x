@@ -20,7 +20,7 @@
   "productos": [
     {
       "sku": "MPX-RC-P12-ROJ",
-      "nombre": "Pickup Crawler 1:12 Roja",
+      "nombre": "Todoterreno Pickup Crawler 1:12 Roja",
       "slug": "pickup-crawler-1-12-roja",
       "familia": "pickup-1-12",
       "estado": "disponible",
@@ -79,7 +79,7 @@
     },
     {
       "sku": "MPX-RC-P12-AMA",
-      "nombre": "Pickup Crawler 1:12 Amarilla",
+      "nombre": "Todoterreno Pickup Crawler 1:12 Amarilla",
       "slug": "pickup-crawler-1-12-amarilla",
       "familia": "pickup-1-12",
       "estado": "disponible",
@@ -200,7 +200,7 @@
     },
     {
       "sku": "MPX-RC-P12-GRU",
-      "nombre": "Pickup Grúa 1:12 Amarilla",
+      "nombre": "Todoterreno Pickup Grúa 1:12 Amarilla",
       "slug": "pickup-grua-1-12-amarilla",
       "familia": "pickup-1-12",
       "estado": "disponible",
@@ -260,7 +260,7 @@
     },
     {
       "sku": "MPX-RC-P12-PRO",
-      "nombre": "Pickup Crawler 1:12 PRO Metal Gris",
+      "nombre": "Todoterreno Pickup Crawler 1:12 PRO Metal Gris",
       "slug": "pickup-crawler-1-12-pro-metal-gris",
       "familia": "pickup-1-12",
       "estado": "vendido",
@@ -319,7 +319,7 @@
     },
     {
       "sku": "MPX-RC-C12-128",
-      "nombre": "Campero Crawler 1:12 Motor 390",
+      "nombre": "Todoterreno Campero Crawler 1:12 Motor 390",
       "slug": "campero-crawler-1-12-motor-390",
       "familia": "pickup-1-12",
       "estado": "disponible",
@@ -622,7 +622,7 @@
     },
     {
       "sku": "MPX-RC-P12-82S",
-      "nombre": "Pickup Crawler 1:12 Gris",
+      "nombre": "Todoterreno Pickup Crawler 1:12 Gris",
       "slug": "pickup-crawler-1-12-gris-vendida",
       "familia": "pickup-1-12",
       "estado": "disponible",
@@ -673,7 +673,7 @@
     },
     {
       "sku": "MPX-RC-P12-ROJ-01",
-      "nombre": "Pickup Crawler 1:12 Roja",
+      "nombre": "Todoterreno Pickup Crawler 1:12 Roja",
       "slug": "pickup-crawler-1-12-roja-vendida",
       "familia": "pickup-1-12",
       "estado": "vendido",
