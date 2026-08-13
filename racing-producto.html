@@ -150,7 +150,7 @@
     </div>
   </footer>
 
-  <a href="https://wa.me/573123414989" target="_blank" rel="noopener"
+  <a href="https://wa.me/573229320982" target="_blank" rel="noopener"
      class="sm:hidden fixed bottom-5 right-5 z-40 w-14 h-14 rounded-full bg-wa flex items-center justify-center shadow-2xl"
      aria-label="Escríbenos por WhatsApp">
     <i class="fa-brands fa-whatsapp text-2xl text-night"></i>
@@ -161,7 +161,7 @@
 
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const fmt = n => '$' + Number(n).toLocaleString('es-CO');
-    const waUrl = (nombre, sku, precio) => `https://wa.me/573123414989?text=${encodeURIComponent(`Hola, me interesa el ${nombre} (${sku}) de ${fmt(precio)}. ¿Sigue disponible?`)}`;
+    const waUrl = (nombre, sku, precio) => `https://wa.me/573229320982?text=${encodeURIComponent(`Hola, me interesa el ${nombre} (${sku}) de ${fmt(precio)}. ¿Sigue disponible?`)}`;
 
     function instrumentarWhatsApp() {
       document.querySelectorAll('a[href*="wa.me"]:not([data-tracked])').forEach(el => {
