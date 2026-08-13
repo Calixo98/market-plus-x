@@ -281,5 +281,11 @@
     wire();
   }
 
-  window.MPXCarrito = { agregar, quitar, setQty, leer: leerCarrito, cargarProductos };
+  function vaciar() {
+    guardarCarrito([]);
+    actualizarBadge();
+    renderPanel();
+  }
+
+  window.MPXCarrito = { agregar, quitar, setQty, vaciar, leer: leerCarrito, cargarProductos };
 })();

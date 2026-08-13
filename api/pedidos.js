@@ -4,19 +4,27 @@
 // El valor de ADMIN_TOKEN lo defines tu en las variables de entorno de Vercel.
 
 const kv = require('../lib/kv');
+const { expireCodOrders, updateCodOrder } = require('../lib/orders');
 
 module.exports = async (req, res) => {
-  if (req.method !== 'GET') return res.status(405).json({ ok: false });
+  if (!['GET', 'PATCH'].includes(req.method)) return res.status(405).json({ ok: false });
 
   const adminToken = process.env.ADMIN_TOKEN;
   const auth = req.headers.authorization || '';
   const provisto = auth.startsWith('Bearer ') ? auth.slice(7) : '';
 
-  if (!adminToken || provisto !== adminToken) {
+  const internal = process.env.MARKETPLUS_INTERNAL_SECRET && provisto === process.env.MARKETPLUS_INTERNAL_SECRET;
+  if ((!adminToken || provisto !== adminToken) && !internal) {
     return res.status(401).json({ ok: false, error: 'No autorizado' });
   }
 
   try {
+    await expireCodOrders();
+    if (req.method === 'PATCH') {
+      const { referencia, action } = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
+      if (!referencia || !['confirm', 'cancel'].includes(action)) return res.status(400).json({ ok: false, error: 'Accion invalida' });
+      return res.status(200).json({ ok: true, pedido: await updateCodOrder(referencia, action) });
+    }
     const claves = await kv.scanAll('pedido:*');
     const valores = await Promise.all(claves.map(k => kv.get(k)));
     const pedidos = valores

@@ -45,6 +45,15 @@ Para cambiar el número, busca y reemplaza `573229320982` en `index.html`.
 
 Navbar · Hero · Características · Casos de uso (tabs) · Precios (4 modelos) · FAQ · Footer · Botón flotante WhatsApp.
 
+## Chat web y contraentrega
+
+Las funciones Vercel actúan como proxy seguro de Agente X, protegen sesiones
+con Turnstile y reservan inventario contraentrega en Upstash. Configurar
+`AGENT_X_URL`, `MARKETPLUS_INTERNAL_SECRET`, `CHAT_SESSION_SECRET`,
+`TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `WEBCHAT_ENABLED`, `COD_ENABLED`,
+`RESEND_API_KEY`, `EMAIL_FROM` y `NOTIFY_EMAIL`. Activar las banderas después
+de aplicar `supabase/migracion-webchat.sql` y desplegar Agente X.
+
 ---
 
 Hecho en Colombia 🇨🇴

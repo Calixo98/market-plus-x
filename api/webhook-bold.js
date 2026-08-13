@@ -23,6 +23,7 @@ const catalogo = require('../lib/catalogo');
 const { leerCuerpoCrudo, verificarFirmaWebhook } = require('../lib/bold');
 const { enviarEventoCompra } = require('../lib/meta');
 const { notificarPedidoAprobado } = require('../lib/telegram');
+const { notifyOrder } = require('../lib/email');
 
 const TIPOS_CONOCIDOS = ['SALE_APPROVED', 'SALE_REJECTED', 'VOID_APPROVED', 'VOID_REJECTED'];
 
@@ -130,6 +131,11 @@ module.exports = async (req, res) => {
           items: reserva.items,
           cliente: reserva.cliente,
         });
+        try {
+          await notifyOrder({ referencia, metodo: 'bold', estado: tipo, ...reserva, montoRecibido });
+        } catch (emailError) {
+          console.error(`No se pudo notificar por correo la venta ${referencia}:`, emailError.message);
+        }
       } else {
         // SALE_REJECTED / VOID_APPROVED / VOID_REJECTED: liberar el stock retenido.
         await catalogo.liberarStock(reserva.items);
