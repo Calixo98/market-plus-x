@@ -92,7 +92,7 @@
       state.poll = setInterval(load, 2500);
       return true;
     } catch (error) {
-      status.textContent = error.message || unavailableMessage();
+      status.textContent = location.protocol === 'file:' ? unavailableMessage() : (error.message || unavailableMessage());
       return false;
     }
   }
