@@ -100,6 +100,7 @@
     #lightbox.is-open { display: flex; }
   </style>
   <link rel="stylesheet" href="chat-widget.css" />
+  <script src="vercel-speed-insights.js" defer></script>
 </head>
 
 <body class="font-sans text-ink antialiased">
@@ -151,30 +152,11 @@
     </div>
   </footer>
 
-  <a href="https://wa.me/573229320982" target="_blank" rel="noopener"
-     class="sm:hidden fixed bottom-5 right-5 z-40 w-14 h-14 rounded-full bg-wa flex items-center justify-center shadow-2xl"
-     aria-label="Escríbenos por WhatsApp">
-    <i class="fa-brands fa-whatsapp text-2xl text-night"></i>
-  </a>
-
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const fmt = n => '$' + Number(n).toLocaleString('es-CO');
-    const waUrl = (nombre, sku, precio) => `https://wa.me/573229320982?text=${encodeURIComponent(`Hola, me interesa el ${nombre} (${sku}) de ${fmt(precio)}. ¿Sigue disponible?`)}`;
-
-    function instrumentarWhatsApp() {
-      document.querySelectorAll('a[href*="wa.me"]:not([data-tracked])').forEach(el => {
-        el.dataset.tracked = '1';
-        el.addEventListener('click', () => {
-          if (window.fbq) fbq('track', 'Contact');
-          if (window.gtag) gtag('event', 'contact_whatsapp');
-          if (window.ttq) ttq.track('Contact');
-        });
-      });
-    }
-
     function inyectarJsonLd(p, precio, disponible) {
       const data = {
         '@context': 'https://schema.org',
@@ -294,18 +276,15 @@
       let ctaHTML;
       if (esVendidoOMostrador) {
         ctaHTML = p.estado === 'vendido'
-          ? `<a href="${waUrl(p.nombre, p.sku, precio || 0)}" target="_blank" rel="noopener" class="btn-sharp w-full inline-flex items-center justify-center gap-2 border px-6 py-4 text-sm font-mono font-bold" style="border-color:rgba(242,241,236,.3); color:#F2F1EC;">Avísame si vuelve</a>`
+          ? `<button type="button" data-open-chat data-chat-prompt="María Paula, avísame si vuelve un modelo similar a ${esc(p.nombre)} (${esc(p.sku)})." class="btn-sharp w-full inline-flex items-center justify-center gap-2 border px-6 py-4 text-sm font-mono font-bold" style="border-color:rgba(242,241,236,.3); color:#F2F1EC;">Consultar disponibilidad</button>`
           : `<p class="text-sm font-mono" style="color:rgba(242,241,236,.5);">Unidad de exhibición — no disponible para compra.</p>`;
       } else {
         ctaHTML = `
-          <button data-add-to-cart data-sku="${esc(p.sku)}" ${agotado ? 'disabled' : ''}
+          <button data-buy-now data-sku="${esc(p.sku)}" ${agotado ? 'disabled' : ''}
              class="btn-sharp flex-1 inline-flex items-center justify-center gap-2 px-6 py-4 text-sm font-mono font-bold text-night transition" style="background:${agotado ? '' : '#C8F02A'};">
-            <i class="fa-solid ${agotado ? 'fa-ban' : 'fa-cart-plus'}"></i> ${agotado ? 'Agotado' : 'Agregar al carrito'}
+            <i class="fa-solid ${agotado ? 'fa-ban' : 'fa-arrow-right'}"></i> ${agotado ? 'Agotado' : 'Comprar ahora'}
           </button>
-          <a href="${waUrl(p.nombre, p.sku, precio)}" target="_blank" rel="noopener"
-             class="btn-sharp flex-1 inline-flex items-center justify-center gap-2 bg-wa px-6 py-4 text-sm font-mono font-bold text-night hover:bg-wa-dark transition">
-            <i class="fa-brands fa-whatsapp"></i> Lo quiero por WhatsApp
-          </a>`;
+          <button type="button" data-open-chat data-chat-prompt="María Paula, tengo dudas sobre ${esc(p.nombre)} (${esc(p.sku)})." class="btn-sharp flex-1 inline-flex items-center justify-center gap-2 border px-6 py-4 text-sm font-mono font-bold text-ink transition" style="border-color:rgba(242,241,236,.24)"><i class="fa-regular fa-comments"></i> Consultar asesor</button>`;
       }
 
       document.getElementById('ficha').innerHTML = `
@@ -367,7 +346,7 @@
       });
 
       inyectarJsonLd(p, precio, !agotado && !esVendidoOMostrador);
-      instrumentarWhatsApp();
+      window.MPXAnalytics?.once(`view_${p.sku}`,'product_view',{currency:'COP',value:precio || 0,items:[{sku:p.sku,nombre:p.nombre,precio:precio || 0,qty:1}]});
     }
 
     document.getElementById('lightboxClose').addEventListener('click', () => document.getElementById('lightbox').classList.remove('is-open'));
@@ -377,6 +356,7 @@
     cargar();
   </script>
 
+  <script src="mpx-funnel.js"></script>
   <script src="carrito.js"></script>
   <script src="chat-widget.js"></script>
 </body>

@@ -111,6 +111,7 @@
     .card-in { animation: cardIn .4s ease both; }
   </style>
   <link rel="stylesheet" href="chat-widget.css" />
+  <script src="vercel-speed-insights.js" defer></script>
 </head>
 
 <body class="font-sans text-ink antialiased">
@@ -159,11 +160,7 @@
         <a href="#catalogo" class="btn-sharp inline-flex items-center gap-2 px-6 py-3.5 text-sm font-mono font-bold text-night transition" style="background:#C9793C;">
           Ver el catálogo <i class="fa-solid fa-arrow-down text-xs"></i>
         </a>
-        <a href="https://wa.me/573229320982?text=Hola%2C%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20los%20carros%20RC%20de%20Marketplus%20Racing"
-           target="_blank" rel="noopener"
-           class="btn-sharp inline-flex items-center gap-2 bg-wa px-6 py-3.5 text-sm font-mono font-bold text-night hover:bg-wa-dark transition">
-          <i class="fa-brands fa-whatsapp"></i> Asesoría por WhatsApp
-        </a>
+        <button type="button" data-open-chat data-chat-prompt="María Paula, ayúdame a elegir un carro de MK Racing." class="btn-sharp inline-flex items-center gap-2 border px-6 py-3.5 text-sm font-mono font-bold text-ink transition" style="border-color:rgba(242,241,236,.28)"><i class="fa-regular fa-comments"></i> Consultar asesor</button>
       </div>
     </div>
   </section>
@@ -222,11 +219,7 @@
         <p class="text-xs font-mono font-semibold uppercase" style="color:rgba(26,14,6,.6);">Contra entrega nacional · Paga al recibir</p>
         <h2 class="mt-2 text-2xl sm:text-3xl font-extrabold font-display" style="color:#1A0E06;">¿No sabes cuál elegir?</h2>
       </div>
-      <a href="https://wa.me/573229320982?text=Hola%2C%20vengo%20de%20la%20web%20y%20quiero%20asesor%C3%ADa%20sobre%20los%20carros%20RC%20de%20Marketplus%20Racing"
-         target="_blank" rel="noopener"
-         class="btn-sharp inline-flex items-center gap-2 px-6 py-3.5 text-sm font-mono font-bold" style="background:#1A0E06; color:#F2F1EC;">
-        <i class="fa-brands fa-whatsapp"></i> Escríbenos por WhatsApp
-      </a>
+      <button type="button" data-open-chat data-chat-prompt="María Paula, ¿qué carro de MK Racing me recomiendas?" class="btn-sharp inline-flex items-center gap-2 px-6 py-3.5 text-sm font-mono font-bold" style="background:#1A0E06; color:#F2F1EC;"><i class="fa-regular fa-comments"></i> Consultar asesor</button>
     </div>
   </section>
 
@@ -242,33 +235,11 @@
     </div>
   </footer>
 
-  <!-- Botón flotante WhatsApp (móvil) -->
-  <a href="https://wa.me/573229320982" target="_blank" rel="noopener"
-     class="sm:hidden fixed bottom-5 right-5 z-40 w-14 h-14 rounded-full bg-wa flex items-center justify-center shadow-2xl"
-     aria-label="Escríbenos por WhatsApp">
-    <i class="fa-brands fa-whatsapp text-2xl text-night"></i>
-  </a>
-
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Conversión: WhatsApp — mismo hook que el resto del sitio (Meta/GA4/TikTok Contact),
-    // reatachado tras cada render porque la grilla es dinámica.
-    function instrumentarWhatsApp() {
-      document.querySelectorAll('a[href*="wa.me"]:not([data-tracked])').forEach(el => {
-        el.dataset.tracked = '1';
-        el.addEventListener('click', () => {
-          if (window.fbq) fbq('track', 'Contact');
-          if (window.gtag) gtag('event', 'contact_whatsapp');
-          if (window.ttq) ttq.track('Contact');
-        });
-      });
-    }
-
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const fmt = n => '$' + Number(n).toLocaleString('es-CO');
-    const waUrl = (nombre, sku, precio) => `https://wa.me/573229320982?text=${encodeURIComponent(`Hola, me interesa el ${nombre} (${sku}) de ${fmt(precio)}. ¿Sigue disponible?`)}`;
-
     let RC = null, PRECIOS = {}, STOCK = {};
     let filtroActivo = 'todos';
 
@@ -338,14 +309,11 @@
             <a href="racing-producto?sku=${encodeURIComponent(p.sku)}" class="font-bold font-mono text-ink hover:text-accent transition">${esc(p.nombre)}${tieneVariante ? ' <span class="font-normal" style="color:rgba(242,241,236,.5);">/ Gris</span>' : ''}</a>
             <p class="text-xs" style="color:rgba(242,241,236,.6);">${esc(p.diferenciador)}</p>
             <p class="text-2xl font-bold font-display text-ink mt-auto">${precioDesde ? '<span class="text-sm font-mono font-medium" style="color:rgba(242,241,236,.5);">desde </span>' : ''}${precio != null ? fmt(Math.min(...(precioDesde ? preciosGrupo : [precio]))) : '—'}</p>
-            <button data-add-to-cart data-sku="${esc(p.sku)}" ${agotado ? 'disabled' : ''}
+            <button data-buy-now data-sku="${esc(p.sku)}" ${agotado ? 'disabled' : ''}
                class="btn-sharp inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-mono font-bold text-night transition" style="background:${agotado ? '' : '#C8F02A'};">
-              <i class="fa-solid ${agotado ? 'fa-ban' : 'fa-cart-plus'}"></i> ${agotado ? 'Agotado' : 'Agregar al carrito'}
+              <i class="fa-solid ${agotado ? 'fa-ban' : 'fa-arrow-right'}"></i> ${agotado ? 'Agotado' : 'Comprar ahora'}
             </button>
-            <a href="${waUrl(p.nombre, p.sku, precio)}" target="_blank" rel="noopener"
-               class="btn-sharp inline-flex items-center justify-center gap-2 bg-wa px-4 py-3 text-sm font-mono font-bold text-night hover:bg-wa-dark transition">
-              <i class="fa-brands fa-whatsapp"></i> Lo quiero por WhatsApp
-            </a>
+            <button type="button" data-open-chat data-chat-prompt="María Paula, tengo dudas sobre ${esc(p.nombre)} (${esc(p.sku)})." class="btn-sharp inline-flex items-center justify-center gap-2 border px-4 py-3 text-sm font-mono font-bold text-ink transition" style="border-color:rgba(242,241,236,.24)"><i class="fa-regular fa-comments"></i> Consultar asesor</button>
           </div>
         </article>`;
     }
@@ -362,7 +330,7 @@
             <span class="font-bold font-mono text-ink">${esc(p.nombre)}</span>
             <p class="text-xs" style="color:rgba(242,241,236,.5);">${p.precio_historico ? fmt(p.precio_historico) : ''}</p>
             ${p.estado === 'vendido'
-              ? `<a href="${waUrl(p.nombre, p.sku, p.precio_historico || 0).replace('%C2%BFSigue%20disponible%3F', '%C2%BFCu%C3%A1ndo%20vuelve%20un%20modelo%20similar%3F')}" target="_blank" rel="noopener" class="btn-sharp mt-2 inline-flex items-center justify-center gap-2 border px-4 py-2.5 text-xs font-mono font-bold transition" style="border-color:rgba(242,241,236,.3); color:#F2F1EC;">Avísame si vuelve</a>`
+              ? `<button type="button" data-open-chat data-chat-prompt="María Paula, avísame si vuelve un modelo similar a ${esc(p.nombre)} (${esc(p.sku)})." class="btn-sharp mt-2 inline-flex items-center justify-center gap-2 border px-4 py-2.5 text-xs font-mono font-bold transition" style="border-color:rgba(242,241,236,.3); color:#F2F1EC;">Consultar disponibilidad</button>`
               : ''}
           </div>
         </article>`;
@@ -370,18 +338,17 @@
 
     function render() {
       document.getElementById('grid').innerHTML = disponibles().map(cardHTML).join('');
-      instrumentarWhatsApp();
     }
 
     function renderVendidos() {
       const items = RC.productos.filter(p => p.estado === 'vendido' || p.estado === 'mostrador').sort((a,b) => a.orden - b.orden);
       document.getElementById('gridVendidos').innerHTML = items.map(cardVendidoHTML).join('');
-      instrumentarWhatsApp();
     }
 
     cargar();
   </script>
 
+  <script src="mpx-funnel.js"></script>
   <script src="carrito.js"></script>
   <script src="chat-widget.js"></script>
 </body>
