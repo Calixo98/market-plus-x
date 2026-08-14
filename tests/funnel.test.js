@@ -9,7 +9,7 @@ const pages = ['index.html', 'deportiva.html', 'racing.html', 'racing-producto.h
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 
 test('scripts propios y scripts inline tienen sintaxis valida', () => {
-  ['mpx-funnel.js', 'carrito.js', 'chat-widget.js', 'vercel-speed-insights.js', 'lib/meta.js', 'lib/orders.js', 'lib/crm-orders.js', 'api/pedidos.js'].forEach(file => new vm.Script(read(file), { filename:file }));
+  ['mpx-funnel.js', 'carrito.js', 'chat-widget.js', 'vercel-speed-insights.js', 'lib/meta.js', 'lib/orders.js', 'lib/crm-orders.js', 'api/pedidos.js', 'api/envios-estimado.js'].forEach(file => new vm.Script(read(file), { filename:file }));
   pages.forEach(file => {
     const html = read(file);
     [...html.matchAll(/<script(?![^>]*\bsrc=)(?![^>]*type=["']application\/ld\+json["'])[^>]*>([\s\S]*?)<\/script>/gi)]

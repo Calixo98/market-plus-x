@@ -29,6 +29,7 @@ require.cache[kvPath] = { id: kvPath, filename: kvPath, loaded: true, exports: f
 require.cache[emailPath] = { id: emailPath, filename: emailPath, loaded: true, exports: { notifyOrder: async () => `email-${++emailCount}` } };
 
 const { createCodOrder, updateCodOrder, expireCodOrders } = require('../lib/orders');
+const catalogo = require('../lib/catalogo');
 
 function input(productName) {
   return {
@@ -41,6 +42,20 @@ function input(productName) {
 }
 
 test.beforeEach(() => { store.clear(); lockTails.clear(); emailCount = 0; });
+
+test('estima el envío de MK Racing con el empaque volumétrico informado', () => {
+  const estimate = catalogo.estimarEnvio({ linea: 'racing', ciudad: 'Bogotá D.C.' });
+  assert.equal(estimate.valorReferencial, 12000);
+  assert.equal(estimate.zona.id, 'bogota');
+  assert.deepEqual(estimate.paquete, {
+    largoCm: 30,
+    altoCm: 15,
+    anchoCm: 10,
+    volumenCm3: 4500,
+    divisorVolumetricoCm3PorKg: 5000,
+    pesoVolumetricoKg: 0.9,
+  });
+});
 
 test('dos clientes no reservan simultáneamente la última unidad', async () => {
   store.set('stock:MPX-G-PRO', '1');
