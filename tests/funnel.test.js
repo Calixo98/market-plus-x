@@ -9,7 +9,7 @@ const pages = ['index.html', 'deportiva.html', 'racing.html', 'racing-producto.h
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 
 test('scripts propios y scripts inline tienen sintaxis valida', () => {
-  ['mpx-funnel.js', 'carrito.js', 'chat-widget.js', 'vercel-speed-insights.js', 'lib/meta.js', 'lib/orders.js'].forEach(file => new vm.Script(read(file), { filename:file }));
+  ['mpx-funnel.js', 'carrito.js', 'chat-widget.js', 'vercel-speed-insights.js', 'lib/meta.js', 'lib/orders.js', 'lib/crm-orders.js', 'api/pedidos.js'].forEach(file => new vm.Script(read(file), { filename:file }));
   pages.forEach(file => {
     const html = read(file);
     [...html.matchAll(/<script(?![^>]*\bsrc=)(?![^>]*type=["']application\/ld\+json["'])[^>]*>([\s\S]*?)<\/script>/gi)]
@@ -59,4 +59,14 @@ test('Speed Insights está preparado para las páginas HTML públicas', () => {
   assert.match(read('vercel-speed-insights.js'), /_vercel\/speed-insights\/script\.js/);
   ['index.html', 'deportiva.html', 'racing.html', 'racing-producto.html', 'checkout.html', 'pago-respuesta.html', 'politicas.html']
     .forEach(file => assert.match(read(file), /vercel-speed-insights\.js/));
+});
+
+test('el panel CRM renderiza datos con textContent y expone filtros y estados', () => {
+  const admin = read('admin-pedidos.html');
+  assert.doesNotMatch(admin, /innerHTML/);
+  assert.match(admin, /textContent/);
+  assert.match(admin, /id="filtroCrm"/);
+  assert.match(admin, /id="detallePanel"/);
+  assert.match(admin, /id="btnAgregarNota"/);
+  ['NEW', 'PENDING_CONFIRMATION', 'CONFIRMED', 'IN_FOLLOW_UP', 'DISPATCHED', 'COMPLETED', 'CANCELLED', 'REJECTED'].forEach(state => assert.match(admin, new RegExp(state)));
 });

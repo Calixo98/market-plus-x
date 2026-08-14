@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Geist+Mono:wght@400;500;600;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <!-- Sistema de gama (atmósfera de fondo) -->
   <link rel="stylesheet" href="assets/gama.css" />
-  <script>
+<script>
     tailwind.config = {
       theme: {
         extend: {
@@ -42,6 +42,20 @@
     input:focus-visible, button:focus-visible { outline: 2px solid #E4FF6B; outline-offset: 2px; }
     th, td { padding: 10px 12px; text-align: left; white-space: nowrap; }
     tr { border-bottom: 1px solid rgba(242,241,236,.14); }
+    textarea, select { background: #16181D; border: 1px solid rgba(242,241,236,.14); color: #F2F1EC; }
+    textarea:focus-visible, select:focus-visible { outline: 2px solid #E4FF6B; outline-offset: 2px; }
+    .crm-status { display: inline-flex; align-items: center; border-radius: 999px; padding: 3px 8px; font-size: .7rem; font-weight: 700; }
+    .crm-status[data-status="NEW"] { color: #C8F02A; background: rgba(200,240,42,.12); }
+    .crm-status[data-status="PENDING_CONFIRMATION"] { color: #facc15; background: rgba(250,204,21,.12); }
+    .crm-status[data-status="CONFIRMED"] { color: #86efac; background: rgba(34,197,94,.12); }
+    .crm-status[data-status="IN_FOLLOW_UP"] { color: #93c5fd; background: rgba(59,130,246,.12); }
+    .crm-status[data-status="DISPATCHED"] { color: #c4b5fd; background: rgba(139,92,246,.12); }
+    .crm-status[data-status="COMPLETED"] { color: #6ee7b7; background: rgba(16,185,129,.12); }
+    .crm-status[data-status="CANCELLED"], .crm-status[data-status="REJECTED"] { color: #fca5a5; background: rgba(239,68,68,.12); }
+    .summary-card { border: 1px solid rgba(242,241,236,.14); background: #111318; border-radius: 12px; padding: 14px; }
+    .detail-field { border-bottom: 1px solid rgba(242,241,236,.1); padding-bottom: 9px; }
+    .detail-field dt { color: rgba(242,241,236,.5); font-size: .7rem; text-transform: uppercase; font-family: 'Geist Mono', monospace; }
+    .detail-field dd { margin-top: 4px; overflow-wrap: anywhere; }
   </style>
 </head>
 <body class="font-sans text-ink antialiased bg-night min-h-screen p-6">
@@ -55,9 +69,9 @@
         <img src="assets/logo-wordmark.png" alt="Market Plus X" class="h-8 w-auto" />
       </a>
       <span class="mpx-gama-badge" aria-hidden="true"></span>
-      <h1 class="text-2xl font-extrabold font-display">Pedidos</h1>
+      <h1 class="text-2xl font-extrabold font-display">CRM de pedidos</h1>
     </header>
-    <p class="mt-1 text-sm" style="color:rgba(242,241,236,.50)">Vista interna. No compartas el enlace ni el token.</p>
+    <p class="mt-1 text-sm" style="color:rgba(242,241,236,.50)">Vista interna para seguimiento operativo. No compartas el enlace ni el token.</p>
 
     <div class="mt-6 flex flex-wrap gap-3 items-end">
       <div>
@@ -68,64 +82,271 @@
       <span id="estado" role="status" class="text-sm" style="color:rgba(242,241,236,.50)"></span>
     </div>
 
+    <div id="resumen" class="mt-6 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3" aria-label="Resumen por estado CRM"></div>
+
+    <div id="crmControls" class="hidden mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+      <div class="lg:col-span-2">
+        <label for="busqueda" class="block text-xs font-semibold uppercase font-mono mb-1.5" style="color:rgba(242,241,236,.50)">Buscar pedido</label>
+        <input id="busqueda" type="search" class="rounded-lg px-3 py-2 text-sm w-full" placeholder="Referencia, nombre o teléfono" />
+      </div>
+      <div>
+        <label for="filtroCrm" class="block text-xs font-semibold uppercase font-mono mb-1.5" style="color:rgba(242,241,236,.50)">Estado CRM</label>
+        <select id="filtroCrm" class="rounded-lg px-3 py-2 text-sm w-full"></select>
+      </div>
+      <div>
+        <label for="filtroMetodo" class="block text-xs font-semibold uppercase font-mono mb-1.5" style="color:rgba(242,241,236,.50)">Método</label>
+        <select id="filtroMetodo" class="rounded-lg px-3 py-2 text-sm w-full"><option value="">Todos</option><option value="bold">Bold</option><option value="contraentrega">Contraentrega</option></select>
+      </div>
+      <div>
+        <label for="filtroPago" class="block text-xs font-semibold uppercase font-mono mb-1.5" style="color:rgba(242,241,236,.50)">Estado pago</label>
+        <select id="filtroPago" class="rounded-lg px-3 py-2 text-sm w-full"><option value="">Todos</option></select>
+      </div>
+      <button id="btnLimpiar" type="button" class="btn-sharp border px-4 py-2 text-sm font-bold font-mono text-ink" style="border-color:rgba(242,241,236,.2)">Limpiar filtros</button>
+    </div>
+
     <div class="mt-6 overflow-x-auto rounded-xl border" style="border-color:rgba(242,241,236,.14)">
       <table class="w-full text-sm">
         <caption class="sr-only">Pedidos recibidos, del más reciente al más antiguo</caption>
         <thead class="bg-card" style="color:rgba(242,241,236,.50); text-transform:uppercase; font-size:0.75rem">
           <tr>
-            <th scope="col">Fecha</th><th scope="col">Estado</th><th scope="col">Referencia</th><th scope="col">Cliente</th><th scope="col">Teléfono</th>
-            <th scope="col">Ciudad</th><th scope="col">Dirección</th><th scope="col">Productos</th><th scope="col">Total</th>
+            <th scope="col">Creado</th><th scope="col">Actualizado</th><th scope="col">Referencia</th><th scope="col">Cliente</th><th scope="col">Teléfono</th><th scope="col">Email</th>
+            <th scope="col">Ciudad</th><th scope="col">Dirección</th><th scope="col">Productos</th><th scope="col">Total</th><th scope="col">Método</th><th scope="col">Estado pago</th><th scope="col">Estado CRM</th><th scope="col">Última nota</th>
           </tr>
         </thead>
-        <tbody id="filas"><tr><td colspan="9" style="color:rgba(242,241,236,.50)">Ingresa el token y carga los pedidos.</td></tr></tbody>
+        <tbody id="filas"><tr><td colspan="14" style="color:rgba(242,241,236,.50)">Ingresa el token y carga los pedidos.</td></tr></tbody>
       </table>
     </div>
+
+    <section id="detallePanel" class="hidden mt-6 rounded-xl border p-5 sm:p-7" style="border-color:rgba(242,241,236,.14); background:#111318" aria-labelledby="detalleTitulo">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div><p class="text-xs uppercase font-mono text-accent">Detalle del pedido</p><h2 id="detalleTitulo" class="mt-1 text-xl font-extrabold font-display"></h2></div>
+        <button id="btnCerrarDetalle" type="button" class="btn-sharp border px-3 py-2 text-sm font-bold" style="border-color:rgba(242,241,236,.2)">Cerrar</button>
+      </div>
+      <dl id="detalleDatos" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-4"></dl>
+      <div class="mt-7 grid lg:grid-cols-[1fr_1fr] gap-5">
+        <div class="rounded-xl border p-4" style="border-color:rgba(242,241,236,.12)">
+          <h3 class="font-bold font-mono">Actualizar estado CRM</h3>
+          <label for="crmEstadoDetalle" class="block mt-4 text-xs font-semibold uppercase font-mono" style="color:rgba(242,241,236,.5)">Nuevo estado</label>
+          <select id="crmEstadoDetalle" class="mt-1 rounded-lg px-3 py-2 text-sm w-full"></select>
+          <label for="notaEstado" class="block mt-4 text-xs font-semibold uppercase font-mono" style="color:rgba(242,241,236,.5)">Nota opcional</label>
+          <textarea id="notaEstado" rows="3" maxlength="2000" class="mt-1 rounded-lg px-3 py-2 text-sm w-full" placeholder="Contexto del cambio"></textarea>
+          <button id="btnGuardarEstado" type="button" class="btn-sharp mt-3 px-4 py-2 text-sm font-bold font-mono text-night" style="background:#C8F02A">Guardar estado</button>
+        </div>
+        <div class="rounded-xl border p-4" style="border-color:rgba(242,241,236,.12)">
+          <h3 class="font-bold font-mono">Nota interna</h3>
+          <textarea id="nuevaNota" rows="3" maxlength="2000" class="mt-4 rounded-lg px-3 py-2 text-sm w-full" placeholder="Solo visible para el equipo"></textarea>
+          <button id="btnAgregarNota" type="button" class="btn-sharp mt-3 border px-4 py-2 text-sm font-bold font-mono" style="border-color:rgba(242,241,236,.25)">Agregar nota</button>
+        </div>
+      </div>
+      <div id="accionesPago" class="hidden mt-5 rounded-xl border p-4" style="border-color:rgba(250,204,21,.25); background:rgba(250,204,21,.06)">
+        <h3 class="font-bold font-mono">Contraentrega pendiente</h3>
+        <p class="mt-1 text-sm" style="color:rgba(242,241,236,.66)">Estas acciones cambian el estado real de contraentrega y el inventario.</p>
+        <div class="mt-3 flex flex-wrap gap-2"><button id="btnConfirmarCod" type="button" class="btn-sharp px-4 py-2 text-sm font-bold text-night" style="background:#C8F02A">Confirmar contraentrega</button><button id="btnCancelarCod" type="button" class="btn-sharp border px-4 py-2 text-sm font-bold text-ink" style="border-color:rgba(248,113,113,.5)">Cancelar pedido</button></div>
+      </div>
+      <div class="mt-7 grid lg:grid-cols-2 gap-5">
+        <div><h3 class="font-bold font-mono">Historial de cambios</h3><ul id="historial" class="mt-3 space-y-2 text-sm" style="color:rgba(242,241,236,.66)"></ul></div>
+        <div><h3 class="font-bold font-mono">Notas internas</h3><ul id="notas" class="mt-3 space-y-2 text-sm" style="color:rgba(242,241,236,.66)"></ul></div>
+      </div>
+    </section>
   </div>
 
-  <script>
-    const fmt = n => n == null ? '—' : '$' + Number(n).toLocaleString('es-CO');
-    // Los datos de pedidos vienen del formulario publico de checkout.html:
-    // cualquier campo (nombre, direccion, ciudad, SKU) puede contener HTML
-    // hostil. Escapar SIEMPRE antes de insertar en el DOM con innerHTML.
-    const esc = s => String(s ?? '—').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    const badge = estado => {
-      const colores = { APPROVED: 'text-okc', DECLINED: 'text-badc', ERROR: 'text-badc', PENDING: 'text-accent', VOIDED: 'text-ter' };
-      return `<span class="font-bold ${colores[estado] || 'text-ter'}">${esc(estado)}</span>`;
-    };
+<script>
+    (() => {
+      const CRM_STATUS = ['NEW', 'PENDING_CONFIRMATION', 'CONFIRMED', 'IN_FOLLOW_UP', 'DISPATCHED', 'COMPLETED', 'CANCELLED', 'REJECTED'];
+      const CRM_LABELS = { NEW: 'Nuevo', PENDING_CONFIRMATION: 'Pendiente de confirmar', CONFIRMED: 'Confirmado', IN_FOLLOW_UP: 'En seguimiento', DISPATCHED: 'Despachado', COMPLETED: 'Completado', CANCELLED: 'Cancelado', REJECTED: 'Rechazado' };
+      const tokenEl = document.getElementById('token');
+      const statusEl = document.getElementById('estado');
+      const rowsEl = document.getElementById('filas');
+      const summaryEl = document.getElementById('resumen');
+      const controlsEl = document.getElementById('crmControls');
+      const searchEl = document.getElementById('busqueda');
+      const crmFilterEl = document.getElementById('filtroCrm');
+      const methodFilterEl = document.getElementById('filtroMetodo');
+      const paymentFilterEl = document.getElementById('filtroPago');
+      const detailEl = document.getElementById('detallePanel');
+      const detailTitleEl = document.getElementById('detalleTitulo');
+      const detailDataEl = document.getElementById('detalleDatos');
+      const detailStatusEl = document.getElementById('crmEstadoDetalle');
+      const stateNoteEl = document.getElementById('notaEstado');
+      const newNoteEl = document.getElementById('nuevaNota');
+      const historyEl = document.getElementById('historial');
+      const notesEl = document.getElementById('notas');
+      const paymentActionsEl = document.getElementById('accionesPago');
+      let pedidos = [];
+      let seleccionado = null;
 
-    document.getElementById('btnCargar').addEventListener('click', async () => {
-      const token = document.getElementById('token').value.trim();
-      const estadoEl = document.getElementById('estado');
-      const filas = document.getElementById('filas');
-      if (!token) { estadoEl.textContent = 'Falta el token.'; return; }
+      const text = (element, value) => { element.textContent = value == null || value === '' ? '—' : String(value); return element; };
+      const make = (tag, className = '') => { const element = document.createElement(tag); if (className) element.className = className; return element; };
+      const clear = element => { while (element.firstChild) element.removeChild(element.firstChild); };
+      const money = value => value == null ? '—' : '$' + Number(value).toLocaleString('es-CO') + ' COP';
+      const date = value => value ? new Date(value).toLocaleString('es-CO') : '—';
+      const paymentMethod = value => value === 'contraentrega' ? 'Contraentrega' : value === 'bold' ? 'Bold' : value || '—';
+      const paymentState = value => value || '—';
+      const showStatus = (message, kind = 'muted') => { statusEl.textContent = message; statusEl.style.color = kind === 'error' ? '#fca5a5' : kind === 'success' ? '#86efac' : 'rgba(242,241,236,.5)'; };
 
-      estadoEl.textContent = 'Cargando…';
-      try {
-        const res = await fetch('api/pedidos', { headers: { Authorization: `Bearer ${token}` } });
-        const data = await res.json();
-        if (!res.ok || !data.ok) throw new Error(data.error || 'Error al cargar pedidos');
-
-        if (data.pedidos.length === 0) {
-          filas.innerHTML = '<tr><td colspan="9" style="color:rgba(242,241,236,.50)">Sin pedidos todavía.</td></tr>';
-        } else {
-          filas.innerHTML = data.pedidos.map(p => `
-            <tr>
-              <td>${p.confirmadoEn ? esc(new Date(p.confirmadoEn).toLocaleString('es-CO')) : '—'}</td>
-              <td>${badge(p.estado)}</td>
-              <td class="font-mono text-xs">${esc(p.referencia)}</td>
-              <td>${p.cliente ? esc(p.cliente.nombre) : '—'}</td>
-              <td>${p.cliente ? esc(p.cliente.telefono) : '—'}</td>
-              <td>${esc(p.ciudad)}</td>
-              <td class="whitespace-normal max-w-xs">${p.cliente ? esc(p.cliente.direccion) : '—'}</td>
-              <td class="whitespace-normal max-w-xs">${p.items ? p.items.map(i => `${esc(i.qty)}× ${esc(i.sku)}`).join(', ') : esc(p.advertencia)}</td>
-              <td>${fmt(p.total)}</td>
-            </tr>`).join('');
-        }
-        estadoEl.textContent = `${data.pedidos.length} pedido(s).`;
-      } catch (err) {
-        estadoEl.textContent = err.message;
+      function statusBadge(value) {
+        const badge = make('span', 'crm-status');
+        badge.dataset.status = value || 'NEW';
+        text(badge, CRM_LABELS[value] || value || 'Nuevo');
+        return badge;
       }
-    });
+
+      function authHeaders() {
+        return { Authorization: `Bearer ${tokenEl.value.trim()}`, 'X-Admin-User': 'panel-web' };
+      }
+
+      async function request(method = 'GET', body) {
+        const options = { method, headers: authHeaders() };
+        if (body) { options.headers['Content-Type'] = 'application/json'; options.body = JSON.stringify(body); }
+        const response = await fetch('/api/pedidos', options);
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.ok) throw new Error(data.error || 'No se pudo procesar la solicitud');
+        return data;
+      }
+
+      function renderSummary() {
+        clear(summaryEl);
+        const counts = Object.fromEntries(CRM_STATUS.map(state => [state, 0]));
+        pedidos.forEach(pedido => { counts[pedido.crmStatus || 'NEW'] = (counts[pedido.crmStatus || 'NEW'] || 0) + 1; });
+        CRM_STATUS.forEach(state => {
+          const card = make('article', 'summary-card');
+          const count = make('strong', 'block text-2xl font-display');
+          text(count, counts[state] || 0);
+          const label = make('span', 'mt-1 block text-xs font-mono');
+          label.style.color = 'rgba(242,241,236,.58)';
+          text(label, CRM_LABELS[state]);
+          card.append(count, label);
+          summaryEl.appendChild(card);
+        });
+      }
+
+      function fillSelects() {
+        clear(crmFilterEl);
+        const allCrm = make('option'); allCrm.value = ''; text(allCrm, 'Todos'); crmFilterEl.appendChild(allCrm);
+        CRM_STATUS.forEach(state => { const option = make('option'); option.value = state; text(option, CRM_LABELS[state]); crmFilterEl.appendChild(option); });
+        const paymentStates = [...new Set(pedidos.map(pedido => pedido.estado).filter(Boolean))].sort();
+        clear(paymentFilterEl);
+        const allPayment = make('option'); allPayment.value = ''; text(allPayment, 'Todos'); paymentFilterEl.appendChild(allPayment);
+        paymentStates.forEach(state => { const option = make('option'); option.value = state; text(option, state); paymentFilterEl.appendChild(option); });
+      }
+
+      function filteredOrders() {
+        const query = searchEl.value.trim().toLowerCase();
+        return pedidos.filter(pedido => {
+          const customer = pedido.cliente || {};
+          const searchable = [pedido.referencia, customer.nombre, customer.telefono, customer.email].join(' ').toLowerCase();
+          return (!query || searchable.includes(query)) && (!crmFilterEl.value || (pedido.crmStatus || 'NEW') === crmFilterEl.value) && (!methodFilterEl.value || pedido.metodo === methodFilterEl.value) && (!paymentFilterEl.value || pedido.estado === paymentFilterEl.value);
+        }).sort((a, b) => new Date(b.creadoEn || b.confirmadoEn || 0) - new Date(a.creadoEn || a.confirmadoEn || 0));
+      }
+
+      function productText(pedido) {
+        return Array.isArray(pedido.items) && pedido.items.length ? pedido.items.map(item => `${item.qty || 0}× ${item.nombre || item.sku || 'Producto'}`).join(', ') : (pedido.advertencia || '—');
+      }
+
+      function cell(value, className = '') {
+        const element = make('td', className);
+        text(element, value);
+        return element;
+      }
+
+      function renderTable() {
+        clear(rowsEl);
+        const visible = filteredOrders();
+        if (!visible.length) {
+          const row = make('tr');
+          const empty = cell('No hay pedidos que coincidan con los filtros.');
+          empty.colSpan = 14;
+          row.appendChild(empty);
+          rowsEl.appendChild(row);
+          return;
+        }
+        visible.forEach(pedido => {
+          const customer = pedido.cliente || {};
+          const row = make('tr', 'cursor-pointer hover:bg-white/5');
+          row.tabIndex = 0;
+          row.addEventListener('click', () => selectOrder(pedido.referencia));
+          row.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectOrder(pedido.referencia); } });
+          row.append(
+            cell(date(pedido.creadoEn || pedido.confirmadoEn)), cell(date(pedido.actualizadoEn || pedido.confirmadoEn)), cell(pedido.referencia, 'font-mono text-xs'),
+            cell(customer.nombre), cell(customer.telefono), cell(customer.email), cell(pedido.ciudad), cell(customer.direccion, 'whitespace-normal max-w-xs'),
+            cell(productText(pedido), 'whitespace-normal max-w-xs'), cell(money(pedido.total)), cell(paymentMethod(pedido.metodo)), cell(paymentState(pedido.estado)),
+            (() => { const td = make('td'); td.appendChild(statusBadge(pedido.crmStatus || 'NEW')); return td; })(), cell(pedido.ultimaNotaInterna?.texto, 'whitespace-normal max-w-xs')
+          );
+          rowsEl.appendChild(row);
+        });
+      }
+
+      function detailField(label, value) {
+        const wrapper = make('div', 'detail-field');
+        const term = make('dt'); text(term, label);
+        const description = make('dd'); text(description, value);
+        wrapper.append(term, description);
+        return wrapper;
+      }
+
+      function renderList(element, items, formatter, emptyMessage) {
+        clear(element);
+        if (!items.length) { const empty = make('li'); text(empty, emptyMessage); element.appendChild(empty); return; }
+        items.slice().reverse().forEach(item => { const entry = make('li', 'rounded-lg border p-3'); entry.style.borderColor = 'rgba(242,241,236,.1)'; text(entry, formatter(item)); element.appendChild(entry); });
+      }
+
+      function renderDetail() {
+        if (!seleccionado) return;
+        const customer = seleccionado.cliente || {};
+        text(detailTitleEl, seleccionado.referencia);
+        clear(detailDataEl);
+        [['Cliente', customer.nombre], ['Teléfono', customer.telefono], ['Email', customer.email], ['Documento', customer.documento], ['Ciudad', seleccionado.ciudad], ['Departamento', customer.departamento], ['Dirección', customer.direccion], ['Método', paymentMethod(seleccionado.metodo)], ['Estado del pago', seleccionado.estado], ['Estado CRM', CRM_LABELS[seleccionado.crmStatus] || seleccionado.crmStatus], ['Creado', date(seleccionado.creadoEn)], ['Actualizado', date(seleccionado.actualizadoEn)], ['Productos', productText(seleccionado)], ['Total', money(seleccionado.total)]].forEach(([label, value]) => detailDataEl.appendChild(detailField(label, value)));
+        clear(detailStatusEl);
+        CRM_STATUS.forEach(state => { const option = make('option'); option.value = state; text(option, CRM_LABELS[state]); detailStatusEl.appendChild(option); });
+        detailStatusEl.value = seleccionado.crmStatus || 'NEW'; stateNoteEl.value = ''; newNoteEl.value = '';
+        renderList(historyEl, seleccionado.historial || [], item => `${date(item.fecha)} · ${item.usuario || 'admin'} · ${item.estadoAnterior || '—'} → ${item.estadoNuevo || '—'}${item.nota ? ` · ${item.nota}` : ''}`, 'No hay cambios registrados.');
+        renderList(notesEl, seleccionado.notasInternas || [], item => `${date(item.fecha)} · ${item.usuario || 'admin'} · ${item.texto}`, 'No hay notas internas.');
+        paymentActionsEl.classList.toggle('hidden', !(seleccionado.metodo === 'contraentrega' && seleccionado.estado === 'COD_PENDING_CONFIRMATION'));
+        detailEl.classList.remove('hidden');
+      }
+
+      function selectOrder(reference) { seleccionado = pedidos.find(pedido => pedido.referencia === reference) || null; renderDetail(); if (seleccionado) detailEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      function replaceOrder(order) { if (!order) return; pedidos = pedidos.map(pedido => pedido.referencia === order.referencia ? order : pedido); seleccionado = order; renderSummary(); renderTable(); renderDetail(); }
+
+      async function loadOrders() {
+        if (!tokenEl.value.trim()) { showStatus('Falta el token.', 'error'); return; }
+        const button = document.getElementById('btnCargar'); button.disabled = true; showStatus('Cargando…');
+        try { const data = await request(); pedidos = Array.isArray(data.pedidos) ? data.pedidos : []; fillSelects(); renderSummary(); renderTable(); controlsEl.classList.remove('hidden'); detailEl.classList.add('hidden'); seleccionado = null; showStatus(`${pedidos.length} pedido(s).`, 'success'); }
+        catch (error) { showStatus(error.message, 'error'); }
+        finally { button.disabled = false; }
+      }
+
+      async function saveCrmStatus() {
+        if (!seleccionado) return;
+        const nextStatus = detailStatusEl.value;
+        if ((nextStatus === 'CANCELLED' || nextStatus === 'REJECTED') && !window.confirm('¿Confirmas este cambio operativo sensible?')) return;
+        try { const data = await request('PATCH', { action: 'update_crm', referencia: seleccionado.referencia, crmStatus: nextStatus, nota: stateNoteEl.value }); replaceOrder(data.pedido); showStatus('Estado CRM actualizado.', 'success'); }
+        catch (error) { showStatus(error.message, 'error'); }
+      }
+
+      async function addNote() {
+        if (!seleccionado || !newNoteEl.value.trim()) { showStatus('Escribe una nota antes de guardarla.', 'error'); return; }
+        try { const data = await request('PATCH', { action: 'add_note', referencia: seleccionado.referencia, nota: newNoteEl.value }); replaceOrder(data.pedido); showStatus('Nota interna guardada.', 'success'); }
+        catch (error) { showStatus(error.message, 'error'); }
+      }
+
+      async function updatePayment(action) {
+        if (!seleccionado) return;
+        if (action === 'cancel' && !window.confirm('¿Confirmas cancelar esta contraentrega y liberar el inventario?')) return;
+        try { const data = await request('PATCH', { action, referencia: seleccionado.referencia }); replaceOrder(data.pedido); showStatus(action === 'confirm' ? 'Contraentrega confirmada.' : 'Pedido cancelado.', 'success'); }
+        catch (error) { showStatus(error.message, 'error'); }
+      }
+
+      document.getElementById('btnCargar').addEventListener('click', loadOrders);
+      tokenEl.addEventListener('keydown', event => { if (event.key === 'Enter') loadOrders(); });
+      [searchEl, crmFilterEl, methodFilterEl, paymentFilterEl].forEach(element => element.addEventListener('input', renderTable));
+      document.getElementById('btnLimpiar').addEventListener('click', () => { searchEl.value = ''; crmFilterEl.value = ''; methodFilterEl.value = ''; paymentFilterEl.value = ''; renderTable(); });
+      document.getElementById('btnCerrarDetalle').addEventListener('click', () => { detailEl.classList.add('hidden'); seleccionado = null; });
+      document.getElementById('btnGuardarEstado').addEventListener('click', saveCrmStatus);
+      document.getElementById('btnAgregarNota').addEventListener('click', addNote);
+      document.getElementById('btnConfirmarCod').addEventListener('click', () => updatePayment('confirm'));
+      document.getElementById('btnCancelarCod').addEventListener('click', () => updatePayment('cancel'));
+    })();
   </script>
 </body>
 </html>
