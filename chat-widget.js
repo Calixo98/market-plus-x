@@ -3,6 +3,11 @@
   window.__MPX_CHAT__ = true;
 
   const state = { started: false, cursor: null, busy: false, poll: null, rendered: new Set(), siteKey: null };
+  const displayText = value => {
+    if (typeof value === 'string') return value;
+    if (value == null || typeof value === 'object') return '';
+    return String(value);
+  };
   const esc = s => String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const unavailableMessage = () => location.protocol === 'file:'
     ? 'El chat funciona desde la tienda publicada. Abre marketplusx.com para hablar con María Paula.'
@@ -20,9 +25,11 @@
     if (state.rendered.has(m.id)) return;
     state.rendered.add(m.id);
     const el = document.createElement('div');
-    el.className = `mpx-chat-bubble ${m.direction === 'in' ? 'mpx-chat-in' : 'mpx-chat-out'}`;
+    const isPhoto = m.kind === 'product_photo' || Boolean(m.image_url);
+    el.className = `mpx-chat-bubble ${m.direction === 'in' ? 'mpx-chat-in' : 'mpx-chat-out'}${isPhoto ? ' mpx-chat-photo-only' : ''}`;
     el.dataset.operator = String(Boolean(m.operator));
-    el.innerHTML = (m.image_url ? `<img class="mpx-chat-photo" src="${esc(m.image_url)}" alt="Foto del producto">` : '') + esc(m.body);
+    const image = m.image_url ? `<img class="mpx-chat-photo" src="${esc(m.image_url)}" alt="Foto del producto">` : '';
+    el.innerHTML = image + (isPhoto ? '' : esc(displayText(m.body)));
     list.appendChild(el);
     list.scrollTop = list.scrollHeight;
     state.cursor = m.created_at;
