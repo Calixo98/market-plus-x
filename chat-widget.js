@@ -25,11 +25,13 @@
     if (state.rendered.has(m.id)) return;
     state.rendered.add(m.id);
     const el = document.createElement('div');
-    const isPhoto = m.kind === 'product_photo' || Boolean(m.image_url);
-    el.className = `mpx-chat-bubble ${m.direction === 'in' ? 'mpx-chat-in' : 'mpx-chat-out'}${isPhoto ? ' mpx-chat-photo-only' : ''}`;
+    const isPhoto = m.kind === 'product_photo' || m.kind === 'racing_media' || Boolean(m.image_url);
+    const isVideo = m.kind === 'product_video' || m.kind === 'racing_media' || Boolean(m.video_url);
+    el.className = `mpx-chat-bubble ${m.direction === 'in' ? 'mpx-chat-in' : 'mpx-chat-out'}${isPhoto ? ' mpx-chat-photo-only' : ''}${isVideo ? ' mpx-chat-video-only' : ''}`;
     el.dataset.operator = String(Boolean(m.operator));
     const image = m.image_url ? `<img class="mpx-chat-photo" src="${esc(m.image_url)}" alt="Foto del producto">` : '';
-    el.innerHTML = image + (isPhoto ? '' : esc(displayText(m.body)));
+    const video = m.video_url ? `<video class="mpx-chat-video" controls playsinline preload="metadata" src="${esc(m.video_url)}"></video>` : '';
+    el.innerHTML = image + video + ((isPhoto || isVideo) ? '' : esc(displayText(m.body)));
     list.appendChild(el);
     list.scrollTop = list.scrollHeight;
     state.cursor = m.created_at;

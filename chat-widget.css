@@ -4,3 +4,4 @@
 @media(max-width:520px){#mpx-chat-launcher{right:12px;bottom:12px}.checkout-page #mpx-chat-launcher{display:none}#mpx-chat-panel{inset:8px;width:auto;height:auto;border-radius:8px}}
 @media(prefers-reduced-motion:reduce){#mpx-chat-panel,#mpx-chat-launcher{scroll-behavior:auto}}
 .mpx-chat-photo-only{padding:0;background:transparent}.mpx-chat-photo-only .mpx-chat-photo{display:block;margin-bottom:0}
+.mpx-chat-video{display:block;max-width:100%;width:100%;border-radius:4px;margin-bottom:7px;background:#000}.mpx-chat-video-only{padding:0;background:transparent}.mpx-chat-video-only .mpx-chat-video{margin-bottom:0}
