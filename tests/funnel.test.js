@@ -37,6 +37,18 @@ test('los CTA invitan a consultar asesor y el chat identifica a Maria Paula', ()
   assert.match(widget, /marketplusx\.com/);
 });
 
+test('GTM nuevo y eventos de Racing llegan con nombres accionables a Meta', () => {
+  const commercial = pages.map(read).join('\n');
+  assert.doesNotMatch(commercial, /GTM-WG74VTMW/);
+  assert.match(commercial, /GTM-MLNX9XJ7/);
+  const funnel = read('mpx-funnel.js');
+  assert.match(funnel, /mpx_event/);
+  assert.match(funnel, /chat_open:'Contact'/);
+  assert.match(funnel, /buy_now:'InitiateCheckout'/);
+  assert.match(read('carrito.js'), /once\('checkout_start', 'buy_now'/);
+  assert.match(read('checkout.html'), /once\('checkout_start', 'begin_checkout'/);
+});
+
 test('contraentrega usa selección progresiva, consentimiento y confirmación clara', () => {
   const checkout = read('checkout.html');
   assert.match(checkout, /id="selectContraentrega"/);

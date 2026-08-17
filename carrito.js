@@ -53,6 +53,12 @@
   async function comprarAhora(sku) {
     await cargarProductos();
     agregar(sku, 1);
+    const producto = productosCache?.find(p => p.sku === sku);
+    window.MPXAnalytics?.once('checkout_start', 'buy_now', {
+      currency: 'COP',
+      value: producto?.precio || 0,
+      items: producto ? [{ sku, nombre: producto.nombre, precio: producto.precio, qty: 1 }] : [{ sku, nombre: sku, precio: 0, qty: 1 }],
+    });
     window.setTimeout(() => { location.href = 'checkout.html'; }, 180);
   }
 
