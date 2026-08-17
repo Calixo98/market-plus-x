@@ -9,7 +9,7 @@ const pages = ['index.html', 'deportiva.html', 'racing.html', 'racing-producto.h
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 
 test('scripts propios y scripts inline tienen sintaxis valida', () => {
-  ['mpx-funnel.js', 'carrito.js', 'chat-widget.js', 'vercel-speed-insights.js', 'lib/meta.js', 'lib/orders.js', 'lib/crm-orders.js', 'api/pedidos.js', 'api/envios-estimado.js'].forEach(file => new vm.Script(read(file), { filename:file }));
+  ['mpx-funnel.js', 'carrito.js', 'chat-widget.js', 'vercel-speed-insights.js', 'commerce-config.js', 'lib/meta.js', 'lib/orders.js', 'lib/crm-orders.js', 'api/pedidos.js', 'api/envios-estimado.js'].forEach(file => new vm.Script(read(file), { filename:file }));
   pages.forEach(file => {
     const html = read(file);
     [...html.matchAll(/<script(?![^>]*\bsrc=)(?![^>]*type=["']application\/ld\+json["'])[^>]*>([\s\S]*?)<\/script>/gi)]
@@ -47,6 +47,19 @@ test('GTM nuevo y eventos de Racing llegan con nombres accionables a Meta', () =
   assert.match(funnel, /buy_now:'InitiateCheckout'/);
   assert.match(read('carrito.js'), /once\('checkout_start', 'buy_now'/);
   assert.match(read('checkout.html'), /once\('checkout_start', 'begin_checkout'/);
+});
+
+test('las fichas muestran prueba social real y el descuento queda apagado', () => {
+  const productPage = read('racing-producto.html');
+  const reviews = JSON.parse(read('rc-reviews.json'));
+  const commerceConfig = require(path.join(root, 'commerce-config.js'));
+  assert.match(productPage, /rc-reviews\.json/);
+  assert.match(productPage, /id="reseñas"/);
+  assert.equal(reviews.general[0].nombre, 'María Alejandra');
+  assert.equal(reviews.general[0].alcance, 'general');
+  assert.equal(commerceConfig.upfrontDiscount.enabled, false);
+  assert.match(read('checkout.html'), /resumenDescuentoWrap/);
+  assert.match(read('api/checkout.js'), /descuento/);
 });
 
 test('contraentrega usa selección progresiva, consentimiento y confirmación clara', () => {

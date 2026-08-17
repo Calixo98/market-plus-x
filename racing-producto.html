@@ -96,10 +96,12 @@
     .btn-sharp:disabled { background: #2a2f3a; color: #7b7c7c; cursor: not-allowed; }
     button:focus-visible, a:focus-visible, [role="radio"]:focus-visible { outline: 2px solid #E4FF6B; outline-offset: 2px; }
     .thumb-active { outline: 2px solid #C9793C; outline-offset: -2px; }
+    .reviews-rail { scrollbar-color: rgba(200,240,42,.75) rgba(242,241,236,.08); scrollbar-width: thin; }
     #lightbox { position: fixed; inset: 0; z-index: 90; background: rgba(7,8,10,.92); display: none; align-items: center; justify-content: center; padding: 24px; }
     #lightbox.is-open { display: flex; }
   </style>
   <link rel="stylesheet" href="chat-widget.css" />
+  <script src="commerce-config.js"></script>
   <script src="vercel-speed-insights.js" defer></script>
 </head>
 
@@ -180,17 +182,22 @@
       document.head.appendChild(script);
     }
 
-    let RC, PRODUCTOS, STOCK;
+    let RC, PRODUCTOS, STOCK, REVIEWS = { general: [], bySku: {} };
 
     async function cargar() {
       const params = new URLSearchParams(location.search);
       const sku = params.get('sku');
-      const [rc, productos, stockResp] = await Promise.all([
+      const [rc, productos, stockResp, reviews] = await Promise.all([
         fetch('rc-crawlers.json').then(r => r.json()),
         fetch('productos.json').then(r => r.json()),
         fetch('api/stock').then(r => r.json()).catch(() => ({ stock: {} })),
+        fetch('rc-reviews.json').then(r => r.json()).catch(() => ({ general: [], bySku: {} })),
       ]);
       RC = rc; PRODUCTOS = productos; STOCK = stockResp.stock || {};
+      REVIEWS = {
+        general: Array.isArray(reviews?.general) ? reviews.general : [],
+        bySku: reviews?.bySku && typeof reviews.bySku === 'object' ? reviews.bySku : {},
+      };
 
       const p = RC.productos.find(x => x.sku === sku);
       if (!p) { location.replace('racing.html'); return; }
@@ -200,6 +207,58 @@
     function precioDe(sku) {
       const row = PRODUCTOS.productos.find(x => x.sku === sku);
       return row ? row.precio : null;
+    }
+
+    function reviewsPara(p) {
+      const especificas = Array.isArray(REVIEWS.bySku?.[p.sku]) ? REVIEWS.bySku[p.sku] : [];
+      return [...especificas, ...REVIEWS.general];
+    }
+
+    function estrellasHTML(puntuacion) {
+      const valor = Math.min(5, Math.max(0, Number(puntuacion) || 0));
+      return Array.from({ length: 5 }, (_, i) => `<i class="fa-solid fa-star text-[11px]" style="color:${i < valor ? '#C8F02A' : 'rgba(242,241,236,.2)'}" aria-hidden="true"></i>`).join('');
+    }
+
+    function reviewCardHTML(review) {
+      const media = review.video
+        ? `<video class="mt-4 w-full max-h-[360px] rounded-sm bg-black object-contain" controls playsinline preload="metadata" poster="${esc(review.poster || '')}" aria-label="Video compartido por ${esc(review.nombre)}"><source src="${esc(review.video)}" type="video/mp4" />Tu navegador no puede reproducir este video.</video>`
+        : review.imagen
+          ? `<img class="mt-4 w-full max-h-[360px] rounded-sm object-cover" src="${esc(review.imagen)}" alt="Experiencia compartida por ${esc(review.nombre)}" loading="lazy" />`
+          : '';
+      const alcance = review.alcance === 'general'
+        ? `<p class="mt-3 text-[11px] leading-relaxed" style="color:rgba(242,241,236,.46);">Testimonio general de una compra real. No se atribuye a un SKU específico.</p>`
+        : '';
+      return `
+        <article class="bento p-5 min-w-[min(86vw,380px)] sm:min-w-[360px] snap-start">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <div class="flex gap-1" aria-label="${esc(review.puntuacion || 0)} de 5 estrellas">${estrellasHTML(review.puntuacion)}</div>
+              <h3 class="mt-3 font-display font-bold text-lg">${esc(review.nombre || 'Cliente MK Racing')}</h3>
+              <p class="mt-1 text-xs font-mono" style="color:rgba(242,241,236,.52);">${esc(review.etiqueta || 'Cliente MK Racing')}</p>
+            </div>
+            ${review.verificada ? '<span class="inline-flex items-center gap-1 text-[10px] font-mono font-semibold text-accent"><i class="fa-solid fa-circle-check"></i> Verificado</span>' : ''}
+          </div>
+          <p class="mt-4 text-sm leading-relaxed" style="color:rgba(242,241,236,.72);">${esc(review.texto || '')}</p>
+          ${alcance}
+          ${media}
+        </article>`;
+    }
+
+    function reviewsHTML(p) {
+      const reviews = reviewsPara(p);
+      return `
+        <section id="reseñas" class="mt-14 pt-10 border-t" style="border-color:rgba(242,241,236,.14);" aria-labelledby="reviewsTitle">
+          <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+            <div>
+              <p class="text-xs font-mono uppercase tracking-[.16em] text-accent">Prueba social</p>
+              <h2 id="reviewsTitle" class="mt-2 text-2xl sm:text-3xl font-extrabold font-display">Testimonios reales</h2>
+            </div>
+            <p class="max-w-md text-xs leading-relaxed" style="color:rgba(242,241,236,.54);">Experiencias compartidas por clientes de MK Racing. Desliza en móvil o baja para ver cada testimonio.</p>
+          </div>
+          ${reviews.length
+            ? `<div class="reviews-rail mt-6 flex gap-4 overflow-x-auto snap-x snap-mandatory pb-3" tabindex="0" aria-label="Testimonios de clientes">${reviews.map(reviewCardHTML).join('')}</div>`
+            : `<div class="mt-6 bento p-6"><p class="text-sm" style="color:rgba(242,241,236,.68);">Estamos recopilando más reseñas reales de esta unidad.</p><button type="button" data-open-chat data-chat-prompt="María Paula, quiero compartir mi experiencia con este carrito." class="mt-4 inline-flex items-center gap-2 text-sm font-mono font-semibold text-accent hover:text-accent-hover"><i class="fa-regular fa-comments"></i> Compartir experiencia</button></div>`}
+        </section>`;
     }
 
     function pintar(p) {
@@ -317,6 +376,7 @@
           </div>
         </div>
         ${relacionadosHTML}
+        ${reviewsHTML(p)}
       `;
 
       // Galería: swap + lightbox

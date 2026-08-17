@@ -11,6 +11,7 @@ const crypto = require('crypto');
 const kv = require('../lib/kv');
 const catalogo = require('../lib/catalogo');
 const { crearLinkDePago } = require('../lib/bold');
+const { upfrontDiscount } = require('../commerce-config');
 
 const RESERVA_TTL_SEGUNDOS = 15 * 60;
 const MAX_QTY_POR_ITEM = 5;
@@ -58,6 +59,8 @@ module.exports = async (req, res) => {
   if (!body || typeof body !== 'object') return error(res, 400, 'Cuerpo de solicitud invalido');
 
   const { items, ciudad, cliente } = body;
+  const paymentMethod = String(body.payment_method || 'bold');
+  if (paymentMethod !== 'bold') return error(res, 400, 'Metodo de pago invalido');
 
   if (!Array.isArray(items) || items.length === 0 || items.length > MAX_ITEMS) {
     return error(res, 400, 'El carrito debe tener entre 1 y ' + MAX_ITEMS + ' referencias');
@@ -119,7 +122,11 @@ module.exports = async (req, res) => {
       const todoEnvioGratis = itemsResueltos.every(it => it.envioGratis);
       const zona = catalogo.buscarZonaEnvio(ciudad);
       const envio = todoEnvioGratis ? 0 : zona.tarifa;
-      const total = subtotal + envio;
+      const porcentaje = Number(upfrontDiscount?.percentage);
+      const descuento = upfrontDiscount?.enabled && upfrontDiscount.paymentMethod === paymentMethod && Number.isFinite(porcentaje) && porcentaje > 0 && porcentaje <= 100
+        ? Math.round(subtotal * porcentaje / 100)
+        : 0;
+      const total = subtotal - descuento + envio;
 
       // Referencia unica (queda en metadata.reference en Bold, y es la clave
       // que el webhook usa para encontrar de nuevo esta reserva).
@@ -160,6 +167,7 @@ module.exports = async (req, res) => {
           zona: zona.id,
           cliente: { nombre, email, telefono, direccion, departamento: departamento || null },
           subtotal,
+          descuento,
           envio,
           total,
           creadoEn: new Date().toISOString(),
@@ -178,7 +186,7 @@ module.exports = async (req, res) => {
       return res.status(200).json({
         ok: true,
         paymentUrl,
-        resumen: { subtotal, envio, total, zona: zona.nombre },
+        resumen: { subtotal, descuento, envio, total, zona: zona.nombre },
       });
     } catch (errInterno) {
       // Ya reservamos el stock atomicamente arriba: si algo falla DESPUES de eso

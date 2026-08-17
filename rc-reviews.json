@@ -1,0 +1,17 @@
+{
+  "nota": "Las reseñas generales son prueba social real y no se atribuyen a un SKU específico. Agrega reseñas por SKU solo con autorización del cliente.",
+  "general": [
+    {
+      "id": "maria-alejandra-video",
+      "nombre": "María Alejandra",
+      "etiqueta": "Compradora MK Racing",
+      "texto": "Nos compartió este video después de su compra. La demostración deja ver la respuesta y la fuerza del carrito en acción.",
+      "video": "assets/rc/customer/testimonio-maria-alejandra.mp4",
+      "poster": "assets/rc/customer/real-jeep.jpg",
+      "puntuacion": 5,
+      "verificada": true,
+      "alcance": "general"
+    }
+  ],
+  "bySku": {}
+}
