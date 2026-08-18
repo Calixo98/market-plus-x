@@ -1,10 +1,17 @@
 {
+  "contraentrega": {
+    "pagoEnCasaPorcentaje": 5
+  },
+  "gafas": {
+    "transportadora": "Inter Rapidísimo",
+    "tipoPaquete": "caja_pequena",
+    "nota": "Valor estimado para una caja pequeña. En contraentrega incluye Pago en Casa (5%). Puede variar al confirmar la guía por destino, valor declarado y tipo de entrega."
+  },
   "racing": {
     "transportadora": "Inter Rapidísimo",
     "vigenciaTarifarioDesde": "2026-06-30",
     "pesoVolumetricoAproximadoKg": 5,
     "divisorVolumetricoCm3PorKg": 6000,
-    "pagoEnCasaPorcentaje": 5,
     "redondeoPesos": 1000,
     "nota": "Valor estimado para 5 kg facturables. En contraentrega incluye Pago en Casa (5%). Puede variar al confirmar la guía por peso, volumen, destino, valor declarado y tipo de entrega."
   },

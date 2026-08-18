@@ -305,20 +305,21 @@
       const zona = zonaDe(ciudad);
       if (todoEnvioGratis) return { total:0, estimado:false, zona };
       const unidadesRacing = items.reduce((total, item) => total + (String(item.sku).startsWith('MPX-RC-') ? Number(item.qty || 1) : 0), 0);
-      if (!unidadesRacing) return { total:zona.tarifa, estimado:false, zona };
+      const porcentajePagoEnCasa = Number(ENVIO_CONFIG.contraentrega?.pagoEnCasaPorcentaje || 0);
+      const pagoEnCasa = paymentMethod === 'cod' ? Math.round(subtotal * porcentajePagoEnCasa / 100) : 0;
+      if (!unidadesRacing) return { total:Number(zona.tarifa) + pagoEnCasa, estimado:true, zona, nota:ENVIO_CONFIG.gafas?.nota || '' };
       const racing = ENVIO_CONFIG.racing || {};
       const pesoFacturableKg = Math.max(1, Math.ceil(Number(racing.pesoVolumetricoAproximadoKg) || 1));
       const transportePorUnidad = Number(zona.tarifaRacingBase || zona.tarifa) + (Math.max(0, pesoFacturableKg - 1) * Number(zona.tarifaRacingKiloAdicionalPromedio || 0));
       const base = transportePorUnidad * unidadesRacing;
-      const pagoEnCasa = paymentMethod === 'cod' ? Math.round(subtotal * Number(racing.pagoEnCasaPorcentaje || 0) / 100) : 0;
       const redondeo = Math.max(1, Number(racing.redondeoPesos) || 1);
       return { total:Math.ceil((base + pagoEnCasa) / redondeo) * redondeo, estimado:true, zona, nota:racing.nota || '' };
     }
 
     function calcularAhorroContraentrega(items, subtotal) {
-      const tieneRacing = items.some(item => String(item.sku).startsWith('MPX-RC-'));
-      const porcentaje = Number(ENVIO_CONFIG.racing?.pagoEnCasaPorcentaje || 0);
-      if (!tieneRacing || !Number.isFinite(porcentaje) || porcentaje <= 0) return { porcentaje:0, valor:0 };
+      const todoEnvioGratis = items.length > 0 && items.every(item => PRODUCTOS.find(producto => producto.sku === item.sku)?.envioGratis);
+      const porcentaje = Number(ENVIO_CONFIG.contraentrega?.pagoEnCasaPorcentaje || 0);
+      if (todoEnvioGratis || !Number.isFinite(porcentaje) || porcentaje <= 0) return { porcentaje:0, valor:0 };
       return { porcentaje, valor:Math.round(subtotal * porcentaje / 100) };
     }
 

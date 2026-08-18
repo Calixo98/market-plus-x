@@ -67,6 +67,25 @@ test('calcula la guía Racing según ciudad, valor y forma de pago', () => {
   assert.equal(anticipado.pagoEnCasa, 0);
 });
 
+test('aplica Pago en Casa a las gafas y conserva la tarifa de caja pequeña', () => {
+  const item = [{ sku: 'MPX-G-STD', qty: 1, precio: 319000, envioGratis: false }];
+  const contraentrega = catalogo.calcularEnvio({ ciudad: 'Bogotá D.C.', items: item, subtotal: 319000, metodoPago: 'contraentrega' });
+  const anticipado = catalogo.calcularEnvio({ ciudad: 'Bogotá D.C.', items: item, subtotal: 319000, metodoPago: 'bold' });
+  assert.equal(contraentrega.base, 12000);
+  assert.equal(contraentrega.pagoEnCasa, 15950);
+  assert.equal(contraentrega.total, 27950);
+  assert.deepEqual(contraentrega.paquete, { tipo: 'caja_pequena', kilosAdicionales: 0 });
+  assert.equal(anticipado.total, 12000);
+  assert.equal(anticipado.pagoEnCasa, 0);
+});
+
+test('respeta el envío gratis de las gafas incluso en contraentrega', () => {
+  const item = [{ sku: 'MPX-G-ULTRA-NEG', qty: 1, precio: 420000, envioGratis: true }];
+  const contraentrega = catalogo.calcularEnvio({ ciudad: 'Medellín', items: item, subtotal: 420000, metodoPago: 'contraentrega' });
+  assert.equal(contraentrega.total, 0);
+  assert.equal(contraentrega.pagoEnCasa, 0);
+});
+
 test('dos clientes no reservan simultáneamente la última unidad', async () => {
   store.set('stock:MPX-G-PRO', '1');
   const results = await Promise.allSettled([createCodOrder(input('Casual Pro')), createCodOrder(input('Casual Pro'))]);

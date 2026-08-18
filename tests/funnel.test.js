@@ -71,6 +71,8 @@ test('contraentrega usa selección progresiva, consentimiento y confirmación cl
   assert.match(checkout, /cod_order_submitted/);
   assert.match(read('envios.json'), /Valor estimado para 5 kg facturables/);
   assert.match(checkout, /pagoEnCasaPorcentaje/);
+  assert.match(read('envios.json'), /"tipoPaquete": "caja_pequena"/);
+  assert.match(checkout, /ENVIO_CONFIG\.contraentrega/);
   assert.match(checkout, /id="codSavingsNotice"/);
   assert.match(checkout, /Ahorra <span id="codSavingsAmount">\$0<\/span> pagando en línea/);
   assert.match(checkout, /id="switchToBold"/);
