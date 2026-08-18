@@ -94,6 +94,16 @@ test('cancelar una contraentrega confirmada libera la unidad reservada', async (
   assert.equal(store.get('stock:MPX-G-STD'), '1');
 });
 
+test('el stock publico bloquea un pedido abierto aunque el contador no se haya actualizado', async () => {
+  store.set('stock:MPX-RC-P12-ROJ', '1');
+  store.set('pedido:MPX-COD-RESERVA-01', JSON.stringify({ estado: 'COD_CONFIRMED', stockLiberado: false, items: [{ sku: 'MPX-RC-P12-ROJ', qty: 1 }] }));
+  let stock = await catalogo.stockDeTodos();
+  assert.equal(stock['MPX-RC-P12-ROJ'], 0);
+  store.set('pedido:MPX-COD-RESERVA-01', JSON.stringify({ estado: 'COD_CANCELLED', stockLiberado: true, items: [{ sku: 'MPX-RC-P12-ROJ', qty: 1 }] }));
+  stock = await catalogo.stockDeTodos();
+  assert.equal(stock['MPX-RC-P12-ROJ'], 1);
+});
+
 test('vencer una reserva en paralelo libera stock una sola vez', async () => {
   store.set('stock:MPX-G-PRO', '1');
   const order = await createCodOrder(input('Casual Pro'));
