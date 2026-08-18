@@ -229,15 +229,16 @@
   }
 
   function marcarAgotados() {
-    fetch('api/stock')
+    fetch('api/stock', { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (!data || !data.stock) return;
-        document.querySelectorAll('[data-add-to-cart]').forEach(btn => {
+        document.querySelectorAll('[data-add-to-cart], [data-buy-now]').forEach(btn => {
           const disponible = data.stock[btn.dataset.sku];
           if (disponible === 0) {
             btn.disabled = true;
             btn.textContent = 'Agotado';
+            btn.setAttribute('aria-disabled', 'true');
             btn.classList.add('opacity-50', 'cursor-not-allowed');
           }
         });

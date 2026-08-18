@@ -19,7 +19,10 @@ test('scripts propios y scripts inline tienen sintaxis valida', () => {
 
 test('la tienda prioriza compra web y deja WhatsApp como respaldo', () => {
   const commercial = pages.map(read).join('\n');
+  const cart = read('carrito.js');
   assert.match(commercial, /data-buy-now/);
+  assert.match(cart, /\[data-add-to-cart\], \[data-buy-now\]/);
+  assert.match(cart, /fetch\('api\/stock', \{ cache: 'no-store' \}\)/);
   assert.match(commercial, /data-open-chat/);
   assert.doesNotMatch(commercial, /Comprar por WhatsApp|Lo quiero por WhatsApp|BOTÓN FLOTANTE WHATSAPP/i);
   assert.doesNotMatch(commercial, /fbq\('track',\s*'Contact'/);
