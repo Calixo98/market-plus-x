@@ -182,7 +182,7 @@
       document.head.appendChild(script);
     }
 
-    let RC, PRODUCTOS, STOCK, REVIEWS = { general: [], bySku: {} };
+    let RC, PRODUCTOS, STOCK, STOCK_OK = false, REVIEWS = { general: [], bySku: {} };
 
     async function cargar() {
       const params = new URLSearchParams(location.search);
@@ -190,10 +190,10 @@
       const [rc, productos, stockResp, reviews] = await Promise.all([
         fetch('rc-crawlers.json').then(r => r.json()),
         fetch('productos.json').then(r => r.json()),
-        fetch('api/stock').then(r => r.json()).catch(() => ({ stock: {} })),
+        fetch('api/stock', { cache: 'no-store' }).then(r => r.json()).catch(() => ({ ok: false, stock: {} })),
         fetch('rc-reviews.json').then(r => r.json()).catch(() => ({ general: [], bySku: {} })),
       ]);
-      RC = rc; PRODUCTOS = productos; STOCK = stockResp.stock || {};
+      RC = rc; PRODUCTOS = productos; STOCK = stockResp.stock || {}; STOCK_OK = stockResp.ok !== false;
       REVIEWS = {
         general: Array.isArray(reviews?.general) ? reviews.general : [],
         bySku: reviews?.bySku && typeof reviews.bySku === 'object' ? reviews.bySku : {},
@@ -265,7 +265,8 @@
       const esVendidoOMostrador = p.estado !== 'disponible';
       const precio = esVendidoOMostrador ? p.precio_historico : precioDe(p.sku);
       const stock = STOCK[p.sku];
-      const agotado = !esVendidoOMostrador && stock === 0;
+      const reservado = !esVendidoOMostrador && STOCK_OK && stock === 0;
+      const agotado = reservado;
 
       document.title = `${p.nombre} | MK Racing | Market Plus X`;
       document.getElementById('pageTitle').textContent = document.title;
@@ -341,7 +342,7 @@
         ctaHTML = `
           <button data-buy-now data-sku="${esc(p.sku)}" ${agotado ? 'disabled' : ''}
              class="btn-sharp flex-1 inline-flex items-center justify-center gap-2 px-6 py-4 text-sm font-mono font-bold text-night transition" style="background:${agotado ? '' : '#C8F02A'};">
-            <i class="fa-solid ${agotado ? 'fa-ban' : 'fa-arrow-right'}"></i> ${agotado ? 'Agotado' : 'Comprar ahora'}
+            <i class="fa-solid ${agotado ? 'fa-lock' : 'fa-arrow-right'}"></i> ${agotado ? 'Reservada' : 'Comprar ahora'}
           </button>
           <button type="button" data-open-chat data-chat-prompt="María Paula, tengo dudas sobre ${esc(p.nombre)} (${esc(p.sku)})." class="btn-sharp flex-1 inline-flex items-center justify-center gap-2 border px-6 py-4 text-sm font-mono font-bold text-ink transition" style="border-color:rgba(242,241,236,.24)"><i class="fa-regular fa-comments"></i> Consultar asesor</button>`;
       }
@@ -359,13 +360,14 @@
             <div class="mt-3 grid grid-cols-6 gap-2">${thumbsHTML}</div>
           </div>
           <div>
-            ${esVendidoOMostrador ? `<span class="inline-block rounded-full px-3 py-1 text-[10px] font-mono font-bold mb-3" style="background:rgba(242,241,236,.12); color:#F2F1EC;">${p.estado === 'vendido' ? 'Vendido' : 'Unidad de exhibición'}</span>` : ''}
+            ${esVendidoOMostrador || reservado ? `<span class="inline-block rounded-full px-3 py-1 text-[10px] font-mono font-bold mb-3" style="background:rgba(242,241,236,.12); color:#F2F1EC;">${reservado ? 'Reservada' : p.estado === 'vendido' ? 'Vendido' : 'Unidad de exhibición'}</span>` : ''}
             <h1 class="text-3xl sm:text-4xl font-extrabold font-display tracking-tight">${esc(p.nombre)}</h1>
             <p class="mt-3 text-sm" style="color:rgba(242,241,236,.65);">${esc(p.angulo_venta)}</p>
             ${variantesHTML}
             <p class="mt-5 text-3xl font-bold font-display text-ink">${precio != null ? fmt(precio) : '—'} <span class="text-sm font-mono font-medium" style="color:rgba(242,241,236,.5);">COP</span></p>
             <p class="mt-1 text-xs font-mono" style="color:rgba(242,241,236,.5);">Contra entrega nacional · Paga al recibir</p>
             <div class="mt-5 flex flex-col sm:flex-row gap-3">${ctaHTML}</div>
+            ${reservado ? '<p class="mt-3 text-xs font-mono" style="color:rgba(242,241,236,.55);">Esta unidad está asignada a un pedido confirmado y no puede volver a comprarse. Si el pedido se cancela, regresará automáticamente al catálogo.</p>' : ''}
             <p class="mt-3 text-xs font-mono" style="color:rgba(242,241,236,.45);">+14 años · Garantía ${p.garantia_dias} días de fábrica</p>
             ${claimsHTML}
             ${incluyeHTML}

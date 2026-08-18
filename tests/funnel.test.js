@@ -82,10 +82,14 @@ test('contraentrega usa selección progresiva, consentimiento y confirmación cl
 
 test('las unidades sin stock no aparecen como disponibles y se pueden liberar al cancelar', () => {
   const racing = read('racing.html');
+  const product = read('racing-producto.html');
   const admin = read('admin-pedidos.html');
   const orders = read('lib/orders.js');
   assert.match(racing, /Number\(STOCK\[p\.sku\]\) > 0/);
   assert.match(racing, /No hay unidades disponibles ahora/);
+  assert.match(racing, /const badge = reservado \? 'Reservada'/);
+  assert.match(racing, /p\.estado === 'disponible' && STOCK_OK && Number\(STOCK\[p\.sku\]\) === 0/);
+  assert.match(product, /\$\{agotado \? 'Reservada' : 'Comprar ahora'\}/);
   assert.match(admin, /COD_CONFIRMED/);
   assert.match(admin, /La unidad permanece reservada/);
   assert.match(admin, /Reactivar y confirmar/);

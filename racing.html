@@ -276,7 +276,7 @@
       const [rc, productos, stockResp] = await Promise.all([
         fetch('rc-crawlers.json').then(r => r.json()),
         fetch('productos.json').then(r => r.json()),
-        fetch('api/stock').then(r => r.json()).catch(() => ({ ok: false, stock: {} })),
+        fetch('api/stock', { cache: 'no-store' }).then(r => r.json()).catch(() => ({ ok: false, stock: {} })),
       ]);
       RC = rc;
       productos.productos.forEach(p => { PRECIOS[p.sku] = p.precio; });
@@ -353,7 +353,9 @@
     }
 
     function cardVendidoHTML(p) {
-      const badge = p.estado === 'vendido' ? 'Vendido' : 'Unidad de exhibición';
+      const reservado = p.estado === 'disponible' && STOCK_OK && Number(STOCK[p.sku]) === 0;
+      const badge = reservado ? 'Reservada' : p.estado === 'vendido' ? 'Vendido' : 'Unidad de exhibición';
+      const precio = reservado ? PRECIOS[p.sku] : p.precio_historico;
       return `
         <article class="bento grayscale-card flex flex-col overflow-hidden">
           <div class="aspect-[4/3] overflow-hidden relative" style="background:rgba(242,241,236,.03);">
@@ -362,9 +364,11 @@
           </div>
           <div class="p-5 flex flex-col gap-2">
             <span class="font-bold font-mono text-ink">${esc(p.nombre)}</span>
-            <p class="text-xs" style="color:rgba(242,241,236,.5);">${p.precio_historico ? fmt(p.precio_historico) : ''}</p>
-            ${p.estado === 'vendido'
-              ? `<button type="button" data-open-chat data-chat-prompt="María Paula, avísame si vuelve un modelo similar a ${esc(p.nombre)} (${esc(p.sku)})." class="btn-sharp mt-2 inline-flex items-center justify-center gap-2 border px-4 py-2.5 text-xs font-mono font-bold transition" style="border-color:rgba(242,241,236,.3); color:#F2F1EC;">Consultar disponibilidad</button>`
+            <p class="text-xs" style="color:rgba(242,241,236,.5);">${precio != null ? fmt(precio) : ''}</p>
+            ${reservado
+              ? `<p class="text-xs leading-relaxed" style="color:rgba(242,241,236,.55);">Pedido confirmado. Volverá al catálogo únicamente si se cancela y se libera la unidad.</p><button type="button" data-open-chat data-chat-prompt="María Paula, avísame si se libera la reserva de ${esc(p.nombre)} (${esc(p.sku)})." class="btn-sharp mt-2 inline-flex items-center justify-center gap-2 border px-4 py-2.5 text-xs font-mono font-bold transition" style="border-color:rgba(242,241,236,.3); color:#F2F1EC;">Avisarme si se libera</button>`
+              : p.estado === 'vendido'
+                ? `<button type="button" data-open-chat data-chat-prompt="María Paula, avísame si vuelve un modelo similar a ${esc(p.nombre)} (${esc(p.sku)})." class="btn-sharp mt-2 inline-flex items-center justify-center gap-2 border px-4 py-2.5 text-xs font-mono font-bold transition" style="border-color:rgba(242,241,236,.3); color:#F2F1EC;">Consultar disponibilidad</button>`
               : ''}
           </div>
         </article>`;
@@ -378,7 +382,9 @@
     }
 
     function renderVendidos() {
-      const items = RC.productos.filter(p => p.estado === 'vendido' || p.estado === 'mostrador').sort((a,b) => a.orden - b.orden);
+      const items = RC.productos
+        .filter(p => p.estado === 'vendido' || p.estado === 'mostrador' || (p.estado === 'disponible' && STOCK_OK && Number(STOCK[p.sku]) === 0))
+        .sort((a,b) => a.orden - b.orden);
       document.getElementById('gridVendidos').innerHTML = items.map(cardVendidoHTML).join('');
     }
 
