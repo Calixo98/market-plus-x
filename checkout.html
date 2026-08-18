@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Finalizar compra | Market Plus X</title>
-  <meta name="description" content="Finaliza tu compra en Market Plus X — pago seguro con Bold (tarjeta, PSE, Nequi, Bancolombia)." />
+  <meta name="description" content="Finaliza tu compra en Market Plus X. Pago seguro con Bold (tarjeta, PSE, Nequi, Bancolombia)." />
   <meta name="theme-color" content="#07080A" />
   <meta name="robots" content="noindex,nofollow" />
 
@@ -16,7 +16,7 @@
   })(window,document,'script','dataLayer','GTM-MLNX9XJ7');</script>
   <!-- End Google Tag Manager -->
 
-  <!-- Google tag (gtag.js) — GA4 -->
+  <!-- Google tag (gtag.js) - GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-0QH4MFCW2X"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -169,6 +169,18 @@
           <p class="text-xs font-mono font-semibold uppercase tracking-[.12em] text-accent">Paso 2 de 2</p>
           <h2 id="formTitle" class="text-lg font-bold font-display">Datos de envío</h2>
           <p id="formIntro" class="text-sm" style="color:rgba(242,241,236,.58)"></p>
+          <div id="codSavingsNotice" class="hidden border p-4" style="border-color:rgba(200,240,42,.46);background:rgba(200,240,42,.07)" role="status" aria-live="polite">
+            <div class="flex items-start gap-3">
+              <i class="fa-solid fa-piggy-bank mt-0.5 text-accent" aria-hidden="true"></i>
+              <div>
+                <strong class="block font-display text-sm">Ahorra <span id="codSavingsAmount">$0</span> pagando en línea</strong>
+                <p class="mt-1 text-xs leading-relaxed" style="color:rgba(242,241,236,.66)">La contraentrega añade <span id="codSavingsPercent">5%</span> por el servicio de recaudo. Con Bold evitas ese costo.</p>
+                <button id="switchToBold" type="button" class="mt-3 inline-flex items-center gap-2 border px-4 py-2 text-xs font-mono font-bold text-accent transition active:translate-y-px" style="border-color:rgba(200,240,42,.58)">
+                  <i class="fa-solid fa-lock" aria-hidden="true"></i> Cambiar a pago en línea
+                </button>
+              </div>
+            </div>
+          </div>
           <div>
             <label for="nombre" class="block text-xs font-semibold uppercase tracking-wide font-mono mb-1.5" style="color:rgba(242,241,236,.50)">Nombre completo</label>
             <input type="text" id="nombre" name="nombre" autocomplete="name" required aria-describedby="formError" class="w-full rounded-xl px-4 py-3 text-sm" placeholder="Como aparece en tu documento" />
@@ -303,6 +315,13 @@
       return { total:Math.ceil((base + pagoEnCasa) / redondeo) * redondeo, estimado:true, zona, nota:racing.nota || '' };
     }
 
+    function calcularAhorroContraentrega(items, subtotal) {
+      const tieneRacing = items.some(item => String(item.sku).startsWith('MPX-RC-'));
+      const porcentaje = Number(ENVIO_CONFIG.racing?.pagoEnCasaPorcentaje || 0);
+      if (!tieneRacing || !Number.isFinite(porcentaje) || porcentaje <= 0) return { porcentaje:0, valor:0 };
+      return { porcentaje, valor:Math.round(subtotal * porcentaje / 100) };
+    }
+
     async function renderResumen() {
       const items = window.MPXCarrito.leer();
       const cont = document.getElementById('resumenItems');
@@ -332,6 +351,13 @@
       }).join('');
 
       document.getElementById('resumenSubtotal').textContent = fmt(subtotal);
+
+      const ahorroContraentrega = calcularAhorroContraentrega(items, subtotal);
+      const codSavingsNotice = document.getElementById('codSavingsNotice');
+      const mostrarAhorro = paymentMethod === 'cod' && ahorroContraentrega.valor > 0;
+      codSavingsNotice.classList.toggle('hidden', !mostrarAhorro);
+      document.getElementById('codSavingsAmount').textContent = fmt(ahorroContraentrega.valor);
+      document.getElementById('codSavingsPercent').textContent = `${ahorroContraentrega.porcentaje}%`;
 
       const ciudad = ciudadSeleccionada();
       const envioNota = document.getElementById('resumenEnvioNota');
@@ -389,6 +415,16 @@
 
     document.getElementById('selectBold').addEventListener('click', () => seleccionarMetodo('bold'));
     document.getElementById('selectContraentrega').addEventListener('click', () => seleccionarMetodo('cod'));
+    document.getElementById('switchToBold').addEventListener('click', () => {
+      const items = window.MPXCarrito.leer();
+      const subtotal = items.reduce((total, item) => {
+        const producto = PRODUCTOS.find(p => p.sku === item.sku);
+        return total + (Number(producto?.precio || 0) * Number(item.qty || 1));
+      }, 0);
+      const ahorro = calcularAhorroContraentrega(items, subtotal);
+      window.MPXAnalytics?.track('cod_savings_offer_selected', { currency:'COP', value:ahorro.valor, percentage:ahorro.porcentaje });
+      seleccionarMetodo('bold');
+    });
 
     // Limpia el aria-invalid de un intento anterior antes de validar de nuevo.
     function limpiarInvalidos() {
@@ -397,7 +433,7 @@
       });
     }
 
-    // Muestra el error, lo asocia al campo culpable, y le mueve el foco — así
+    // Muestra el error, lo asocia al campo culpable, y le mueve el foco. Así
     // el usuario SIEMPRE ve o siente que algo paso (no solo un texto que puede
     // quedar fuera de la pantalla en movil), y un lector de pantalla lo anuncia
     // de inmediato por el aria-live del propio elemento.
