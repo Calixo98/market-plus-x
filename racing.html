@@ -269,18 +269,19 @@
 
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const fmt = n => '$' + Number(n).toLocaleString('es-CO');
-    let RC = null, PRECIOS = {}, STOCK = {};
+    let RC = null, PRECIOS = {}, STOCK = {}, STOCK_OK = false;
     let filtroActivo = 'todos';
 
     async function cargar() {
       const [rc, productos, stockResp] = await Promise.all([
         fetch('rc-crawlers.json').then(r => r.json()),
         fetch('productos.json').then(r => r.json()),
-        fetch('api/stock').then(r => r.json()).catch(() => ({ stock: {} })),
+        fetch('api/stock').then(r => r.json()).catch(() => ({ ok: false, stock: {} })),
       ]);
       RC = rc;
       productos.productos.forEach(p => { PRECIOS[p.sku] = p.precio; });
       STOCK = stockResp.stock || {};
+      STOCK_OK = stockResp.ok !== false;
       renderFiltros();
       render();
       renderVendidos();
@@ -304,6 +305,10 @@
     function disponibles() {
       return RC.productos
         .filter(p => p.estado === 'disponible')
+        // Una unidad con stock 0 puede estar reservada por una contraentrega
+        // confirmada. No se muestra en el catalogo hasta que el pedido libere
+        // inventario mediante cancelacion.
+        .filter(p => !STOCK_OK || Number(STOCK[p.sku]) > 0)
         .filter(p => p.variante_primaria !== false) // el secundario (gris) no sale como tarjeta propia
         .filter(p => filtroActivo === 'todos' || p.familia === filtroActivo)
         .sort((a, b) => a.orden - b.orden);
@@ -366,7 +371,10 @@
     }
 
     function render() {
-      document.getElementById('grid').innerHTML = disponibles().map(cardHTML).join('');
+      const disponiblesAhora = disponibles();
+      document.getElementById('grid').innerHTML = disponiblesAhora.length
+        ? disponiblesAhora.map(cardHTML).join('')
+        : `<div class="bento p-6 sm:p-8 text-center sm:col-span-2 lg:col-span-3"><p class="font-display font-bold text-lg">No hay unidades disponibles ahora.</p><p class="mt-2 text-sm" style="color:rgba(242,241,236,.58);">Las unidades reservadas quedan fuera del catálogo mientras el pedido está abierto. Si se cancela y se libera inventario, volverán a mostrarse.</p><button type="button" data-open-chat data-chat-prompt="María Paula, quiero saber cuándo vuelve a estar disponible un crawler MK Racing." class="mt-4 inline-flex items-center gap-2 text-sm font-mono font-semibold text-accent hover:text-accent-hover"><i class="fa-regular fa-comments"></i> Consultar disponibilidad</button></div>`;
     }
 
     function renderVendidos() {

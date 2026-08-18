@@ -71,6 +71,17 @@ test('contraentrega usa selección progresiva, consentimiento y confirmación cl
   assert.match(checkout, /cod_order_submitted/);
 });
 
+test('las unidades sin stock no aparecen como disponibles y se pueden liberar al cancelar', () => {
+  const racing = read('racing.html');
+  const admin = read('admin-pedidos.html');
+  const orders = read('lib/orders.js');
+  assert.match(racing, /Number\(STOCK\[p\.sku\]\) > 0/);
+  assert.match(racing, /No hay unidades disponibles ahora/);
+  assert.match(admin, /COD_CONFIRMED/);
+  assert.match(admin, /La unidad permanece reservada/);
+  assert.match(orders, /\['COD_PENDING_CONFIRMATION', 'COD_CONFIRMED'\]\.includes\(order\.estado\)/);
+});
+
 test('Purchase de contraentrega solo se emite al confirmar', () => {
   const orders = read('lib/orders.js');
   const confirmAt = orders.indexOf("action === 'confirm'");

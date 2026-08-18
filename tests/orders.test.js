@@ -82,6 +82,18 @@ test('cancelar dos veces libera la reserva una sola vez', async () => {
   assert.equal(JSON.parse(store.get(`pedido:${order.referencia}`)).estado, 'COD_CANCELLED');
 });
 
+test('cancelar una contraentrega confirmada libera la unidad reservada', async () => {
+  store.set('stock:MPX-G-STD', '1');
+  const order = await createCodOrder(input('Casual Standard'));
+  await updateCodOrder(order.referencia, 'confirm');
+  assert.equal(store.get('stock:MPX-G-STD'), '0');
+  await updateCodOrder(order.referencia, 'cancel');
+  assert.equal(store.get('stock:MPX-G-STD'), '1');
+  assert.equal(JSON.parse(store.get(`pedido:${order.referencia}`)).estado, 'COD_CANCELLED');
+  await updateCodOrder(order.referencia, 'cancel');
+  assert.equal(store.get('stock:MPX-G-STD'), '1');
+});
+
 test('vencer una reserva en paralelo libera stock una sola vez', async () => {
   store.set('stock:MPX-G-PRO', '1');
   const order = await createCodOrder(input('Casual Pro'));

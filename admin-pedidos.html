@@ -144,8 +144,8 @@
         </div>
       </div>
       <div id="accionesPago" class="hidden mt-5 rounded-xl border p-4" style="border-color:rgba(250,204,21,.25); background:rgba(250,204,21,.06)">
-        <h3 class="font-bold font-mono">Contraentrega pendiente</h3>
-        <p class="mt-1 text-sm" style="color:rgba(242,241,236,.66)">Estas acciones cambian el estado real de contraentrega y el inventario.</p>
+        <h3 id="tituloAccionesPago" class="font-bold font-mono">Contraentrega pendiente</h3>
+        <p id="ayudaAccionesPago" class="mt-1 text-sm" style="color:rgba(242,241,236,.66)">Estas acciones cambian el estado real de contraentrega y el inventario.</p>
         <div class="mt-3 flex flex-wrap gap-2"><button id="btnConfirmarCod" type="button" class="btn-sharp px-4 py-2 text-sm font-bold text-night" style="background:#C8F02A">Confirmar contraentrega</button><button id="btnCancelarCod" type="button" class="btn-sharp border px-4 py-2 text-sm font-bold text-ink" style="border-color:rgba(248,113,113,.5)">Cancelar pedido</button></div>
       </div>
       <div class="mt-7 grid lg:grid-cols-2 gap-5">
@@ -177,6 +177,8 @@
       const historyEl = document.getElementById('historial');
       const notesEl = document.getElementById('notas');
       const paymentActionsEl = document.getElementById('accionesPago');
+      const paymentActionsTitleEl = document.getElementById('tituloAccionesPago');
+      const paymentActionsHelpEl = document.getElementById('ayudaAccionesPago');
       let pedidos = [];
       let seleccionado = null;
 
@@ -306,7 +308,14 @@
         detailStatusEl.value = seleccionado.crmStatus || 'NEW'; stateNoteEl.value = ''; newNoteEl.value = '';
         renderList(historyEl, seleccionado.historial || [], item => `${date(item.fecha)} · ${item.usuario || 'admin'} · ${item.estadoAnterior || '—'} → ${item.estadoNuevo || '—'}${item.nota ? ` · ${item.nota}` : ''}`, 'No hay cambios registrados.');
         renderList(notesEl, seleccionado.notasInternas || [], item => `${date(item.fecha)} · ${item.usuario || 'admin'} · ${item.texto}`, 'No hay notas internas.');
-        paymentActionsEl.classList.toggle('hidden', !(seleccionado.metodo === 'contraentrega' && seleccionado.estado === 'COD_PENDING_CONFIRMATION'));
+        const codPending = seleccionado.metodo === 'contraentrega' && seleccionado.estado === 'COD_PENDING_CONFIRMATION';
+        const codConfirmed = seleccionado.metodo === 'contraentrega' && seleccionado.estado === 'COD_CONFIRMED';
+        paymentActionsEl.classList.toggle('hidden', !(codPending || codConfirmed));
+        document.getElementById('btnConfirmarCod').classList.toggle('hidden', !codPending);
+        paymentActionsTitleEl.textContent = codConfirmed ? 'Contraentrega confirmada' : 'Contraentrega pendiente';
+        paymentActionsHelpEl.textContent = codConfirmed
+          ? 'La unidad permanece reservada hasta despacharla o cancelar el pedido.'
+          : 'Estas acciones cambian el estado real de contraentrega y el inventario.';
         detailEl.classList.remove('hidden');
       }
 
