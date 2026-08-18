@@ -117,6 +117,19 @@ test('reactivar una contraentrega expirada vuelve a reservar el inventario', asy
   assert.equal(store.get('stock:MPX-RC-P12-ROJ'), '0');
 });
 
+test('reactivar una contraentrega cancelada conserva la venta contabilizada', async () => {
+  store.set('stock:MPX-RC-P12-ROJ', '1');
+  const order = await createCodOrder({ ...input('Casual Standard'), items: [{ sku: 'MPX-RC-P12-ROJ', qty: 1 }], product_name: undefined });
+  await updateCodOrder(order.referencia, 'confirm');
+  await updateCodOrder(order.referencia, 'cancel');
+  assert.equal(store.get('stock:MPX-RC-P12-ROJ'), '1');
+  const reactivated = await updateCodOrder(order.referencia, 'confirm_cancelled');
+  assert.equal(reactivated.estado, 'COD_CONFIRMED');
+  assert.equal(reactivated.stockLiberado, false);
+  assert.equal(store.get('stock:MPX-RC-P12-ROJ'), '0');
+  assert.equal(store.get('vendido:MPX-RC-P12-ROJ'), '1');
+});
+
 test('vencer una reserva en paralelo libera stock una sola vez', async () => {
   store.set('stock:MPX-G-PRO', '1');
   const order = await createCodOrder(input('Casual Pro'));
