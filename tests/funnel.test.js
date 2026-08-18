@@ -79,6 +79,8 @@ test('las unidades sin stock no aparecen como disponibles y se pueden liberar al
   assert.match(racing, /No hay unidades disponibles ahora/);
   assert.match(admin, /COD_CONFIRMED/);
   assert.match(admin, /La unidad permanece reservada/);
+  assert.match(admin, /Reactivar y confirmar/);
+  assert.match(orders, /confirm_expired/);
   assert.match(orders, /\['COD_PENDING_CONFIRMATION', 'COD_CONFIRMED'\]\.includes\(order\.estado\)/);
 });
 

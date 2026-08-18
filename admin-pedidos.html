@@ -308,14 +308,19 @@
         detailStatusEl.value = seleccionado.crmStatus || 'NEW'; stateNoteEl.value = ''; newNoteEl.value = '';
         renderList(historyEl, seleccionado.historial || [], item => `${date(item.fecha)} · ${item.usuario || 'admin'} · ${item.estadoAnterior || '—'} → ${item.estadoNuevo || '—'}${item.nota ? ` · ${item.nota}` : ''}`, 'No hay cambios registrados.');
         renderList(notesEl, seleccionado.notasInternas || [], item => `${date(item.fecha)} · ${item.usuario || 'admin'} · ${item.texto}`, 'No hay notas internas.');
-        const codPending = seleccionado.metodo === 'contraentrega' && seleccionado.estado === 'COD_PENDING_CONFIRMATION';
-        const codConfirmed = seleccionado.metodo === 'contraentrega' && seleccionado.estado === 'COD_CONFIRMED';
-        paymentActionsEl.classList.toggle('hidden', !(codPending || codConfirmed));
-        document.getElementById('btnConfirmarCod').classList.toggle('hidden', !codPending);
-        paymentActionsTitleEl.textContent = codConfirmed ? 'Contraentrega confirmada' : 'Contraentrega pendiente';
-        paymentActionsHelpEl.textContent = codConfirmed
-          ? 'La unidad permanece reservada hasta despacharla o cancelar el pedido.'
-          : 'Estas acciones cambian el estado real de contraentrega y el inventario.';
+        const crmLocked = ['DISPATCHED', 'COMPLETED'].includes(seleccionado.crmStatus);
+        const codPending = seleccionado.metodo === 'contraentrega' && seleccionado.estado === 'COD_PENDING_CONFIRMATION' && !crmLocked;
+        const codConfirmed = seleccionado.metodo === 'contraentrega' && seleccionado.estado === 'COD_CONFIRMED' && !crmLocked;
+        const codExpired = seleccionado.metodo === 'contraentrega' && seleccionado.estado === 'COD_EXPIRED' && !crmLocked;
+        paymentActionsEl.classList.toggle('hidden', !(codPending || codConfirmed || codExpired));
+        document.getElementById('btnConfirmarCod').classList.toggle('hidden', !(codPending || codExpired));
+        document.getElementById('btnConfirmarCod').textContent = codExpired ? 'Reactivar y confirmar' : 'Confirmar contraentrega';
+        paymentActionsTitleEl.textContent = codExpired ? 'Contraentrega expirada' : codConfirmed ? 'Contraentrega confirmada' : 'Contraentrega pendiente';
+        paymentActionsHelpEl.textContent = codExpired
+          ? 'La reserva venció. Al reactivar se comprobará el stock y la unidad volverá a quedar bloqueada.'
+          : codConfirmed
+            ? 'La unidad permanece reservada hasta despacharla o cancelar el pedido.'
+            : 'Estas acciones cambian el estado real de contraentrega y el inventario.';
         detailEl.classList.remove('hidden');
       }
 
@@ -347,7 +352,8 @@
       async function updatePayment(action) {
         if (!seleccionado) return;
         if (action === 'cancel' && !window.confirm('¿Confirmas cancelar esta contraentrega y liberar el inventario?')) return;
-        try { const data = await request('PATCH', { action, referencia: seleccionado.referencia }); replaceOrder(data.pedido); showStatus(action === 'confirm' ? 'Contraentrega confirmada.' : 'Pedido cancelado.', 'success'); }
+        if (action === 'confirm_expired' && !window.confirm('¿Confirmas reactivar esta contraentrega y volver a reservar el inventario?')) return;
+        try { const data = await request('PATCH', { action, referencia: seleccionado.referencia }); replaceOrder(data.pedido); showStatus(action === 'cancel' ? 'Pedido cancelado.' : 'Contraentrega confirmada.', 'success'); }
         catch (error) { showStatus(error.message, 'error'); }
       }
 
@@ -358,7 +364,7 @@
       document.getElementById('btnCerrarDetalle').addEventListener('click', () => { detailEl.classList.add('hidden'); seleccionado = null; });
       document.getElementById('btnGuardarEstado').addEventListener('click', saveCrmStatus);
       document.getElementById('btnAgregarNota').addEventListener('click', addNote);
-      document.getElementById('btnConfirmarCod').addEventListener('click', () => updatePayment('confirm'));
+      document.getElementById('btnConfirmarCod').addEventListener('click', () => updatePayment(seleccionado?.estado === 'COD_EXPIRED' ? 'confirm_expired' : 'confirm'));
       document.getElementById('btnCancelarCod').addEventListener('click', () => updatePayment('cancel'));
     })();
   </script>

@@ -57,7 +57,7 @@ module.exports = async (req, res) => {
       const { referencia, action } = body;
 
       // Compatibilidad con las acciones existentes de contraentrega.
-      if (action === 'confirm' || action === 'cancel') {
+      if (action === 'confirm' || action === 'confirm_expired' || action === 'cancel') {
         await updateCodOrder(referencia, action);
         return res.status(200).json({ ok: true, pedido: await getOrderWithCrm(referencia) });
       }
