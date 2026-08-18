@@ -69,7 +69,7 @@ test('contraentrega usa selección progresiva, consentimiento y confirmación cl
   assert.match(checkout, /aceptar la politica de privacidad/i);
   assert.match(checkout, /Pronto te contactaremos/);
   assert.match(checkout, /cod_order_submitted/);
-  assert.match(read('envios.json'), /Valor estimado\. Puede variar al confirmar la guía/);
+  assert.match(read('envios.json'), /Valor estimado para 5 kg facturables/);
   assert.match(checkout, /pagoEnCasaPorcentaje/);
   assert.match(read('api/checkout.js'), /catalogo\.calcularEnvio/);
 });

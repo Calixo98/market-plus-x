@@ -6,7 +6,7 @@
     "divisorVolumetricoCm3PorKg": 6000,
     "pagoEnCasaPorcentaje": 5,
     "redondeoPesos": 1000,
-    "nota": "Valor estimado. Puede variar al confirmar la guía por peso, volumen, destino, valor declarado y tipo de entrega."
+    "nota": "Valor estimado para 5 kg facturables. En contraentrega incluye Pago en Casa (5%). Puede variar al confirmar la guía por peso, volumen, destino, valor declarado y tipo de entrega."
   },
   "zonas": [
     {
@@ -14,6 +14,7 @@
       "nombre": "Bogotá D.C.",
       "tarifa": 12000,
       "tarifaRacingBase": 7900,
+      "tarifaRacingKiloAdicionalPromedio": 3800,
       "ciudades": ["Bogotá", "Bogotá D.C."]
     },
     {
@@ -21,13 +22,15 @@
       "nombre": "Ciudad principal",
       "tarifa": 15000,
       "tarifaRacingBase": 17600,
+      "tarifaRacingKiloAdicionalPromedio": 7050,
       "ciudades": ["Medellín", "Cali", "Barranquilla", "Cartagena", "Bucaramanga", "Pereira", "Manizales", "Cúcuta"]
     },
     {
       "id": "resto",
       "nombre": "Resto del país",
       "tarifa": 22000,
-      "tarifaRacingBase": 31000,
+      "tarifaRacingBase": 20000,
+      "tarifaRacingKiloAdicionalPromedio": 7050,
       "ciudades": []
     }
   ]

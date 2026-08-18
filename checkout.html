@@ -295,7 +295,9 @@
       const unidadesRacing = items.reduce((total, item) => total + (String(item.sku).startsWith('MPX-RC-') ? Number(item.qty || 1) : 0), 0);
       if (!unidadesRacing) return { total:zona.tarifa, estimado:false, zona };
       const racing = ENVIO_CONFIG.racing || {};
-      const base = Number(zona.tarifaRacingBase || zona.tarifa) * unidadesRacing;
+      const pesoFacturableKg = Math.max(1, Math.ceil(Number(racing.pesoVolumetricoAproximadoKg) || 1));
+      const transportePorUnidad = Number(zona.tarifaRacingBase || zona.tarifa) + (Math.max(0, pesoFacturableKg - 1) * Number(zona.tarifaRacingKiloAdicionalPromedio || 0));
+      const base = transportePorUnidad * unidadesRacing;
       const pagoEnCasa = paymentMethod === 'cod' ? Math.round(subtotal * Number(racing.pagoEnCasaPorcentaje || 0) / 100) : 0;
       const redondeo = Math.max(1, Number(racing.redondeoPesos) || 1);
       return { total:Math.ceil((base + pagoEnCasa) / redondeo) * redondeo, estimado:true, zona, nota:racing.nota || '' };

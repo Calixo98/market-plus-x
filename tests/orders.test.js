@@ -45,8 +45,8 @@ test.beforeEach(() => { store.clear(); lockTails.clear(); emailCount = 0; });
 
 test('estima el envío de MK Racing con peso volumétrico y Pago en Casa', () => {
   const estimate = catalogo.estimarEnvio({ linea: 'racing', ciudad: 'Bogotá D.C.' });
-  assert.equal(estimate.valorReferencial, 39000);
-  assert.deepEqual(estimate.rangoReferencial, { minimo: 34000, maximo: 52000 });
+  assert.equal(estimate.valorReferencial, 54000);
+  assert.deepEqual(estimate.rangoReferencial, { minimo: 49000, maximo: 67000 });
   assert.equal(estimate.zona.id, 'bogota');
   assert.deepEqual(estimate.paquete, {
     pesoVolumetricoKg: 5,
@@ -59,9 +59,11 @@ test('calcula la guía Racing según ciudad, valor y forma de pago', () => {
   const item = [{ sku: 'MPX-RC-P12-ROJ', qty: 1, precio: 521000, envioGratis: false }];
   const contraentrega = catalogo.calcularEnvio({ ciudad: 'Medellín', items: item, subtotal: 521000, metodoPago: 'contraentrega' });
   const anticipado = catalogo.calcularEnvio({ ciudad: 'Medellín', items: item, subtotal: 521000, metodoPago: 'bold' });
-  assert.equal(contraentrega.total, 44000);
+  assert.equal(contraentrega.total, 72000);
+  assert.equal(contraentrega.base, 45800);
   assert.equal(contraentrega.pagoEnCasa, 26050);
-  assert.equal(anticipado.total, 18000);
+  assert.equal(contraentrega.kilosAdicionales, 4);
+  assert.equal(anticipado.total, 46000);
   assert.equal(anticipado.pagoEnCasa, 0);
 });
 
