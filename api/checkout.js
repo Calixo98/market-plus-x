@@ -121,7 +121,10 @@ module.exports = async (req, res) => {
       const subtotal = itemsResueltos.reduce((acc, it) => acc + it.precio * it.qty, 0);
       const todoEnvioGratis = itemsResueltos.every(it => it.envioGratis);
       const zona = catalogo.buscarZonaEnvio(ciudad);
-      const envio = todoEnvioGratis ? 0 : zona.tarifa;
+      const envioDetalle = todoEnvioGratis
+        ? { total: 0, base: 0, pagoEnCasa: 0, estimado: false, zona: { id: zona.id, nombre: zona.nombre } }
+        : catalogo.calcularEnvio({ ciudad, items: itemsResueltos, metodoPago: paymentMethod, subtotal });
+      const envio = envioDetalle.total;
       const porcentaje = Number(upfrontDiscount?.percentage);
       const descuento = upfrontDiscount?.enabled && upfrontDiscount.paymentMethod === paymentMethod && Number.isFinite(porcentaje) && porcentaje > 0 && porcentaje <= 100
         ? Math.round(subtotal * porcentaje / 100)
@@ -169,6 +172,7 @@ module.exports = async (req, res) => {
           subtotal,
           descuento,
           envio,
+          envioDetalle,
           total,
           creadoEn: new Date().toISOString(),
           expiraEn: expirationTime,
@@ -186,7 +190,7 @@ module.exports = async (req, res) => {
       return res.status(200).json({
         ok: true,
         paymentUrl,
-        resumen: { subtotal, descuento, envio, total, zona: zona.nombre },
+        resumen: { subtotal, descuento, envio, envioEstimado: envioDetalle.estimado, notaEnvio: envioDetalle.nota || null, total, zona: zona.nombre },
       });
     } catch (errInterno) {
       // Ya reservamos el stock atomicamente arriba: si algo falla DESPUES de eso

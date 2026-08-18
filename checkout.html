@@ -234,6 +234,7 @@
             <div class="flex justify-between" style="color:rgba(242,241,236,.66)"><span>Subtotal</span><span id="resumenSubtotal">$0</span></div>
             <div id="resumenDescuentoWrap" class="hidden flex justify-between text-accent"><span id="resumenDescuentoLabel">Descuento</span><span id="resumenDescuento">-$0</span></div>
             <div class="flex justify-between" style="color:rgba(242,241,236,.66)"><span>Envío</span><span id="resumenEnvio">Selecciona tu ciudad</span></div>
+            <p id="resumenEnvioNota" class="hidden text-[11px] leading-relaxed" style="color:rgba(242,241,236,.48)"></p>
             <div class="flex justify-between text-lg font-extrabold pt-2 border-t font-display" style="border-color:rgba(242,241,236,.14)"><span>Total</span><span id="resumenTotal">$0</span></div>
           </div>
           <button id="btnPagar" type="submit" form="formCheckout" class="hidden mt-6 w-full inline-flex items-center justify-center gap-2 btn-sharp px-6 py-4 text-base font-bold font-mono text-night transition disabled:cursor-not-allowed" style="background:#C8F02A">
@@ -255,6 +256,7 @@
 
     let PRODUCTOS = [];
     let ZONAS = [];
+    let ENVIO_CONFIG = {};
     let paymentMethod = null;
 
     function configDescuento() {
@@ -285,6 +287,18 @@
       const sel = document.getElementById('ciudad').value;
       if (sel === '__otra__') return document.getElementById('ciudadOtra').value.trim();
       return sel;
+    }
+
+    function calcularEnvioCliente({ items, subtotal, ciudad, todoEnvioGratis }) {
+      const zona = zonaDe(ciudad);
+      if (todoEnvioGratis) return { total:0, estimado:false, zona };
+      const unidadesRacing = items.reduce((total, item) => total + (String(item.sku).startsWith('MPX-RC-') ? Number(item.qty || 1) : 0), 0);
+      if (!unidadesRacing) return { total:zona.tarifa, estimado:false, zona };
+      const racing = ENVIO_CONFIG.racing || {};
+      const base = Number(zona.tarifaRacingBase || zona.tarifa) * unidadesRacing;
+      const pagoEnCasa = paymentMethod === 'cod' ? Math.round(subtotal * Number(racing.pagoEnCasaPorcentaje || 0) / 100) : 0;
+      const redondeo = Math.max(1, Number(racing.redondeoPesos) || 1);
+      return { total:Math.ceil((base + pagoEnCasa) / redondeo) * redondeo, estimado:true, zona, nota:racing.nota || '' };
     }
 
     async function renderResumen() {
@@ -318,15 +332,17 @@
       document.getElementById('resumenSubtotal').textContent = fmt(subtotal);
 
       const ciudad = ciudadSeleccionada();
+      const envioNota = document.getElementById('resumenEnvioNota');
       let envio = 0;
       if (!ciudad) {
         document.getElementById('resumenEnvio').textContent = 'Selecciona tu ciudad';
-      } else if (todoEnvioGratis) {
-        document.getElementById('resumenEnvio').textContent = 'Gratis';
+        envioNota.classList.add('hidden');
       } else {
-        const zona = zonaDe(ciudad);
-        envio = zona.tarifa;
-        document.getElementById('resumenEnvio').textContent = fmt(envio) + ' · ' + zona.nombre;
+        const calculoEnvio = calcularEnvioCliente({ items, subtotal, ciudad, todoEnvioGratis });
+        envio = calculoEnvio.total;
+        document.getElementById('resumenEnvio').textContent = envio === 0 ? 'Gratis' : `${calculoEnvio.estimado ? 'Aprox. ' : ''}${fmt(envio)} · ${calculoEnvio.zona.nombre}`;
+        envioNota.textContent = calculoEnvio.nota || '';
+        envioNota.classList.toggle('hidden', !calculoEnvio.estimado || !calculoEnvio.nota);
       }
 
       const config = configDescuento();
@@ -489,7 +505,7 @@
         const trackedItems = items.map(i => { const p = PRODUCTOS.find(x => x.sku === i.sku); return { ...i, nombre:p?.nombre, precio:p?.precio }; });
         window.MPXAnalytics?.track('cod_order_submitted', { currency:'COP', value:data.resumen.total, items:trackedItems }, { eventId:`cod-lead-${data.referencia}` });
         window.MPXCarrito.vaciar?.();
-        document.getElementById('checkoutContenido').innerHTML = `<div class="lg:col-span-5 bento p-8 sm:p-12 text-center"><span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent text-night text-xl"><i class="fa-solid fa-check"></i></span><p class="mt-6 text-xs font-mono font-semibold uppercase tracking-[.12em] text-accent">Reserva creada · ${data.referencia}</p><h2 class="mt-2 text-2xl sm:text-3xl font-extrabold font-display">¡Listo! Pronto te contactaremos</h2><p class="mt-4 mx-auto max-w-xl" style="color:rgba(242,241,236,.66)">Te escribiremos al WhatsApp que registraste para confirmar la dirección, el producto y los detalles del envío. No necesitas escribirnos primero.</p><div class="mt-7 mx-auto max-w-xl grid sm:grid-cols-3 gap-3 text-left text-xs"><div class="border p-4" style="border-color:rgba(242,241,236,.16)"><strong class="block text-accent">1 · Ahora</strong><span style="color:rgba(242,241,236,.58)">Tu unidad queda reservada por 24 horas.</span></div><div class="border p-4" style="border-color:rgba(242,241,236,.16)"><strong class="block text-accent">2 · Confirmación</strong><span style="color:rgba(242,241,236,.58)">Validamos contigo por WhatsApp.</span></div><div class="border p-4" style="border-color:rgba(242,241,236,.16)"><strong class="block text-accent">3 · Despacho</strong><span style="color:rgba(242,241,236,.58)">Recibes la guía y pagas al recibir.</span></div></div><div class="mt-8 flex flex-col sm:flex-row justify-center gap-3"><a href="index.html#modelos" class="btn-sharp bg-accent px-6 py-3 text-sm font-mono font-bold text-night">Volver a la tienda</a><button type="button" data-open-chat data-chat-prompt="María Paula, tengo una pregunta sobre mi pedido ${data.referencia}." class="btn-sharp border px-6 py-3 text-sm font-mono font-bold text-ink" style="border-color:rgba(242,241,236,.24)">Consultar asesor</button></div></div>`;
+        document.getElementById('checkoutContenido').innerHTML = `<div class="lg:col-span-5 bento p-8 sm:p-12 text-center"><span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent text-night text-xl"><i class="fa-solid fa-check"></i></span><p class="mt-6 text-xs font-mono font-semibold uppercase tracking-[.12em] text-accent">Reserva creada · ${data.referencia}</p><h2 class="mt-2 text-2xl sm:text-3xl font-extrabold font-display">¡Listo! Pronto te contactaremos</h2><p class="mt-4 mx-auto max-w-xl" style="color:rgba(242,241,236,.66)">Te escribiremos al WhatsApp que registraste para confirmar la dirección, el producto y los detalles del envío. El valor mostrado es estimado y puede variar al generar la guía; si cambia, te avisamos antes de despachar.</p><div class="mt-7 mx-auto max-w-xl grid sm:grid-cols-3 gap-3 text-left text-xs"><div class="border p-4" style="border-color:rgba(242,241,236,.16)"><strong class="block text-accent">1 · Ahora</strong><span style="color:rgba(242,241,236,.58)">Tu unidad queda reservada por 24 horas.</span></div><div class="border p-4" style="border-color:rgba(242,241,236,.16)"><strong class="block text-accent">2 · Confirmación</strong><span style="color:rgba(242,241,236,.58)">Validamos contigo por WhatsApp.</span></div><div class="border p-4" style="border-color:rgba(242,241,236,.16)"><strong class="block text-accent">3 · Despacho</strong><span style="color:rgba(242,241,236,.58)">Recibes la guía y pagas al recibir.</span></div></div><div class="mt-8 flex flex-col sm:flex-row justify-center gap-3"><a href="index.html#modelos" class="btn-sharp bg-accent px-6 py-3 text-sm font-mono font-bold text-night">Volver a la tienda</a><button type="button" data-open-chat data-chat-prompt="María Paula, tengo una pregunta sobre mi pedido ${data.referencia}." class="btn-sharp border px-6 py-3 text-sm font-mono font-bold text-ink" style="border-color:rgba(242,241,236,.24)">Consultar asesor</button></div></div>`;
       } catch (err) {
         const info = Array.isArray(err) ? err : [err.message || 'Ocurrio un error.']; mostrarError(info[0], info[1]); btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-truck-fast"></i> Confirmar pedido contraentrega';
       }
@@ -501,6 +517,7 @@
     ]).then(([productos, envios]) => {
       PRODUCTOS = productos;
       ZONAS = envios.zonas;
+      ENVIO_CONFIG = envios;
       renderResumen().then(summary => {
         const items = window.MPXCarrito.leer().map(i => { const p = PRODUCTOS.find(x => x.sku === i.sku); return { ...i, nombre:p?.nombre, precio:p?.precio }; });
         if (items.length) window.MPXAnalytics?.once('checkout_start', 'begin_checkout', { currency:'COP', value:summary.total, items });
