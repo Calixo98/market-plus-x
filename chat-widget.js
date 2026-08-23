@@ -31,7 +31,9 @@
     el.dataset.operator = String(Boolean(m.operator));
     const image = m.image_url ? `<img class="mpx-chat-photo" src="${esc(m.image_url)}" alt="Foto del producto">` : '';
     const video = m.video_url ? `<video class="mpx-chat-video" controls playsinline preload="metadata" src="${esc(m.video_url)}"></video>` : '';
-    el.innerHTML = image + video + ((isPhoto || isVideo) ? '' : esc(displayText(m.body)));
+    const actionUrl = typeof m.action_url === 'string' && /^https:\/\/wa\.me\/\d+/.test(m.action_url) ? m.action_url : '';
+    const action = actionUrl ? `<a class="mpx-chat-action" href="${esc(actionUrl)}" target="_blank" rel="noopener noreferrer">${esc(displayText(m.action_label) || 'Escribir por WhatsApp')}</a>` : '';
+    el.innerHTML = image + video + ((isPhoto || isVideo) ? '' : esc(displayText(m.body))) + action;
     list.appendChild(el);
     list.scrollTop = list.scrollHeight;
     state.cursor = m.created_at;
@@ -107,15 +109,19 @@
   }
 
   async function open(prompt) {
+    const contextualPrompt = typeof prompt === 'string' ? prompt : '';
     panel.dataset.open = 'true';
     launcher.setAttribute('aria-expanded', 'true');
-    window.MPXAnalytics?.track('chat_open', { placement: prompt ? 'contextual' : 'launcher' });
+    window.MPXAnalytics?.track('chat_open', { placement: contextualPrompt ? 'contextual' : 'launcher' });
     await start();
-    if (prompt && !input.value) input.value = prompt;
+    if (contextualPrompt && !input.value) input.value = contextualPrompt;
     input.focus();
   }
 
-  launcher.addEventListener('click', open);
+  // No pasar directamente `open` como listener: el navegador le entrega el
+  // PointerEvent como primer argumento y terminaba convertido en
+  // "[object PointerEvent]" dentro del mensaje del cliente.
+  launcher.addEventListener('click', () => { void open(); });
   panel.querySelector('.mpx-chat-close').addEventListener('click', () => {
     panel.dataset.open = 'false';
     launcher.setAttribute('aria-expanded', 'false');

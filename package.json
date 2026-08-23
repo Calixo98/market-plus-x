@@ -1,4 +1,9 @@
 {
+  "name": "market-plus-x-live",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0"
   }

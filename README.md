@@ -1,21 +1,26 @@
-# Market Plus X — Landing Page
+# Market Plus X — tienda web
 
-Landing page de conversión para **Market Plus X**, tienda de Gafas Inteligentes con Cámara e IA en Colombia.
+Tienda web de **Market Plus X** para gafas inteligentes y vehículos RC en Colombia.
+Incluye catálogo, carrito, checkout, pagos Bold, contraentrega con reserva de
+inventario, cálculo de envíos, CRM de pedidos y chat conectado con Agente X.
 
 ## 🚀 Stack
 
-- **HTML5** semántico
-- **Tailwind CSS** (vía CDN — sin build)
-- **Vanilla JavaScript** (tabs, acordeón FAQ, navbar dinámica)
-- **FontAwesome** + **Inter** (Google Fonts)
+- **Frontend:** HTML, Tailwind CSS vía CDN y JavaScript sin framework.
+- **Backend:** funciones serverless en `api/` para pagos, pedidos, stock, envíos y chat.
+- **Datos:** Upstash Redis/KV para inventario y pedidos.
+- **Integraciones:** Bold, Resend, Meta CAPI, Turnstile y Agente X.
 
-Es un sitio 100% estático de un solo archivo (`index.html`). No requiere instalación ni dependencias.
+Las páginas públicas no requieren compilación. La dependencia de Speed Insights
+y las pruebas sí se administran con npm.
 
 ## 🖥️ Probar localmente
 
-Simplemente abre `index.html` en tu navegador. O sirve la carpeta:
+Instala dependencias, ejecuta las pruebas y sirve la carpeta:
 
 ```bash
+npm install
+npm test
 npx serve .
 ```
 
@@ -34,16 +39,13 @@ vercel        # despliegue de preview
 vercel --prod # despliegue a producción
 ```
 
-## 📞 Configuración
+## 📦 Superficies principales
 
-Todos los botones de compra apuntan a WhatsApp:
-`https://wa.me/573229320982`
-
-Para cambiar el número, busca y reemplaza `573229320982` en `index.html`.
-
-## 📦 Secciones
-
-Navbar · Hero · Características · Casos de uso (tabs) · Precios (4 modelos) · FAQ · Footer · Botón flotante WhatsApp.
+- `index.html`, `deportiva.html`, `racing.html` y `racing-producto.html`: catálogo.
+- `carrito.js` y `checkout.html`: compra y contraentrega.
+- `admin-pedidos.html`: operación y seguimiento de pedidos.
+- `api/`: funciones privadas de comercio y chat.
+- `tests/`: contratos del funnel, inventario y CRM.
 
 ## Chat web y contraentrega
 
