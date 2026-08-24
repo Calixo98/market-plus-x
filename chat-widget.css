@@ -4,5 +4,6 @@
 @media(max-width:520px){#mpx-chat-launcher{right:12px;bottom:12px}.checkout-page #mpx-chat-launcher{display:none}#mpx-chat-panel{inset:8px;width:auto;height:auto;border-radius:8px}}
 @media(prefers-reduced-motion:reduce){#mpx-chat-panel,#mpx-chat-launcher{scroll-behavior:auto}}
 .mpx-chat-photo-only{padding:0;background:transparent}.mpx-chat-photo-only .mpx-chat-photo{display:block;margin-bottom:0}
+.mpx-chat-bubble[data-failed=true]{border-color:#f87171}.mpx-chat-retry{display:block;margin-top:7px;border:1px solid currentColor;border-radius:3px;background:transparent;color:#fca5a5;padding:4px 7px;font:700 11px "Geist Mono",monospace;cursor:pointer}.mpx-chat-retry:focus{outline:2px solid #e4ff6b;outline-offset:2px}
 .mpx-chat-video{display:block;max-width:100%;width:100%;border-radius:4px;margin-bottom:7px;background:#000}.mpx-chat-video-only{padding:0;background:transparent}.mpx-chat-video-only .mpx-chat-video{margin-bottom:0}
 .mpx-chat-action{display:inline-block;margin-top:9px;border-radius:4px;background:#c8f02a;color:#07080a;padding:8px 10px;font-size:12px;font-weight:800;text-decoration:none}

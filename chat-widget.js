@@ -22,7 +22,10 @@
   const input = panel.querySelector('.mpx-chat-input');
 
   function render(m, advanceCursor = true) {
-    if (state.rendered.has(m.id)) return;
+    if (state.rendered.has(m.id)) {
+      if (advanceCursor && m.created_at) state.cursor = m.created_at;
+      return;
+    }
     state.rendered.add(m.id);
     const el = document.createElement('div');
     const isPhoto = m.kind === 'product_photo' || m.kind === 'racing_media' || Boolean(m.image_url);
@@ -38,6 +41,38 @@
     list.scrollTop = list.scrollHeight;
     if (advanceCursor && m.created_at) state.cursor = m.created_at;
     return el;
+  }
+
+  async function sendMessage(message, element) {
+    if (state.busy) return;
+    state.busy = true;
+    element?.querySelector('.mpx-chat-retry')?.remove();
+    element?.removeAttribute('data-failed');
+    status.textContent = 'María Paula está respondiendo…';
+    try {
+      const response = await fetch('/api/chat/messages', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ client_message_id: message.id, body: message.body, page: location.pathname })
+      });
+      if (!response.ok) throw new Error((await response.json().catch(() => ({}))).error || 'No se pudo enviar.');
+      window.MPXAnalytics?.once('first_chat_message', 'chat_message_sent', { channel: 'webchat' });
+      await load();
+    } catch (error) {
+      status.textContent = error.message || 'No se pudo enviar. Intenta otra vez.';
+      if (element) {
+        element.dataset.failed = 'true';
+        const retry = document.createElement('button');
+        retry.type = 'button';
+        retry.className = 'mpx-chat-retry';
+        retry.textContent = 'Reintentar';
+        retry.addEventListener('click', () => { void sendMessage(message, element); });
+        element.appendChild(retry);
+      }
+    } finally {
+      state.busy = false;
+      setTimeout(load, 1200);
+    }
   }
 
   async function load() {
@@ -153,25 +188,9 @@
     e.preventDefault();
     const body = input.value.trim();
     if (!body || state.busy || !(await start())) return;
-    state.busy = true;
     input.value = '';
-    status.textContent = 'María Paula está respondiendo…';
     const temp = { id: crypto.randomUUID(), direction: 'in', body, created_at: new Date().toISOString() };
-    render(temp, false);
-    try {
-      const r = await fetch('/api/chat/messages', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ client_message_id: temp.id, body, page: location.pathname })
-      });
-      if (!r.ok) throw new Error((await r.json()).error);
-      window.MPXAnalytics?.once('first_chat_message', 'chat_message_sent', { channel: 'webchat' });
-      await load();
-    } catch (err) {
-      status.textContent = err.message || 'No se pudo enviar. Intenta otra vez.';
-    } finally {
-      state.busy = false;
-      setTimeout(load, 1200);
-    }
+    const element = render(temp, false);
+    await sendMessage(temp, element);
   });
 })();

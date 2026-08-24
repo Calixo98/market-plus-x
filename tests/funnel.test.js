@@ -36,6 +36,7 @@ test('los CTA invitan a consultar asesor y el chat identifica a Maria Paula', ()
   assert.doesNotMatch(advisorCtas, /Preguntarle a María Paula|Pregúntale a María Paula|Consultar a María Paula/);
   const widget = read('chat-widget.js');
   assert.match(widget, /María Paula · Asesora/);
+  assert.match(widget, /mpx-chat-retry/);
   assert.match(widget, /location\.protocol === 'file:'/);
   assert.match(widget, /marketplusx\.com/);
 });
