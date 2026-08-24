@@ -67,14 +67,14 @@
     renderPanel();
   }
 
-  function setQty(sku, qty) {
+  function setQty(sku, qty, focusAction = null) {
     const items = leerCarrito();
     const item = items.find(i => i.sku === sku);
     if (!item) return;
     if (qty < 1) return quitar(sku);
     item.qty = Math.min(qty, 5);
     guardarCarrito(items);
-    renderPanel();
+    renderPanel({ focusSku: sku, focusAction, announcement: `Cantidad actualizada a ${item.qty}` });
   }
 
   function totalItems() {
@@ -106,6 +106,7 @@
       </style>
       <div id="carritoOverlay" class="fixed inset-0 z-[70] hidden bg-black/60"></div>
       <aside id="carritoPanel" role="dialog" aria-modal="true" aria-labelledby="carritoTitulo"
+             inert
              class="fixed top-0 right-0 z-[71] h-full w-full max-w-md translate-x-full transition-transform duration-300 bg-raised border-l border-hairline flex flex-col">
         <div class="flex items-center justify-between p-5 border-b border-hairline">
           <h2 id="carritoTitulo" class="text-lg font-bold">Tu carrito</h2>
@@ -114,6 +115,7 @@
           </button>
         </div>
         <div id="carritoItems" class="flex-1 overflow-y-auto p-5 space-y-4"></div>
+        <p id="carritoEstado" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
         <div class="p-5 border-t border-hairline space-y-3">
           <div class="flex items-center justify-between text-sm text-sec">
             <span>Subtotal</span>
@@ -181,7 +183,7 @@
     disparadorApertura = null;
   }
 
-  async function renderPanel() {
+  async function renderPanel({ focusSku = null, focusAction = null, announcement = '' } = {}) {
     const cont = document.getElementById('carritoItems');
     const subtotalEl = document.getElementById('carritoSubtotal');
     if (!cont) return;
@@ -219,13 +221,20 @@
 
     cont.querySelectorAll('[data-qty-menos]').forEach(b => b.addEventListener('click', () => {
       const it = leerCarrito().find(i => i.sku === b.dataset.qtyMenos);
-      if (it) setQty(it.sku, it.qty - 1);
+      if (it) setQty(it.sku, it.qty - 1, 'menos');
     }));
     cont.querySelectorAll('[data-qty-mas]').forEach(b => b.addEventListener('click', () => {
       const it = leerCarrito().find(i => i.sku === b.dataset.qtyMas);
-      if (it) setQty(it.sku, it.qty + 1);
+      if (it) setQty(it.sku, it.qty + 1, 'mas');
     }));
     cont.querySelectorAll('[data-quitar]').forEach(b => b.addEventListener('click', () => quitar(b.dataset.quitar)));
+    if (focusSku && focusAction) {
+      const datasetKey = focusAction === 'menos' ? 'qtyMenos' : 'qtyMas';
+      const target = [...cont.querySelectorAll(`[data-qty-${focusAction}]`)].find(button => button.dataset[datasetKey] === focusSku);
+      target?.focus();
+    }
+    const live = document.getElementById('carritoEstado');
+    if (live && announcement) live.textContent = announcement;
   }
 
   function marcarAgotados() {

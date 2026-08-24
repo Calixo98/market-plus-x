@@ -9,7 +9,7 @@ const pages = ['index.html', 'deportiva.html', 'racing.html', 'racing-producto.h
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 
 test('scripts propios y scripts inline tienen sintaxis valida', () => {
-  ['mpx-funnel.js', 'carrito.js', 'chat-widget.js', 'vercel-speed-insights.js', 'commerce-config.js', 'lib/meta.js', 'lib/orders.js', 'lib/crm-orders.js', 'api/pedidos.js', 'api/envios-estimado.js'].forEach(file => new vm.Script(read(file), { filename:file }));
+  ['mpx-funnel.js', 'carrito.js', 'chat-widget.js', 'vercel-speed-insights.js', 'commerce-config.js', 'lib/meta.js', 'lib/orders.js', 'lib/crm-orders.js', 'lib/bold-orders.js', 'lib/validation.js', 'lib/http.js', 'api/checkout.js', 'api/webhook-bold.js', 'api/pedidos.js', 'api/envios-estimado.js'].forEach(file => new vm.Script(read(file), { filename:file }));
   pages.forEach(file => {
     const html = read(file);
     [...html.matchAll(/<script(?![^>]*\bsrc=)(?![^>]*type=["']application\/ld\+json["'])[^>]*>([\s\S]*?)<\/script>/gi)]
@@ -81,6 +81,11 @@ test('contraentrega usa selección progresiva, consentimiento y confirmación cl
   assert.match(checkout, /id="switchToBold"/);
   assert.match(checkout, /cod_savings_offer_selected/);
   assert.match(read('api/checkout.js'), /catalogo\.calcularEnvio/);
+  assert.match(checkout, /aria-pressed="false"/);
+  assert.match(checkout, /codSuccessTitle/);
+  assert.match(checkout, /obtenerTokenTurnstile/);
+  assert.match(read('api/checkout.js'), /verifyTurnstile/);
+  assert.match(read('carrito.js'), /id="carritoPanel"[\s\S]*?inert/);
 });
 
 test('las unidades sin stock no aparecen como disponibles y se pueden liberar al cancelar', () => {

@@ -153,12 +153,12 @@
           <p class="text-xs font-mono font-semibold uppercase tracking-[.12em] text-accent">Paso 1 de 2</p>
           <h2 class="mt-2 text-xl font-bold font-display">¿Cómo quieres pagar?</h2>
           <p class="mt-2 text-sm" style="color:rgba(242,241,236,.60)">Elige una opción. Te pediremos los datos de envío en el siguiente paso.</p>
-          <div class="mt-5 grid sm:grid-cols-2 gap-3">
-            <button id="selectBold" type="button" class="text-left border p-5 transition hover:-translate-y-0.5" style="border-color:#C8F02A;background:rgba(200,240,42,.08)">
+          <div class="mt-5 grid sm:grid-cols-2 gap-3" role="group" aria-label="Método de pago">
+            <button id="selectBold" type="button" aria-pressed="false" class="text-left border p-5 transition hover:-translate-y-0.5" style="border-color:rgba(242,241,236,.24);background:rgba(242,241,236,.03)">
               <span class="flex items-center justify-between"><i class="fa-solid fa-lock text-accent"></i><span class="text-[10px] font-mono text-accent">INMEDIATO</span></span>
               <strong class="block mt-4 font-display">Pagar ahora</strong><span class="block mt-1 text-xs" style="color:rgba(242,241,236,.58)">Bold: tarjeta, PSE, Nequi o Bancolombia.</span>
             </button>
-            <button id="selectContraentrega" type="button" class="text-left border p-5 transition hover:-translate-y-0.5" style="border-color:rgba(242,241,236,.24);background:rgba(242,241,236,.03)">
+            <button id="selectContraentrega" type="button" aria-pressed="false" class="text-left border p-5 transition hover:-translate-y-0.5" style="border-color:rgba(242,241,236,.24);background:rgba(242,241,236,.03)">
               <span class="flex items-center justify-between"><i class="fa-solid fa-truck-fast text-accent"></i><span class="text-[10px] font-mono" style="color:rgba(242,241,236,.5)">PAGA AL RECIBIR</span></span>
               <strong class="block mt-4 font-display">Contraentrega</strong><span class="block mt-1 text-xs" style="color:rgba(242,241,236,.58)">Reservamos 24 h y confirmamos contigo por WhatsApp.</span>
             </button>
@@ -270,6 +270,45 @@
     let ZONAS = [];
     let ENVIO_CONFIG = {};
     let paymentMethod = null;
+    let turnstileScriptPromise = null;
+
+    function cargarTurnstile() {
+      if (window.turnstile) return Promise.resolve();
+      if (turnstileScriptPromise) return turnstileScriptPromise;
+      turnstileScriptPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        script.onload = resolve;
+        script.onerror = () => reject(new Error('No se pudo cargar la verificacion de seguridad.'));
+        document.head.appendChild(script);
+      });
+      return turnstileScriptPromise;
+    }
+
+    async function obtenerTokenTurnstile() {
+      const configResponse = await fetch('/api/chat/sessions', { cache:'no-store' });
+      const config = await configResponse.json().catch(() => ({}));
+      if (!configResponse.ok || !config.turnstileSiteKey) throw new Error('La verificacion de seguridad no esta disponible.');
+      await cargarTurnstile();
+      const token = await new Promise(resolve => {
+        const host = document.createElement('div');
+        host.style.display = 'none';
+        document.body.appendChild(host);
+        let settled = false;
+        const finish = value => { if (settled) return; settled = true; host.remove(); resolve(value); };
+        const widgetId = window.turnstile.render(host, {
+          sitekey: config.turnstileSiteKey,
+          size: 'invisible',
+          execution: 'execute',
+          callback: value => finish(value),
+          'error-callback': () => finish(null),
+          'timeout-callback': () => finish(null),
+        });
+        window.turnstile.execute(widgetId);
+      });
+      if (!token) throw new Error('No pudimos completar la verificacion de seguridad. Intenta nuevamente.');
+      return token;
+    }
 
     function configDescuento() {
       const config = window.MPX_COMMERCE_CONFIG?.upfrontDiscount;
@@ -394,9 +433,21 @@
     async function seleccionarMetodo(method) {
       paymentMethod = method;
       const isCod = method === 'cod';
+      const boldOption = document.getElementById('selectBold');
+      const codOption = document.getElementById('selectContraentrega');
+      boldOption.setAttribute('aria-pressed', String(!isCod));
+      codOption.setAttribute('aria-pressed', String(isCod));
+      [boldOption, codOption].forEach((option, index) => {
+        const selected = index === 0 ? !isCod : isCod;
+        option.style.borderColor = selected ? '#C8F02A' : 'rgba(242,241,236,.24)';
+        option.style.background = selected ? 'rgba(200,240,42,.08)' : 'rgba(242,241,236,.03)';
+      });
       document.getElementById('formCheckout').classList.remove('hidden');
       document.getElementById('documentoWrap').classList.toggle('hidden', !isCod);
       document.getElementById('consentimientoWrap').classList.toggle('hidden', !isCod);
+      document.getElementById('documento').required = isCod;
+      document.getElementById('departamento').required = isCod;
+      document.getElementById('consentimiento').required = isCod;
       document.getElementById('btnPagar').classList.toggle('hidden', isCod);
       document.getElementById('btnContraentrega').classList.toggle('hidden', !isCod);
       document.getElementById('formTitle').textContent = isCod ? 'Confirma tus datos para pagar al recibir' : 'Datos para pago y envío';
@@ -499,12 +550,14 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando…';
 
       try {
+        const turnstileToken = await obtenerTokenTurnstile();
         const resp = await fetch('api/checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             items: items.map(i => ({ sku: i.sku, qty: i.qty })),
             payment_method: 'bold',
+            turnstile_token: turnstileToken,
             ciudad,
             cliente: { nombre, email, telefono, direccion, departamento },
           }),
@@ -536,15 +589,14 @@
         const items = window.MPXCarrito.leer();
         if (!items.length) throw ['Tu carrito esta vacio.'];
         btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Reservando...';
-        const config = await fetch('/api/chat/sessions').then(r => r.json());
-        if (!window.turnstile) await new Promise((ok, bad) => { const s = document.createElement('script'); s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'; s.onload = ok; s.onerror = bad; document.head.appendChild(s); });
-        const token = await new Promise(resolve => { const host = document.createElement('div'); host.style.display='none'; document.body.appendChild(host); const widgetId = turnstile.render(host, { sitekey: config.turnstileSiteKey, size:'invisible', execution:'execute', callback:t => { host.remove(); resolve(t); }, 'error-callback':()=>resolve(null) }); turnstile.execute(widgetId); });
+        const token = await obtenerTokenTurnstile();
         const resp = await fetch('/api/pedidos-contraentrega', { method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({ items, ...datos, consent:{ accepted:true, source:'checkout', policy_version:'2026-08-13' }, turnstile_token:token }) });
         const data = await resp.json(); if (!resp.ok) throw [data.error || 'No se pudo crear el pedido.'];
         const trackedItems = items.map(i => { const p = PRODUCTOS.find(x => x.sku === i.sku); return { ...i, nombre:p?.nombre, precio:p?.precio }; });
         window.MPXAnalytics?.track('cod_order_submitted', { currency:'COP', value:data.resumen.total, items:trackedItems }, { eventId:`cod-lead-${data.referencia}` });
         window.MPXCarrito.vaciar?.();
-        document.getElementById('checkoutContenido').innerHTML = `<div class="lg:col-span-5 bento p-8 sm:p-12 text-center"><span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent text-night text-xl"><i class="fa-solid fa-check"></i></span><p class="mt-6 text-xs font-mono font-semibold uppercase tracking-[.12em] text-accent">Reserva creada · ${data.referencia}</p><h2 class="mt-2 text-2xl sm:text-3xl font-extrabold font-display">¡Listo! Pronto te contactaremos</h2><p class="mt-4 mx-auto max-w-xl" style="color:rgba(242,241,236,.66)">Te escribiremos al WhatsApp que registraste para confirmar la dirección, el producto y los detalles del envío. El valor mostrado es estimado y puede variar al generar la guía; si cambia, te avisamos antes de despachar.</p><div class="mt-7 mx-auto max-w-xl grid sm:grid-cols-3 gap-3 text-left text-xs"><div class="border p-4" style="border-color:rgba(242,241,236,.16)"><strong class="block text-accent">1 · Ahora</strong><span style="color:rgba(242,241,236,.58)">Tu unidad queda reservada por 24 horas.</span></div><div class="border p-4" style="border-color:rgba(242,241,236,.16)"><strong class="block text-accent">2 · Confirmación</strong><span style="color:rgba(242,241,236,.58)">Validamos contigo por WhatsApp.</span></div><div class="border p-4" style="border-color:rgba(242,241,236,.16)"><strong class="block text-accent">3 · Despacho</strong><span style="color:rgba(242,241,236,.58)">Recibes la guía y pagas al recibir.</span></div></div><div class="mt-8 flex flex-col sm:flex-row justify-center gap-3"><a href="index.html#modelos" class="btn-sharp bg-accent px-6 py-3 text-sm font-mono font-bold text-night">Volver a la tienda</a><button type="button" data-open-chat data-chat-prompt="María Paula, tengo una pregunta sobre mi pedido ${data.referencia}." class="btn-sharp border px-6 py-3 text-sm font-mono font-bold text-ink" style="border-color:rgba(242,241,236,.24)">Consultar asesor</button></div></div>`;
+        document.getElementById('checkoutContenido').innerHTML = `<div class="lg:col-span-5 bento p-8 sm:p-12 text-center" role="status" aria-live="polite" aria-atomic="true"><span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent text-night text-xl" aria-hidden="true"><i class="fa-solid fa-check"></i></span><p class="mt-6 text-xs font-mono font-semibold uppercase tracking-[.12em] text-accent">Reserva creada · ${data.referencia}</p><h2 id="codSuccessTitle" tabindex="-1" class="mt-2 text-2xl sm:text-3xl font-extrabold font-display">¡Listo! Pronto te contactaremos</h2><p class="mt-4 mx-auto max-w-xl" style="color:rgba(242,241,236,.66)">Te escribiremos al WhatsApp que registraste para confirmar la dirección, el producto y los detalles del envío. El valor mostrado es estimado y puede variar al generar la guía; si cambia, te avisamos antes de despachar.</p><div class="mt-7 mx-auto max-w-xl grid sm:grid-cols-3 gap-3 text-left text-xs"><div class="border p-4" style="border-color:rgba(242,241,236,.16)"><strong class="block text-accent">1 · Ahora</strong><span style="color:rgba(242,241,236,.58)">Tu unidad queda reservada por 24 horas.</span></div><div class="border p-4" style="border-color:rgba(242,241,236,.16)"><strong class="block text-accent">2 · Confirmación</strong><span style="color:rgba(242,241,236,.58)">Validamos contigo por WhatsApp.</span></div><div class="border p-4" style="border-color:rgba(242,241,236,.16)"><strong class="block text-accent">3 · Despacho</strong><span style="color:rgba(242,241,236,.58)">Recibes la guía y pagas al recibir.</span></div></div><div class="mt-8 flex flex-col sm:flex-row justify-center gap-3"><a href="index.html#modelos" class="btn-sharp bg-accent px-6 py-3 text-sm font-mono font-bold text-night">Volver a la tienda</a><button type="button" data-open-chat data-chat-prompt="María Paula, tengo una pregunta sobre mi pedido ${data.referencia}." class="btn-sharp border px-6 py-3 text-sm font-mono font-bold text-ink" style="border-color:rgba(242,241,236,.24)">Consultar asesor</button></div></div>`;
+        document.getElementById('codSuccessTitle').focus();
       } catch (err) {
         const info = Array.isArray(err) ? err : [err.message || 'Ocurrio un error.']; mostrarError(info[0], info[1]); btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-truck-fast"></i> Confirmar pedido contraentrega';
       }

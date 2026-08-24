@@ -1,26 +1,10 @@
 // POST /api/webhook-bold
-// Bold llama esta URL cuando una venta hecha por Link de Pagos cambia de
-// estado. Esta es la UNICA fuente de verdad para dar una venta por
-// confirmada: la redireccion al cliente (bold-order-id/bold-tx-status) es
-// solo informativa.
-//
-// Referencia: https://developers.bold.co/webhook
-//
-// Configurar en el Panel de Comercios -> Integraciones -> Webhooks:
-//   https://marketplusx.com/api/webhook-bold
-//
-// A diferencia de Wompi, Bold solo notifica 4 estados (no existe "pendiente"
-// para este tipo de pago):
-//   SALE_APPROVED -> venta confirmada. El stock ya se desconto al reservar;
-//                    aqui solo se registra en vendido:{sku} para reportes.
-//   SALE_REJECTED / VOID_APPROVED / VOID_REJECTED -> se libera el stock retenido.
-//
-// Bold exige responder 200 en menos de 2 segundos o reintenta (hasta 5 veces
-// en 24h) — por eso el trabajo aqui es minimo (unas pocas idas a Redis).
+// Fuente de verdad para el estado de pagos Bold.
+// Referencia oficial: https://developers.bold.co/webhook
 
-const kv = require('../lib/kv');
 const catalogo = require('../lib/catalogo');
 const { leerCuerpoCrudo, verificarFirmaWebhook } = require('../lib/bold');
+const { processBoldEvent } = require('../lib/bold-orders');
 const { enviarEventoCompra } = require('../lib/meta');
 const { notificarPedidoAprobado } = require('../lib/telegram');
 const { notifyOrder } = require('../lib/email');
@@ -30,153 +14,84 @@ const TIPOS_CONOCIDOS = ['SALE_APPROVED', 'SALE_REJECTED', 'VOID_APPROVED', 'VOI
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ ok: false });
 
-  // Importante: no tocar req.body en ningun punto de este archivo (ni antes
-  // ni despues). El getter de @vercel/node consume el stream para parsearlo
-  // el mismo, y si lo dispara primero, leerCuerpoCrudo() ya no tiene nada
-  // que leer. El HMAC de Bold firma los bytes crudos, no un JSON reconstruido.
-  const cuerpoCrudo = await leerCuerpoCrudo(req);
-
-  // El secreto vive SOLO en esta variable de entorno. En sandbox, Bold firma
-  // con clave vacia sin importar el valor de tu llave secreta de pruebas
-  // (documentado explicitamente por Bold): por eso BOLD_WEBHOOK_SECRET se
-  // deja en '' mientras se prueba, y se reemplaza por el secreto real de
-  // produccion recien al pasar a produccion.
-  const secreto = process.env.BOLD_WEBHOOK_SECRET;
-  if (secreto === undefined) {
+  // El HMAC cubre los bytes exactos enviados por Bold. No acceder a req.body
+  // antes de leer el stream crudo.
+  const rawBody = await leerCuerpoCrudo(req);
+  const secret = process.env.BOLD_WEBHOOK_SECRET;
+  if (secret === undefined) {
     console.error('BOLD_WEBHOOK_SECRET no configurado: no se puede validar el webhook');
-    // 500 (no 200): error NUESTRO de configuracion. Queremos que Bold
-    // reintente en vez de perder la venta en silencio.
     return res.status(500).json({ ok: false, error: 'Webhook no configurado' });
   }
-
-  const firmaRecibida = req.headers['x-bold-signature'];
-  if (!verificarFirmaWebhook(cuerpoCrudo, firmaRecibida, secreto)) {
+  if (!verificarFirmaWebhook(rawBody, req.headers['x-bold-signature'], secret)) {
     console.error('Webhook de Bold con firma invalida, ignorado');
-    // 400, no 200: payload no autenticado (o secreto mal copiado). Reintentar
-    // no ayuda si es un ataque, y si es un secreto mal copiado preferimos
-    // verlo fallar alto y claro en los logs, no silenciarlo con 200.
     return res.status(400).json({ ok: false, error: 'Firma invalida' });
   }
 
   let payload;
-  try {
-    payload = JSON.parse(cuerpoCrudo.toString('utf8'));
-  } catch {
-    return res.status(400).json({ ok: false, error: 'JSON invalido' });
+  try { payload = JSON.parse(rawBody.toString('utf8')); }
+  catch { return res.status(400).json({ ok: false, error: 'JSON invalido' }); }
+
+  const type = payload.type;
+  if (!TIPOS_CONOCIDOS.includes(type)) {
+    return res.status(200).json({ ok: true, ignorado: type || 'desconocido' });
   }
 
-  const tipo = payload.type;
-  if (!TIPOS_CONOCIDOS.includes(tipo)) {
-    return res.status(200).json({ ok: true, ignorado: tipo || 'desconocido' });
-  }
-
-  const datos = payload.data;
-  const referencia = datos && datos.metadata && datos.metadata.reference;
-  if (!referencia) return res.status(200).json({ ok: true });
-
-  const paymentId = datos.payment_id;
-  const montoRecibido = datos.amount && datos.amount.total;
+  const data = payload.data;
+  const reference = data?.metadata?.reference;
+  if (!reference) return res.status(200).json({ ok: true, ignorado: 'sin referencia' });
 
   try {
-    const reservaRaw = await kv.get(`reserva:${referencia}`);
+    // processBoldEvent comparte lock con la limpieza de vencimientos. Guarda
+    // el pedido antes de cualquier llamada externa y deduplica reintentos.
+    const result = await processBoldEvent(String(reference), {
+      type,
+      eventId: payload.id || null,
+      paymentId: data.payment_id || null,
+      amount: data.amount || null,
+      createdAt: data.created_at || null,
+    });
 
-    if (reservaRaw) {
-      const reserva = JSON.parse(reservaRaw);
-
-      if (tipo === 'SALE_APPROVED') {
-        const montoCoincide = montoRecibido === reserva.total;
-        if (!montoCoincide) {
-          console.error(`Discrepancia de monto en ${referencia}: esperado ${reserva.total}, recibido ${montoRecibido}`);
-        }
-
-        for (const item of reserva.items) {
-          await kv.incrby(`vendido:${item.sku}`, item.qty);
-        }
-        await kv.set(
-          `pedido:${referencia}`,
-          JSON.stringify({
-            referencia,
-            paymentId,
-            estado: tipo,
-            montoRecibido,
-            montoCoincide,
-            ...reserva,
-            confirmadoEn: new Date().toISOString(),
-          })
-        );
-        await kv.del(`reserva:${referencia}`);
-
-        // Meta Pixel Purchase, server-side (Conversions API): la redireccion
-        // del cliente no es prueba confiable de venta, asi que se dispara
-        // aqui, no en pago-respuesta.html. No bloquea la respuesta a Bold mas
-        // de lo necesario ni hace fallar el webhook si Meta no responde: el
-        // pedido ya quedo guardado arriba de todas formas.
-        const tiempoEvento = datos.created_at ? Math.floor(new Date(datos.created_at).getTime() / 1000) : Math.floor(Date.now() / 1000);
-        await enviarEventoCompra({
-          referencia,
-          total: reserva.total,
-          moneda: catalogo.moneda,
-          email: reserva.cliente.email,
-          telefono: reserva.cliente.telefono,
-          ip: reserva.ip,
-          userAgent: reserva.userAgent,
-          eventTime: tiempoEvento,
-        });
-
-        // Aviso por Telegram: hoy es la unica forma de enterarse de una venta
-        // sin entrar manualmente a admin-pedidos.html.
-        await notificarPedidoAprobado({
-          referencia,
-          total: reserva.total,
-          items: reserva.items,
-          cliente: reserva.cliente,
-        });
-        try {
-          await notifyOrder({ referencia, metodo: 'bold', estado: tipo, ...reserva, montoRecibido });
-        } catch (emailError) {
-          console.error(`No se pudo notificar por correo la venta ${referencia}:`, emailError.message);
-        }
-      } else {
-        // SALE_REJECTED / VOID_APPROVED / VOID_REJECTED: liberar el stock retenido.
-        await catalogo.liberarStock(reserva.items);
-        await kv.set(
-          `pedido:${referencia}`,
-          JSON.stringify({
-            referencia,
-            paymentId,
-            estado: tipo,
-            montoRecibido,
-            ...reserva,
-            confirmadoEn: new Date().toISOString(),
-          })
-        );
-        await kv.del(`reserva:${referencia}`);
-      }
-    } else {
-      // La reserva ya no existe: se proceso antes (idempotencia — Bold puede
-      // reenviar la misma notificacion hasta 5 veces), o expiro y fue
-      // reconciliada antes de que llegara este evento.
-      const pedidoExistente = await kv.get(`pedido:${referencia}`);
-      if (!pedidoExistente) {
-        await kv.set(
-          `pedido:${referencia}`,
-          JSON.stringify({
-            referencia,
-            paymentId,
-            estado: tipo,
-            montoRecibido,
-            confirmadoEn: new Date().toISOString(),
-            advertencia: tipo === 'SALE_APPROVED'
-              ? 'Sin reserva asociada (probablemente expiró antes del pago). Revisar manualmente qué producto correspondía a esta referencia; el stock pudo haberse liberado de más.'
-              : null,
-          })
-        );
-      }
+    if (result.review && !result.duplicate) {
+      console.error(`Pago Bold requiere revision manual (${reference}): ${result.order.motivoRevision}`);
+      try { await notifyOrder(result.order); }
+      catch (emailError) { console.error(`No se pudo notificar la revision ${reference}:`, emailError.message); }
     }
-  } catch (err) {
-    console.error('Error procesando webhook de Bold:', err);
-    // 500, no 200: si es un fallo transitorio de Redis, Bold reintentara
-    // (hasta 5 veces en 24h) y el proximo intento puede tener exito.
+
+    if (result.approved && !result.duplicate) {
+      const order = result.order;
+      const eventTimeMs = data.created_at ? new Date(data.created_at).getTime() : Date.now();
+      const eventTime = Number.isFinite(eventTimeMs) ? Math.floor(eventTimeMs / 1000) : Math.floor(Date.now() / 1000);
+
+      // Estas integraciones ya no corren una tras otra. El pedido y el stock
+      // quedaron confirmados primero; un fallo de aviso no revierte la venta.
+      const notifications = await Promise.allSettled([
+        enviarEventoCompra({
+          referencia: String(reference),
+          total: order.total,
+          moneda: catalogo.moneda,
+          email: order.cliente.email,
+          telefono: order.cliente.telefono,
+          ip: order.ip,
+          userAgent: order.userAgent,
+          eventTime,
+        }),
+        notificarPedidoAprobado({
+          referencia: String(reference),
+          total: order.total,
+          items: order.items,
+          cliente: order.cliente,
+        }),
+        notifyOrder(order),
+      ]);
+      notifications.forEach((notification, index) => {
+        if (notification.status === 'rejected') {
+          console.error(`Fallo la notificacion ${index + 1} de ${reference}:`, notification.reason?.message || notification.reason);
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error procesando webhook de Bold:', error);
+    // 500 pide a Bold reintentar si Redis tuvo un fallo transitorio.
     return res.status(500).json({ ok: false });
   }
 

@@ -9,7 +9,9 @@ module.exports = async (req, res) => {
   if (req.method !== 'GET') return res.status(405).json({ ok: false });
 
   try {
-    await expireCodOrders();
+    // La disponibilidad publica tambien reconcilia carritos Bold abandonados;
+    // asi la ultima unidad vuelve a aparecer sin exigir otro checkout.
+    await Promise.all([expireCodOrders(), catalogo.liberarReservasVencidas()]);
     const stock = await catalogo.stockDeTodos();
     res.setHeader('Cache-Control', 'no-store');
     return res.status(200).json({ ok: true, stock });

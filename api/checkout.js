@@ -12,6 +12,8 @@ const kv = require('../lib/kv');
 const catalogo = require('../lib/catalogo');
 const { crearLinkDePago } = require('../lib/bold');
 const { upfrontDiscount } = require('../commerce-config');
+const { cleanText, cleanEmail, normalizeColombianMobile } = require('../lib/validation');
+const { ipHash, rateLimit, verifyTurnstile } = require('../lib/security');
 
 const RESERVA_TTL_SEGUNDOS = 15 * 60;
 const MAX_QTY_POR_ITEM = 5;
@@ -20,15 +22,8 @@ const MAX_ITEMS = 10;
 // Limite de tasa por IP: evita que alguien bloquee el inventario mandando
 // checkouts sin pagar (cada intento retiene stock por 15 min).
 //
-// OJO: con un catalogo de solo 1-2 unidades por SKU, ningun limite lo bastante
-// generoso para clientes reales (que pueden necesitar reintentar 2-3 veces)
-// puede impedir matematicamente que UNA sola IP agote el catalogo completo en
-// una sola ventana (el total de unidades es menor que cualquier limite razonable
-// para humanos). Este limite eleva el costo del ataque (antes: gratis e ilimitado,
-// repetible cada 15 min sin espera) a "requiere gastar todo el cupo de una IP y
-// esperar 10 min para repetir" — no lo elimina del todo. Cerrarlo del todo
-// requeriria verificacion humana (captcha) antes de reservar, fuera de alcance
-// de este arreglo.
+// Turnstile evita que un bot bloquee piezas unicas creando links que nunca
+// paga. El rate limit atomico de security.js queda como segunda barrera.
 const LIMITE_INTENTOS_POR_VENTANA = 4;
 const VENTANA_LIMITE_SEGUNDOS = 10 * 60;
 
@@ -40,13 +35,6 @@ function obtenerIp(req) {
   const xff = req.headers['x-forwarded-for'];
   if (xff) return String(xff).split(',')[0].trim();
   return (req.socket && req.socket.remoteAddress) || 'desconocida';
-}
-
-async function excedeLimiteDeTasa(ip) {
-  const clave = `ratelimit:checkout:${ip}`;
-  const conteo = await kv.incrby(clave, 1);
-  if (conteo === 1) await kv.expire(clave, VENTANA_LIMITE_SEGUNDOS);
-  return conteo > LIMITE_INTENTOS_POR_VENTANA;
 }
 
 module.exports = async (req, res) => {
@@ -70,15 +58,23 @@ module.exports = async (req, res) => {
       return error(res, 400, 'Item de carrito invalido');
     }
   }
-  if (!ciudad || typeof ciudad !== 'string' || ciudad.trim().length < 2) {
-    return error(res, 400, 'Ciudad de envio requerida');
-  }
+  let ciudadLimpia;
+  try { ciudadLimpia = cleanText(ciudad, { field: 'Ciudad', min: 2, max: 100 }); }
+  catch { return error(res, 400, 'Ciudad de envio invalida'); }
   if (!cliente || typeof cliente !== 'object') return error(res, 400, 'Datos del cliente requeridos');
   const { nombre, email, telefono, direccion, departamento } = cliente;
-  if (!nombre || String(nombre).trim().length < 3) return error(res, 400, 'Nombre completo requerido');
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return error(res, 400, 'Email invalido');
-  if (!telefono || String(telefono).replace(/\D/g, '').length < 7) return error(res, 400, 'Teléfono invalido');
-  if (!direccion || String(direccion).trim().length < 5) return error(res, 400, 'Dirección de envío requerida');
+  let clienteLimpio;
+  try {
+    clienteLimpio = {
+      nombre: cleanText(nombre, { field: 'Nombre', min: 3, max: 120 }),
+      email: cleanEmail(email),
+      telefono: normalizeColombianMobile(telefono),
+      direccion: cleanText(direccion, { field: 'Direccion', min: 5, max: 300 }),
+      departamento: departamento ? cleanText(departamento, { field: 'Departamento', min: 2, max: 100 }) : null,
+    };
+  } catch (validationError) {
+    return error(res, 400, validationError.message);
+  }
 
   // Resolver cada item contra el catalogo real (precio e imagen del servidor,
   // no del cliente). Es validacion pura (sin tocar Redis), corre siempre.
@@ -96,34 +92,27 @@ module.exports = async (req, res) => {
   const ip = obtenerIp(req);
 
   try {
-    if (await excedeLimiteDeTasa(ip)) {
+    if (!(await rateLimit(`checkout:${ipHash(req)}`, LIMITE_INTENTOS_POR_VENTANA, VENTANA_LIMITE_SEGUNDOS))) {
       return error(res, 429, 'Demasiados intentos. Espera unos minutos e intenta de nuevo.');
+    }
+    if (!(await verifyTurnstile(body.turnstile_token, req))) {
+      return error(res, 403, 'Verificacion de seguridad fallida. Recarga e intenta nuevamente.');
     }
 
     // Liberar reservas abandonadas antes de intentar reservar la nueva: evita
     // que carritos nunca pagados dejen el inventario bloqueado indefinidamente.
     await catalogo.liberarReservasVencidas();
 
-    // Reserva ATOMICA: la propia operacion de descuento es la verificacion de
-    // stock. No hay ventana entre "leer disponibilidad" y "escribir la reserva".
+    // La reserva y el descuento de stock se guardan juntos mas abajo, dentro
+    // de un unico EVAL. Aqui solo resolvemos el carrito validado.
     const itemsParaReservar = itemsResueltos.map(it => ({ sku: it.sku, qty: it.qty }));
-    const resultadoReserva = await catalogo.reservarStock(itemsParaReservar);
-    if (!resultadoReserva.ok) {
-      const producto = catalogo.buscarProducto(resultadoReserva.sku);
-      return error(
-        res, 409,
-        `Sin stock suficiente para ${producto ? producto.nombre : resultadoReserva.sku} (quedan ${resultadoReserva.disponible})`
-      );
-    }
-
-    try {
       // Calcular el total. Envio gratis solo si TODO el carrito son referencias con envioGratis.
       const subtotal = itemsResueltos.reduce((acc, it) => acc + it.precio * it.qty, 0);
       const todoEnvioGratis = itemsResueltos.every(it => it.envioGratis);
-      const zona = catalogo.buscarZonaEnvio(ciudad);
+      const zona = catalogo.buscarZonaEnvio(ciudadLimpia);
       const envioDetalle = todoEnvioGratis
         ? { total: 0, base: 0, pagoEnCasa: 0, estimado: false, zona: { id: zona.id, nombre: zona.nombre } }
-        : catalogo.calcularEnvio({ ciudad, items: itemsResueltos, metodoPago: paymentMethod, subtotal });
+        : catalogo.calcularEnvio({ ciudad: ciudadLimpia, items: itemsResueltos, metodoPago: paymentMethod, subtotal });
       const envio = envioDetalle.total;
       const porcentaje = Number(upfrontDiscount?.percentage);
       const descuento = upfrontDiscount?.enabled && upfrontDiscount.paymentMethod === paymentMethod && Number.isFinite(porcentaje) && porcentaje > 0 && porcentaje <= 100
@@ -145,60 +134,65 @@ module.exports = async (req, res) => {
       const proto = String(req.headers['x-forwarded-proto'] || 'https').split(',')[0].trim();
       const callbackUrl = `${proto}://${req.headers.host}/pago-respuesta.html`;
 
-      // Primero se crea el link en Bold, y SOLO si Bold lo acepta se escribe
-      // la reserva en Redis. Si se escribiera antes y crearLinkDePago fallara,
-      // quedaria un registro reserva:{referencia} huerfano: liberarStock() ya
-      // le devuelve las unidades al contador aqui abajo, pero cuando esa
-      // reserva huerfana "expirara" mas tarde, liberarReservasVencidas() le
-      // devolveria esas MISMAS unidades otra vez, inflando el stock real.
-      const { url: paymentUrl } = await crearLinkDePago({
-        referencia,
-        totalPesos: total,
-        moneda: catalogo.moneda,
-        descripcion: `Market Plus X — pedido ${referencia}`,
-        callbackUrl,
-        expiraEnMs,
-        payerEmail: email,
-        identidad,
+      const reservationKey = `reserva:${referencia}`;
+      const reservation = {
+        items: itemsParaReservar,
+        ciudad: ciudadLimpia,
+        zona: zona.id,
+        cliente: clienteLimpio,
+        subtotal,
+        descuento,
+        envio,
+        envioDetalle,
+        total,
+        creadoEn: new Date().toISOString(),
+        expiraEn: expirationTime,
+        stockLiberado: false,
+        // El webhook llega desde Bold y no conoce el navegador del comprador.
+        ip,
+        userAgent: req.headers['user-agent'] || null,
+      };
+      const stored = await catalogo.guardarConInventario(reservationKey, reservation, {
+        stockDeltas: itemsParaReservar.map(item => ({ sku:item.sku, delta:-item.qty })),
       });
+      if (!stored.ok) {
+        const producto = catalogo.buscarProducto(stored.sku);
+        return error(res, 409, `Sin stock suficiente para ${producto ? producto.nombre : stored.sku} (quedan ${stored.disponible})`);
+      }
 
-      await kv.set(
-        `reserva:${referencia}`,
-        JSON.stringify({
-          items: itemsParaReservar,
-          ciudad,
-          zona: zona.id,
-          cliente: { nombre, email, telefono, direccion, departamento: departamento || null },
-          subtotal,
-          descuento,
-          envio,
-          envioDetalle,
-          total,
-          creadoEn: new Date().toISOString(),
-          expiraEn: expirationTime,
-          // Se guardan aqui (no en el webhook) porque son datos del navegador
-          // del comprador: el webhook lo llama Bold desde SUS servidores, asi
-          // que su IP/user-agent no sirven para el evento Purchase de Meta.
-          ip,
-          userAgent: req.headers['user-agent'] || null,
-        })
-      );
+      let paymentUrl;
+      try {
+        ({ url: paymentUrl } = await crearLinkDePago({
+          referencia,
+          totalPesos: total,
+          moneda: catalogo.moneda,
+          descripcion: `Market Plus X — pedido ${referencia}`,
+          callbackUrl,
+          expiraEnMs,
+          payerEmail: clienteLimpio.email,
+          identidad,
+        }));
+      } catch (boldError) {
+        // La reserva ya existe: liberar y marcarla en la misma transaccion.
+        // El limpiador vera stockLiberado=true y nunca sumara esas unidades de nuevo.
+        await catalogo.guardarConInventario(reservationKey, {
+          ...reservation,
+          estado: 'LINK_FAILED',
+          stockLiberado: true,
+          falloEn: new Date().toISOString(),
+        }, { stockDeltas: itemsParaReservar.map(item => ({ sku:item.sku, delta:item.qty })) });
+        throw boldError;
+      }
       // Red de seguridad de almacenamiento (24h): la logica real de vencimiento
       // usa el campo expiraEn de arriba, no este TTL.
-      await kv.expire(`reserva:${referencia}`, catalogo.RESERVA_TTL_RESPALDO_SEGUNDOS);
+      try { await kv.expire(reservationKey, catalogo.RESERVA_TTL_RESPALDO_SEGUNDOS); }
+      catch (ttlError) { console.error(`No se pudo asignar TTL a ${reservationKey}; expiraEn sigue siendo la fuente logica:`, ttlError); }
 
       return res.status(200).json({
         ok: true,
         paymentUrl,
         resumen: { subtotal, descuento, envio, envioEstimado: envioDetalle.estimado, notaEnvio: envioDetalle.nota || null, total, zona: zona.nombre },
       });
-    } catch (errInterno) {
-      // Ya reservamos el stock atomicamente arriba: si algo falla DESPUES de eso
-      // (p.ej. Bold rechazo el link, o no se pudo guardar la reserva), hay que
-      // devolverlo o el stock quedaria perdido para siempre.
-      await catalogo.liberarStock(itemsParaReservar);
-      throw errInterno;
-    }
   } catch (err) {
     console.error('Error en /api/checkout:', err);
     return error(res, 500, 'No se pudo iniciar el pago. Intenta de nuevo en un momento.');
