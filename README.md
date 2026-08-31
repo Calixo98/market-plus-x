@@ -51,10 +51,19 @@ vercel --prod # despliegue a producción
 
 Las funciones Vercel actúan como proxy seguro de Agente X, protegen sesiones
 con Turnstile y reservan inventario contraentrega en Upstash. Configurar
-`AGENT_X_URL`, `MARKETPLUS_INTERNAL_SECRET`, `CHAT_SESSION_SECRET`,
-`TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `WEBCHAT_ENABLED`, `COD_ENABLED`,
-`RESEND_API_KEY`, `EMAIL_FROM` y `NOTIFY_EMAIL`. Activar las banderas después
-de aplicar `supabase/migracion-webchat.sql` y desplegar Agente X.
+`AGENT_X_URL`, `AGENT_X_CHAT_SECRET`, `AGENT_X_ORDERS_SECRET`,
+`CHAT_SESSION_SECRET`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`,
+`WEBCHAT_ENABLED`, `COD_ENABLED`, `RESEND_API_KEY`, `EMAIL_FROM`,
+`NOTIFY_EMAIL`, `CRON_SECRET` y las credenciales de Bold/KV/Meta/Telegram.
+En producción, `AGENT_X_CHAT_SECRET` y `AGENT_X_ORDERS_SECRET` son obligatorios
+y deben ser distintos; `MARKETPLUS_INTERNAL_SECRET` solo queda como compatibilidad
+temporal fuera de producción. Activar las banderas después de aplicar
+`supabase/migracion-webchat.sql` y desplegar Agente X.
+
+El endpoint `/api/cron-retry-notifications` debe invocarse con
+`Authorization: Bearer <CRON_SECRET>` (Vercel Cron lo hace automáticamente al
+configurarlo). Reintenta avisos pendientes y reconcilia reservas vencidas; no
+expone datos personales en la URL.
 
 ---
 

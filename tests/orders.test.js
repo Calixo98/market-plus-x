@@ -5,6 +5,7 @@ const path = require('node:path');
 const store = new Map();
 const lockTails = new Map();
 let emailCount = 0;
+let inputCount = 0;
 
 const fakeKv = {
   async get(key) { return store.has(key) ? store.get(key) : null; },
@@ -63,16 +64,18 @@ const catalogo = require('../lib/catalogo');
 const { processBoldEvent } = require('../lib/bold-orders');
 
 function input(productName) {
+  inputCount += 1;
   return {
     product_name: productName,
     qty: 1,
+    idempotency_key: `cod-test-key-${String(inputCount).padStart(4, '0')}`,
     cliente: { nombre: 'Cliente Prueba', telefono: '3001234567', email: 'cliente@example.com', documento: '12345678', direccion: 'Calle 1 # 2-3', departamento: 'Cundinamarca' },
     ciudad: 'Bogotá D.C.',
     consent: { accepted: true, source: 'test', policy_version: '2026-08-13' },
   };
 }
 
-test.beforeEach(() => { store.clear(); lockTails.clear(); emailCount = 0; });
+test.beforeEach(() => { store.clear(); lockTails.clear(); emailCount = 0; inputCount = 0; });
 
 test('estima el envío de MK Racing con peso volumétrico y Pago en Casa', () => {
   const estimate = catalogo.estimarEnvio({ linea: 'racing', ciudad: 'Bogotá D.C.' });
@@ -124,6 +127,27 @@ test('dos clientes no reservan simultáneamente la última unidad', async () => 
   assert.equal(results.filter(result => result.status === 'rejected').length, 1);
   assert.equal(store.get('stock:MPX-G-PRO'), '0');
   assert.equal(emailCount, 1);
+});
+
+test('reintentar la misma contraentrega devuelve el pedido original sin reservar otra unidad', async () => {
+  store.set('stock:MPX-G-PRO', '2');
+  const request = input('Casual Pro');
+  const first = await createCodOrder(request);
+  const retry = await createCodOrder({ ...request });
+  assert.equal(retry.referencia, first.referencia);
+  assert.equal(store.get('stock:MPX-G-PRO'), '1');
+  assert.equal(emailCount, 1);
+});
+
+test('rechaza reutilizar una clave de contraentrega con datos distintos', async () => {
+  store.set('stock:MPX-G-PRO', '2');
+  const request = input('Casual Pro');
+  await createCodOrder(request);
+  await assert.rejects(
+    () => createCodOrder({ ...request, ciudad: 'Medellín' }),
+    error => error.statusCode === 409 && /idempotencia/i.test(error.message),
+  );
+  assert.equal(store.get('stock:MPX-G-PRO'), '1');
 });
 
 test('un carrito de varios SKU se reserva como todo o nada', async () => {

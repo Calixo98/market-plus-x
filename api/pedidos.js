@@ -34,8 +34,7 @@ function isAuthorized(req) {
   const adminToken = process.env.ADMIN_TOKEN;
   const auth = req.headers.authorization || '';
   const provided = auth.startsWith('Bearer ') ? auth.slice(7) : '';
-  const internal = process.env.MARKETPLUS_INTERNAL_SECRET && provided === process.env.MARKETPLUS_INTERNAL_SECRET;
-  return Boolean((adminToken && provided === adminToken) || internal);
+  return Boolean(adminToken && provided === adminToken);
 }
 
 function errorStatus(error) {

@@ -524,6 +524,18 @@
       return { ciudad, cliente: { nombre, email, telefono, direccion, departamento, documento } };
     }
 
+    let paymentIdempotencyKey = null;
+    let paymentIdempotencyFingerprint = '';
+
+    function paymentRequestKey(items, datos) {
+      const fingerprint = JSON.stringify({ items: items.map(i => ({ sku:i.sku, qty:i.qty })), datos });
+      if (fingerprint !== paymentIdempotencyFingerprint || !paymentIdempotencyKey) {
+        paymentIdempotencyFingerprint = fingerprint;
+        paymentIdempotencyKey = `checkout-${crypto.randomUUID()}`;
+      }
+      return paymentIdempotencyKey;
+    }
+
     document.getElementById('formCheckout').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (paymentMethod !== 'bold') return;
@@ -551,12 +563,15 @@
 
       try {
         const turnstileToken = await obtenerTokenTurnstile();
+        const paymentDatos = { ciudad, cliente: { nombre, email, telefono, direccion, departamento } };
+        const idempotencyKey = paymentRequestKey(items, paymentDatos);
         const resp = await fetch('api/checkout', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'Idempotency-Key': idempotencyKey },
           body: JSON.stringify({
             items: items.map(i => ({ sku: i.sku, qty: i.qty })),
             payment_method: 'bold',
+            idempotency_key: idempotencyKey,
             turnstile_token: turnstileToken,
             ciudad,
             cliente: { nombre, email, telefono, direccion, departamento },
@@ -581,6 +596,18 @@
       }
     });
 
+    let codIdempotencyKey = null;
+    let codIdempotencyFingerprint = '';
+
+    function codRequestKey(items, datos) {
+      const fingerprint = JSON.stringify({ items: items.map(i => ({ sku:i.sku, qty:i.qty })), datos });
+      if (fingerprint !== codIdempotencyFingerprint || !codIdempotencyKey) {
+        codIdempotencyFingerprint = fingerprint;
+        codIdempotencyKey = `checkout-${crypto.randomUUID()}`;
+      }
+      return codIdempotencyKey;
+    }
+
     document.getElementById('btnContraentrega').addEventListener('click', async () => {
       ocultarError();
       const btn = document.getElementById('btnContraentrega');
@@ -590,7 +617,7 @@
         if (!items.length) throw ['Tu carrito esta vacio.'];
         btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Reservando...';
         const token = await obtenerTokenTurnstile();
-        const resp = await fetch('/api/pedidos-contraentrega', { method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({ items, ...datos, consent:{ accepted:true, source:'checkout', policy_version:'2026-08-13' }, turnstile_token:token }) });
+        const resp = await fetch('/api/pedidos-contraentrega', { method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({ items, ...datos, idempotency_key:codRequestKey(items, datos), consent:{ accepted:true, source:'checkout', policy_version:'2026-08-13' }, turnstile_token:token }) });
         const data = await resp.json(); if (!resp.ok) throw [data.error || 'No se pudo crear el pedido.'];
         const trackedItems = items.map(i => { const p = PRODUCTOS.find(x => x.sku === i.sku); return { ...i, nombre:p?.nombre, precio:p?.precio }; });
         window.MPXAnalytics?.track('cod_order_submitted', { currency:'COP', value:data.resumen.total, items:trackedItems }, { eventId:`cod-lead-${data.referencia}` });

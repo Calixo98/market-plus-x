@@ -8,7 +8,8 @@ function noStore(res) {
 }
 
 function authorized(req) {
-  const secret = process.env.MARKETPLUS_INTERNAL_SECRET;
+  const production = process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production';
+  const secret = process.env.AGENT_X_ORDERS_SECRET || (!production && process.env.MARKETPLUS_INTERNAL_SECRET);
   return Boolean(secret && req.headers.authorization === `Bearer ${secret}`);
 }
 

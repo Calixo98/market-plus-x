@@ -106,6 +106,18 @@ test.beforeEach(() => {
   process.env.BOLD_WEBHOOK_SECRET = 'test';
 });
 
+test('rechaza un secreto webhook vacio en produccion', async () => {
+  const previousVercelEnv = process.env.VERCEL_ENV;
+  process.env.VERCEL_ENV = 'production';
+  process.env.BOLD_WEBHOOK_SECRET = '';
+  payload = { id: 'evt-secret-empty', type: 'SALE_REJECTED', data: { metadata: { reference: 'MPX-BOLD-SECRET' } } };
+  const res = response();
+  await handler(request(), res);
+  assert.equal(res.statusCode, 500);
+  if (previousVercelEnv === undefined) delete process.env.VERCEL_ENV;
+  else process.env.VERCEL_ENV = previousVercelEnv;
+});
+
 test('dos rechazos Bold simultaneos liberan la reserva una sola vez', async () => {
   const referencia = 'MPX-BOLD-RACE-REJECT';
   store.set('stock:MPX-G-PRO', '0');
@@ -116,8 +128,43 @@ test('dos rechazos Bold simultaneos liberan la reserva una sola vez', async () =
   await Promise.all(responses.map(res => handler(request(), res)));
 
   assert.equal(store.get('stock:MPX-G-PRO'), '1');
-  assert.equal(store.has(`reserva:${referencia}`), false);
+  assert.equal(store.has(`reserva:${referencia}`), true);
   assert.equal(responses.every(res => res.statusCode === 200), true);
+});
+
+test('un rechazo seguido de un segundo pago aprobado en el mismo link confirma la venta', async () => {
+  const referencia = 'MPX-BOLD-RETRY-APPROVE';
+  store.set('stock:MPX-G-PRO', '0');
+  store.set(`reserva:${referencia}`, JSON.stringify(reservation()));
+
+  payload = { id: 'evt-reject-retry', type: 'SALE_REJECTED', data: { payment_id: 'pay-rejected', amount: { total: 359000, currency: 'COP' }, metadata: { reference: referencia } } };
+  await handler(request(), response());
+
+  payload = { id: 'evt-approve-retry', type: 'SALE_APPROVED', data: { payment_id: 'pay-approved', amount: { total: 359000, currency: 'COP' }, metadata: { reference: referencia } } };
+  const res = response();
+  await handler(request(), res);
+
+  const order = JSON.parse(store.get(`pedido:${referencia}`));
+  assert.equal(res.statusCode, 200);
+  assert.equal(order.estado, 'SALE_APPROVED');
+  assert.equal(order.paymentId, 'pay-approved');
+  assert.equal(store.get('stock:MPX-G-PRO'), '0');
+  assert.equal(store.get('vendido:MPX-G-PRO'), '1');
+  assert.equal(store.has(`reserva:${referencia}`), false);
+  assert.equal(emailCount, 1);
+});
+
+test('resuelve un identificador LNK de Bold con la referencia externa guardada', async () => {
+  const referencia = 'MPX-BOLD-LINK-MAP';
+  store.set('stock:MPX-G-PRO', '0');
+  store.set(`reserva:${referencia}`, JSON.stringify(reservation()));
+  store.set('bold-link:LNK_TEST_1', referencia);
+  payload = { id: 'evt-link-map', type: 'SALE_APPROVED', data: { payment_id: 'pay-link-map', amount: { total: 359000, currency: 'COP' }, metadata: { reference: 'LNK_TEST_1' } } };
+
+  const res = response();
+  await handler(request(), res);
+  assert.equal(res.statusCode, 200);
+  assert.equal(JSON.parse(store.get(`pedido:${referencia}`)).estado, 'SALE_APPROVED');
 });
 
 test('dos aprobaciones Bold simultaneas contabilizan y notifican una sola vez', async () => {

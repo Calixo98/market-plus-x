@@ -14,6 +14,7 @@ const { crearLinkDePago } = require('../lib/bold');
 const { upfrontDiscount } = require('../commerce-config');
 const { cleanText, cleanEmail, normalizeColombianMobile } = require('../lib/validation');
 const { ipHash, rateLimit, verifyTurnstile } = require('../lib/security');
+const { begin: beginIdempotency, complete: completeIdempotency, fail: failIdempotency } = require('../lib/idempotency');
 
 const RESERVA_TTL_SEGUNDOS = 15 * 60;
 const MAX_QTY_POR_ITEM = 5;
@@ -90,12 +91,27 @@ module.exports = async (req, res) => {
   if (!identidad) return error(res, 500, 'Integracion de pagos no configurada (falta BOLD_IDENTITY_KEY)');
 
   const ip = obtenerIp(req);
+  let idempotencyContext = null;
+  let paymentCreated = false;
 
   try {
+    const suppliedIdempotencyKey = body.idempotency_key || req.headers['idempotency-key'];
+    idempotencyContext = await beginIdempotency('checkout', suppliedIdempotencyKey, {
+      items: itemsResueltos.map(item => ({ sku: item.sku, qty: item.qty })),
+      ciudad: ciudadLimpia,
+      cliente: clienteLimpio,
+      paymentMethod,
+    });
+    if (idempotencyContext.status === 'completed') {
+      return res.status(200).json(idempotencyContext.response);
+    }
+
     if (!(await rateLimit(`checkout:${ipHash(req)}`, LIMITE_INTENTOS_POR_VENTANA, VENTANA_LIMITE_SEGUNDOS))) {
+      await failIdempotency(idempotencyContext);
       return error(res, 429, 'Demasiados intentos. Espera unos minutos e intenta de nuevo.');
     }
     if (!(await verifyTurnstile(body.turnstile_token, req))) {
+      await failIdempotency(idempotencyContext);
       return error(res, 403, 'Verificacion de seguridad fallida. Recarga e intenta nuevamente.');
     }
 
@@ -157,12 +173,14 @@ module.exports = async (req, res) => {
       });
       if (!stored.ok) {
         const producto = catalogo.buscarProducto(stored.sku);
+        await failIdempotency(idempotencyContext);
         return error(res, 409, `Sin stock suficiente para ${producto ? producto.nombre : stored.sku} (quedan ${stored.disponible})`);
       }
 
       let paymentUrl;
+      let paymentLink;
       try {
-        ({ url: paymentUrl } = await crearLinkDePago({
+        ({ url: paymentUrl, paymentLink } = await crearLinkDePago({
           referencia,
           totalPesos: total,
           moneda: catalogo.moneda,
@@ -172,6 +190,7 @@ module.exports = async (req, res) => {
           payerEmail: clienteLimpio.email,
           identidad,
         }));
+        paymentCreated = true;
       } catch (boldError) {
         // La reserva ya existe: liberar y marcarla en la misma transaccion.
         // El limpiador vera stockLiberado=true y nunca sumara esas unidades de nuevo.
@@ -183,18 +202,44 @@ module.exports = async (req, res) => {
         }, { stockDeltas: itemsParaReservar.map(item => ({ sku:item.sku, delta:item.qty })) });
         throw boldError;
       }
-      // Red de seguridad de almacenamiento (24h): la logica real de vencimiento
-      // usa el campo expiraEn de arriba, no este TTL.
-      try { await kv.expire(reservationKey, catalogo.RESERVA_TTL_RESPALDO_SEGUNDOS); }
-      catch (ttlError) { console.error(`No se pudo asignar TTL a ${reservationKey}; expiraEn sigue siendo la fuente logica:`, ttlError); }
 
-      return res.status(200).json({
+      if (paymentLink) {
+        // Conserva ambos identificadores: Bold puede devolver el link LNK_*
+        // en metadata.reference en algunos flujos, mientras que otras
+        // notificaciones usan la referencia externa MPX_*. Estas escrituras
+        // son auxiliares: si fallan, nunca se libera una reserva cuyo cobro
+        // ya existe; el webhook puede seguir resolviendo la referencia MPX_*.
+        try {
+          await catalogo.guardarConInventario(reservationKey, {
+            ...reservation,
+            paymentUrl,
+            paymentLink,
+          });
+          await kv.set(`bold-link:${paymentLink}`, referencia, { exSeconds: catalogo.RESERVA_TTL_RESPALDO_SEGUNDOS });
+        } catch (metadataError) {
+          console.error(`No se pudo guardar metadata Bold para ${referencia}; se conserva la reserva:`, metadataError.message || metadataError);
+        }
+      }
+      // La reserva activa no recibe TTL físico: si Redis la elimina antes del
+      // limpiador, el stock quedaría descontado sin forma de reconciliarlo.
+      // El vencimiento lógico usa `expiraEn`; el cron de mantenimiento aplica
+      // después el TTL de respaldo cuando ya liberó el inventario.
+
+      const response = {
         ok: true,
         paymentUrl,
+        paymentLink: paymentLink || null,
         resumen: { subtotal, descuento, envio, envioEstimado: envioDetalle.estimado, notaEnvio: envioDetalle.nota || null, total, zona: zona.nombre },
-      });
+      };
+      await completeIdempotency(idempotencyContext, response);
+      return res.status(200).json(response);
   } catch (err) {
+    // Si Bold ya devolvio una URL, no borrar la clave: un reintento debe
+    // quedarse bloqueado para evitar crear un segundo cobro mientras se
+    // reconcilia una posible escritura incompleta de idempotencia.
+    if (!paymentCreated) await failIdempotency(idempotencyContext);
     console.error('Error en /api/checkout:', err);
-    return error(res, 500, 'No se pudo iniciar el pago. Intenta de nuevo en un momento.');
+    const status = Number(err.statusCode) >= 400 && Number(err.statusCode) < 500 ? err.statusCode : 500;
+    return error(res, status, status < 500 ? err.message : 'No se pudo iniciar el pago. Intenta de nuevo en un momento.');
   }
 };

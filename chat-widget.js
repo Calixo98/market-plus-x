@@ -13,7 +13,7 @@
     ? 'El chat funciona desde la tienda publicada. Abre marketplusx.com para hablar con María Paula.'
     : 'El chat no está disponible temporalmente. Intenta de nuevo en un momento.';
 
-  document.body.insertAdjacentHTML('beforeend', `<button id="mpx-chat-launcher" type="button" aria-controls="mpx-chat-panel" aria-expanded="false">Consultar asesor</button><section id="mpx-chat-panel" role="dialog" aria-label="Chat de Market Plus X" data-open="false"><header class="mpx-chat-head"><div><div class="mpx-chat-title">María Paula · Asesora</div><div class="mpx-chat-sub">ASESORÍA MARKET PLUS X</div></div><button class="mpx-chat-close" type="button" aria-label="Cerrar chat">×</button></header><div class="mpx-chat-messages" aria-live="polite"></div><div><div class="mpx-chat-status" role="status" aria-live="polite" aria-atomic="true"></div><form class="mpx-chat-form"><input class="mpx-chat-input" maxlength="1200" autocomplete="off" placeholder="Escribe tu pregunta" aria-label="Mensaje"><button class="mpx-chat-send" type="submit">Enviar</button></form></div></section>`);
+  document.body.insertAdjacentHTML('beforeend', `<button id="mpx-chat-launcher" type="button" aria-controls="mpx-chat-panel" aria-expanded="false">Consultar asesor</button><section id="mpx-chat-panel" role="dialog" aria-modal="true" aria-label="Chat de Market Plus X" data-open="false"><header class="mpx-chat-head"><div><div class="mpx-chat-title">María Paula · Asesora</div><div class="mpx-chat-sub">ASESORÍA MARKET PLUS X</div></div><button class="mpx-chat-close" type="button" aria-label="Cerrar chat">×</button></header><div class="mpx-chat-messages" aria-live="polite"></div><div><div class="mpx-chat-status" role="status" aria-live="polite" aria-atomic="true"></div><form class="mpx-chat-form"><input class="mpx-chat-input" maxlength="1200" autocomplete="off" placeholder="Escribe tu pregunta" aria-label="Mensaje"><button class="mpx-chat-send" type="submit">Enviar</button></form></div></section>`);
 
   const panel = document.getElementById('mpx-chat-panel');
   const launcher = document.getElementById('mpx-chat-launcher');
@@ -175,6 +175,21 @@
     if (event.key === 'Escape') {
       event.preventDefault();
       close();
+      return;
+    }
+    if (event.key === 'Tab') {
+      const focusable = [...panel.querySelectorAll('button, input, a[href], [tabindex]:not([tabindex="-1"])')]
+        .filter(element => !element.hasAttribute('disabled') && element.getAttribute('aria-hidden') !== 'true');
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
   });
   document.addEventListener('click', e => {

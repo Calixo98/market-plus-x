@@ -3,13 +3,16 @@
 // Referencia oficial: https://developers.bold.co/webhook
 
 const catalogo = require('../lib/catalogo');
+const kv = require('../lib/kv');
 const { leerCuerpoCrudo, verificarFirmaWebhook } = require('../lib/bold');
 const { processBoldEvent } = require('../lib/bold-orders');
+const { saveNotificationResult } = require('../lib/orders');
 const { enviarEventoCompra } = require('../lib/meta');
 const { notificarPedidoAprobado } = require('../lib/telegram');
 const { notifyOrder } = require('../lib/email');
 
 const TIPOS_CONOCIDOS = ['SALE_APPROVED', 'SALE_REJECTED', 'VOID_APPROVED', 'VOID_REJECTED'];
+const NOTIFICATION_DEADLINE_MS = 1100;
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ ok: false });
@@ -18,7 +21,8 @@ module.exports = async (req, res) => {
   // antes de leer el stream crudo.
   const rawBody = await leerCuerpoCrudo(req);
   const secret = process.env.BOLD_WEBHOOK_SECRET;
-  if (secret === undefined) {
+  const production = process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production';
+  if (secret === undefined || (production && !String(secret).trim())) {
     console.error('BOLD_WEBHOOK_SECRET no configurado: no se puede validar el webhook');
     return res.status(500).json({ ok: false, error: 'Webhook no configurado' });
   }
@@ -37,7 +41,12 @@ module.exports = async (req, res) => {
   }
 
   const data = payload.data;
-  const reference = data?.metadata?.reference;
+  let reference = data?.metadata?.reference || data?.reference || data?.external_reference;
+  if (reference && !String(reference).startsWith('MPX-')) {
+    // API Link puede reportar el identificador LNK_* en metadata.reference;
+    // el checkout guarda la correspondencia con la referencia MPX externa.
+    reference = await kv.get(`bold-link:${String(reference)}`) || reference;
+  }
   if (!reference) return res.status(200).json({ ok: true, ignorado: 'sin referencia' });
 
   try {
@@ -53,8 +62,19 @@ module.exports = async (req, res) => {
 
     if (result.review && !result.duplicate) {
       console.error(`Pago Bold requiere revision manual (${reference}): ${result.order.motivoRevision}`);
-      try { await notifyOrder(result.order); }
-      catch (emailError) { console.error(`No se pudo notificar la revision ${reference}:`, emailError.message); }
+      const emailWork = notifyOrder(result.order)
+        .then(emailNotificationId => ({ status: 'sent', emailNotificationId }))
+        .catch(emailError => ({ status: 'failed', emailNotificationError: String(emailError.message || emailError) }));
+      const emailResult = await Promise.race([
+        emailWork,
+        new Promise(resolve => setTimeout(() => resolve({ status: 'pending' }), NOTIFICATION_DEADLINE_MS)),
+      ]);
+      await saveNotificationResult(`pedido:${String(reference)}`, emailResult.status === 'sent'
+        ? { emailNotificationId: emailResult.emailNotificationId, emailNotificationStatus: 'sent', emailNotificationError: null }
+        : emailResult.status === 'failed'
+          ? { emailNotificationStatus: 'failed', emailNotificationError: emailResult.emailNotificationError }
+          : { emailNotificationStatus: 'pending', notificationDeferredAt: new Date().toISOString() });
+      if (emailResult.status === 'failed') console.error(`No se pudo notificar la revision ${reference}:`, emailResult.emailNotificationError);
     }
 
     if (result.approved && !result.duplicate) {
@@ -64,7 +84,7 @@ module.exports = async (req, res) => {
 
       // Estas integraciones ya no corren una tras otra. El pedido y el stock
       // quedaron confirmados primero; un fallo de aviso no revierte la venta.
-      const notifications = await Promise.allSettled([
+      const notificationWork = Promise.allSettled([
         enviarEventoCompra({
           referencia: String(reference),
           total: order.total,
@@ -83,11 +103,35 @@ module.exports = async (req, res) => {
         }),
         notifyOrder(order),
       ]);
-      notifications.forEach((notification, index) => {
-        if (notification.status === 'rejected') {
-          console.error(`Fallo la notificacion ${index + 1} de ${reference}:`, notification.reason?.message || notification.reason);
-        }
-      });
+      const notifications = await Promise.race([
+        notificationWork,
+        new Promise(resolve => setTimeout(() => resolve(null), NOTIFICATION_DEADLINE_MS)),
+      ]);
+      const notificationResult = notifications
+        ? (() => {
+          notifications.forEach((notification, index) => {
+            if (notification.status === 'rejected') {
+              console.error(`Fallo la notificacion ${index + 1} de ${reference}:`, notification.reason?.message || notification.reason);
+            }
+          });
+          const [metaNotification, telegramNotification, emailNotification] = notifications;
+          return {
+            metaNotificationStatus: metaNotification.status === 'fulfilled' && metaNotification.value !== false ? 'sent' : 'failed',
+            metaNotificationError: metaNotification.status === 'rejected' ? String(metaNotification.reason?.message || metaNotification.reason) : null,
+            telegramNotificationStatus: telegramNotification.status === 'fulfilled' && telegramNotification.value !== false ? 'sent' : 'failed',
+            telegramNotificationError: telegramNotification.status === 'rejected' ? String(telegramNotification.reason?.message || telegramNotification.reason) : null,
+            ...(emailNotification.status === 'fulfilled'
+              ? { emailNotificationId: emailNotification.value, emailNotificationStatus: 'sent', emailNotificationError: null }
+              : { emailNotificationStatus: 'failed', emailNotificationError: String(emailNotification.reason?.message || emailNotification.reason) }),
+          };
+        })()
+        : {
+          metaNotificationStatus: 'pending',
+          telegramNotificationStatus: 'pending',
+          emailNotificationStatus: 'pending',
+          notificationDeferredAt: new Date().toISOString(),
+        };
+      await saveNotificationResult(`pedido:${String(reference)}`, notificationResult);
     }
   } catch (error) {
     console.error('Error procesando webhook de Bold:', error);

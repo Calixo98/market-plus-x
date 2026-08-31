@@ -4,7 +4,9 @@ const { fetchWithTimeout } = require('../../lib/http');
 
 function agentUrl(path) {
   const base = String(process.env.AGENT_X_URL || '').replace(/\/$/, '');
-  if (!base || !process.env.MARKETPLUS_INTERNAL_SECRET) throw new Error('Integracion de Agente X no configurada');
+  const production = process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production';
+  const secret = process.env.AGENT_X_CHAT_SECRET || (!production && process.env.MARKETPLUS_INTERNAL_SECRET);
+  if (!base || !secret) throw new Error('Integracion de Agente X no configurada');
   return `${base}${path}`;
 }
 
@@ -13,7 +15,7 @@ async function callAgent(path, options = {}) {
     ...options,
     headers: {
       ...(options.headers || {}),
-      authorization: `Bearer ${process.env.MARKETPLUS_INTERNAL_SECRET}`,
+      authorization: `Bearer ${process.env.AGENT_X_CHAT_SECRET || process.env.MARKETPLUS_INTERNAL_SECRET}`,
       'content-type': 'application/json',
     },
   }, 10000);
