@@ -1,9 +1,9 @@
-const kv = require('../../lib/kv');
-const { notifyOrder } = require('../../lib/email');
-const catalogo = require('../../lib/catalogo');
-const { expireCodOrders } = require('../../lib/orders');
-const { enviarEventoCompra } = require('../../lib/meta');
-const { notificarPedidoAprobado } = require('../../lib/telegram');
+const kv = require('../lib/kv');
+const { notifyOrder } = require('../lib/email');
+const catalogo = require('../lib/catalogo');
+const { expireCodOrders } = require('../lib/orders');
+const { enviarEventoCompra } = require('../lib/meta');
+const { notificarPedidoAprobado } = require('../lib/telegram');
 
 const STALE_CLAIM_MS = 10 * 60 * 1000;
 
