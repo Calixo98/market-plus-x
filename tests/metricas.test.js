@@ -67,6 +67,14 @@ test('métricas de pedidos requieren token y no ejecutan limpieza', async () => 
   assert.equal(result.payload.error, 'No autorizado');
 });
 
+test('métricas aceptan el secreto interno de Agente X', async () => {
+  process.env.MARKETPLUS_INTERNAL_SECRET = 'internal-metrics-secret';
+  seed('MPX-INTERNAL-METRICS');
+  const result = await invoke({ from: '2026-08-01', to: '2026-08-31' }, 'internal-metrics-secret');
+  assert.equal(result.statusCode, 200);
+  assert.equal(result.payload.summary.ordersCreated, 1);
+});
+
 test('métricas agregan pedidos por fecha y no devuelven PII', async () => {
   seed('MPX-METRICS-1');
   seed('MPX-METRICS-2', { metodo: 'contraentrega', estado: 'COD_CONFIRMED', total: 420000, creadoEn: '2026-08-15T12:00:00.000Z' });

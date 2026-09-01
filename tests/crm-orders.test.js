@@ -90,6 +90,14 @@ test('rechaza listado sin token y evita cache', async () => {
   assert.equal(result.headers['Cache-Control'], 'no-store');
 });
 
+test('permite al panel de Agente X usar el secreto interno sin exponer ADMIN_TOKEN', async () => {
+  process.env.MARKETPLUS_INTERNAL_SECRET = 'internal-orders-secret';
+  seed('MPX-INTERNAL');
+  const result = await invoke('GET', {}, 'internal-orders-secret');
+  assert.equal(result.statusCode, 200);
+  assert.equal(result.payload.pedidos[0].referencia, 'MPX-INTERNAL');
+});
+
 test('lista pedidos autenticados, hidrata CRM y conserva pedidos antiguos', async () => {
   seed('MPX-OLD', { creadoEn: '2026-08-14T09:00:00.000Z' });
   seed('MPX-BOLD-OLD', { creadoEn: '2026-08-14T08:00:00.000Z', metodo: undefined, estado: 'SALE_APPROVED' });

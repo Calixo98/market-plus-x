@@ -31,10 +31,11 @@ function adminActor(req) {
 }
 
 function isAuthorized(req) {
-  const adminToken = process.env.ADMIN_TOKEN;
   const auth = req.headers.authorization || '';
   const provided = auth.startsWith('Bearer ') ? auth.slice(7) : '';
-  return Boolean(adminToken && provided === adminToken);
+  const allowed = [process.env.ADMIN_TOKEN, process.env.MARKETPLUS_INTERNAL_SECRET]
+    .filter(Boolean);
+  return Boolean(provided && allowed.includes(provided));
 }
 
 function errorStatus(error) {
