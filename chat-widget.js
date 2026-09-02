@@ -23,7 +23,7 @@
 
   function render(m, advanceCursor = true) {
     if (state.rendered.has(m.id)) {
-      if (advanceCursor && m.created_at) state.cursor = m.created_at;
+      if (advanceCursor && m.created_at) state.cursor = m.cursor || `${m.created_at}|${m.id}`;
       return;
     }
     state.rendered.add(m.id);
@@ -39,7 +39,7 @@
     el.innerHTML = image + video + ((isPhoto || isVideo) ? '' : esc(displayText(m.body))) + action;
     list.appendChild(el);
     list.scrollTop = list.scrollHeight;
-    if (advanceCursor && m.created_at) state.cursor = m.created_at;
+    if (advanceCursor && m.created_at) state.cursor = m.cursor || `${m.created_at}|${m.id}`;
     return el;
   }
 

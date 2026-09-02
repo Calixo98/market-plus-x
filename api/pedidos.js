@@ -33,7 +33,7 @@ function adminActor(req) {
 function isAuthorized(req) {
   const auth = req.headers.authorization || '';
   const provided = auth.startsWith('Bearer ') ? auth.slice(7) : '';
-  const allowed = [process.env.ADMIN_TOKEN, process.env.MARKETPLUS_INTERNAL_SECRET]
+  const allowed = [process.env.ADMIN_TOKEN, process.env.AGENT_X_ORDERS_SECRET, process.env.MARKETPLUS_INTERNAL_SECRET]
     .filter(Boolean);
   return Boolean(provided && allowed.includes(provided));
 }

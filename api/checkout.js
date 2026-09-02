@@ -38,6 +38,14 @@ function obtenerIp(req) {
   return (req.socket && req.socket.remoteAddress) || 'desconocida';
 }
 
+function publicStoreOrigin() {
+  const configured = String(process.env.PUBLIC_STORE_URL || 'https://marketplusx.com').replace(/\/+$/, '');
+  if (!/^https:\/\/[A-Za-z0-9.-]+(?::\d+)?$/.test(configured)) {
+    throw new Error('PUBLIC_STORE_URL invalido');
+  }
+  return configured;
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return error(res, 405, 'Metodo no permitido');
 
@@ -142,13 +150,9 @@ module.exports = async (req, res) => {
       const expiraEnMs = Date.now() + RESERVA_TTL_SEGUNDOS * 1000;
       const expirationTime = new Date(expiraEnMs).toISOString();
 
-      // x-forwarded-proto puede llegar como lista separada por comas si hay
-      // varios proxies en la cadena (p.ej. "https,http" en vercel dev, que
-      // antepone el suyo al que ya mandamos nosotros) — solo el primer valor
-      // es el que importa. Bold rechaza la URL entera si el esquema no es
-      // exactamente "https".
-      const proto = String(req.headers['x-forwarded-proto'] || 'https').split(',')[0].trim();
-      const callbackUrl = `${proto}://${req.headers.host}/pago-respuesta.html`;
+      // El dominio de retorno lo fija el servidor; el navegador/proxy no puede
+      // elegirlo mediante Host o Forwarded. Esto evita callbacks manipulados.
+      const callbackUrl = `${publicStoreOrigin()}/pago-respuesta.html`;
 
       const reservationKey = `reserva:${referencia}`;
       const reservation = {

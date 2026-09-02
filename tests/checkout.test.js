@@ -8,6 +8,7 @@ let stock;
 let boldShouldFail;
 let metadataShouldFail;
 let boldCalls;
+let boldOptions;
 let requestCount = 0;
 
 function stub(modulePath, exports) {
@@ -43,8 +44,9 @@ stub(catalogPath, {
   },
 });
 stub(boldPath, {
-  async crearLinkDePago() {
+  async crearLinkDePago(options) {
     boldCalls += 1;
+    boldOptions = options;
     if (boldShouldFail) throw new Error('Bold temporalmente no disponible');
     return { url:'https://checkout.bold.co/test' };
   },
@@ -88,9 +90,11 @@ test.beforeEach(() => {
   boldShouldFail = false;
   metadataShouldFail = false;
   boldCalls = 0;
+  boldOptions = null;
   requestCount = 0;
   idempotencyRecords.clear();
   process.env.BOLD_IDENTITY_KEY = 'identity-test';
+  process.env.PUBLIC_STORE_URL = 'https://marketplusx.com';
 });
 
 test('checkout guarda reserva y stock juntos antes de crear el link Bold', async () => {
@@ -104,6 +108,17 @@ test('checkout guarda reserva y stock juntos antes de crear el link Bold', async
   assert.equal(reservation.total, 359000);
   assert.equal(reservation.stockLiberado, false);
   assert.equal(boldCalls, 1);
+});
+
+test('checkout usa el origen canónico aunque el Host del request sea manipulable', async () => {
+  const req = request();
+  req.headers.host = 'evil.example';
+  req.headers['x-forwarded-proto'] = 'http';
+  const res = response();
+  await handler(req, res);
+
+  assert.equal(res.statusCode, 200);
+  assert.equal(boldOptions.callbackUrl, 'https://marketplusx.com/pago-respuesta.html');
 });
 
 test('reintentar el mismo checkout devuelve el link original sin crear otro cobro', async () => {
