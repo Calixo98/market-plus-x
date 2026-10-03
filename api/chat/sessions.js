@@ -24,9 +24,12 @@ async function callAgent(path, options = {}) {
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method === 'GET') {
+    let hasSession = false;
+    try { hasSession = Boolean(readSession(req)); } catch { /* Malformed cookies cannot resume a session. */ }
     return res.status(200).json({
       enabled: process.env.WEBCHAT_ENABLED === '1',
       turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || null,
+      hasSession,
     });
   }
   if (req.method !== 'POST') return res.status(405).json({ ok: false });

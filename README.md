@@ -60,6 +60,17 @@ y deben ser distintos; `MARKETPLUS_INTERNAL_SECRET` solo queda como compatibilid
 temporal fuera de producción. Activar las banderas después de aplicar
 `supabase/migracion-webchat.sql` y desplegar Agente X.
 
+Chat startup uses a supported flexible Turnstile widget inside the dialog, shown
+only when interaction is needed, or compact sizing on narrow screens. Startup
+HTTP requests have a 15-second deadline including JSON consumption.
+Loading expires after 10 seconds; silent
+verification after 60 seconds, with one 120-second allowance when interaction
+begins. Failed verification never creates an unverified session; retry by
+opening the advisor again or sending the retained message. Valid signed sessions
+resume without another challenge. See [Cloudflare widget configuration](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/).
+Production verification must still check widget hostname/key configuration and
+an actual advisor response; mocked regression tests do not establish live health.
+
 El endpoint `/api/cron-retry-notifications` debe invocarse con
 `Authorization: Bearer <CRON_SECRET>` (Vercel Cron lo hace automáticamente al
 configurarlo). Reintenta avisos pendientes y reconcilia reservas vencidas; no

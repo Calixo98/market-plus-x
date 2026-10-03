@@ -20,6 +20,8 @@
   const list = panel.querySelector('.mpx-chat-messages');
   const status = panel.querySelector('.mpx-chat-status');
   const input = panel.querySelector('.mpx-chat-input');
+  let turnstileScriptPromise = null;
+  let startPromise = null;
 
   function render(m, advanceCursor = true) {
     if (state.rendered.has(m.id)) {
@@ -90,58 +92,139 @@
     }
   }
 
-  async function token() {
-    if (!state.siteKey) return null;
-    if (!window.turnstile) {
-      await new Promise((ok, bad) => {
-        const s = document.createElement('script');
-        s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-        s.onload = ok;
-        s.onerror = bad;
-        document.head.appendChild(s);
-      });
-    }
-    const attempt = () => new Promise(resolve => {
-      const host = document.createElement('div');
-      // No usar display:none: Turnstile falla con 300030 si su contenedor no se renderiza.
-      host.style.cssText = 'position:fixed;left:0;bottom:0;width:300px;height:65px;opacity:0;pointer-events:none;z-index:-1';
-      document.body.appendChild(host);
-      const done = value => { try { window.turnstile.remove(widgetId); } catch {} host.remove(); resolve(value); };
-      let widgetId;
-      widgetId = window.turnstile.render(host, {
-        sitekey: state.siteKey,
-        size: 'invisible',
-        execution: 'execute',
-        callback: t => done(t),
-        'error-callback': e => { state.turnstileError = String(e); done(null); },
-        'timeout-callback': () => { state.turnstileError = 'timeout'; done(null); }
-      });
-      window.turnstile.execute(widgetId);
-    });
-    let t = await attempt();
-    if (!t) t = await attempt();
-    return t;
+  function loadTurnstile() {
+    if (turnstileScriptPromise) return turnstileScriptPromise;
+    turnstileScriptPromise = new Promise((resolve, reject) => {
+      let script;
+      let settled = false;
+      const finish = error => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        if (script) { script.onload = null; script.onerror = null; }
+        if (error) { script?.remove(); reject(error); } else resolve();
+      };
+      const timer = setTimeout(() => finish(new Error('La verificación tardó demasiado. Intenta de nuevo.')), 10000);
+      const ready = () => {
+        if (settled) return;
+        try {
+          if (!window.turnstile?.render) throw new Error('No se pudo cargar la verificación. Intenta de nuevo.');
+          if (window.turnstile.ready) window.turnstile.ready(() => finish());
+          else finish();
+        } catch (error) { finish(error); }
+      };
+      if (window.turnstile?.render) ready();
+      else {
+        script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        script.onload = ready;
+        script.onerror = () => finish(new Error('No se pudo cargar la verificación. Intenta de nuevo.'));
+        document.head.appendChild(script);
+      }
+    }).catch(error => { turnstileScriptPromise = null; throw error; });
+    return turnstileScriptPromise;
   }
 
-  async function start() {
-    if (state.started) return true;
+  async function token() {
+    state.turnstileError = null;
+    if (!state.siteKey) { state.turnstileError = 'missing-sitekey'; return null; }
+    await loadTurnstile();
+    return new Promise(resolve => {
+      const host = document.createElement('div');
+      host.className = 'mpx-chat-verification';
+      status.parentNode.insertBefore(host, status);
+      let widgetId;
+      let settled = false;
+      let interactive = false;
+      const removeWidget = () => { if (widgetId !== undefined) { try { window.turnstile.remove(widgetId); } catch {} } };
+      const done = (value, error = null) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        state.turnstileError = error;
+        removeWidget();
+        host.remove();
+        resolve(value);
+      };
+      let timer = setTimeout(() => done(null, 'timeout-cliente'), 60000);
+      try {
+        widgetId = window.turnstile.render(host, {
+          sitekey: state.siteKey,
+          // Invisible is a dashboard mode, not a size. Managed challenges must remain usable.
+          // Flexible requires 300px of content width; the host has 14px padding per side.
+          size: host.clientWidth - 28 >= 300 ? 'flexible' : 'compact',
+          appearance: 'interaction-only', execution: 'execute',
+          retry: 'never', 'refresh-expired': 'never', 'refresh-timeout': 'never',
+          callback: t => done(t),
+          'error-callback': e => { done(null, String(e)); return true; },
+          'expired-callback': () => done(null, 'expired'),
+          'timeout-callback': () => done(null, 'timeout'),
+          'before-interactive-callback': () => {
+            if (settled || interactive) return;
+            interactive = true;
+            status.textContent = 'Completa la verificación para iniciar el chat.';
+            clearTimeout(timer);
+            timer = setTimeout(() => done(null, 'timeout-interactivo'), 120000);
+          }
+        });
+        // Also clean up a widget if an SDK callback fired synchronously during render.
+        if (settled) removeWidget();
+        else window.turnstile.execute(widgetId);
+      } catch { done(null, 'widget-error'); }
+    });
+  }
+
+  function start() {
+    if (state.started) return Promise.resolve(true);
+    if (!startPromise) startPromise = initialize().finally(() => { startPromise = null; });
+    return startPromise;
+  }
+
+  async function startupFetch(url, options = {}) {
+    const controller = new AbortController();
+    let timer;
+    const timeout = new Promise((resolve, reject) => {
+      timer = setTimeout(() => {
+        controller.abort();
+        const error = new Error('Startup request timed out');
+        error.name = 'AbortError';
+        reject(error);
+      }, 15000);
+    });
+    const request = (async () => {
+      const response = await fetch(url, { ...options, signal: controller.signal });
+      const data = await response.json().catch(() => null);
+      return { ok: response.ok, data };
+    })();
+    // The deadline covers JSON consumption, not only receipt of HTTP headers.
+    try { return await Promise.race([request, timeout]); }
+    finally { clearTimeout(timer); }
+  }
+
+  async function initialize() {
     status.textContent = 'Conectando…';
     try {
-      const configResponse = await fetch('/api/chat/sessions');
+      const configResponse = await startupFetch('/api/chat/sessions');
       if (!configResponse.ok) throw new Error(unavailableMessage());
-      const config = await configResponse.json();
+      const config = configResponse.data;
+      if (!config) throw new Error(unavailableMessage());
       if (!config.enabled) {
         status.textContent = 'Chat no disponible temporalmente.';
         return false;
       }
       state.siteKey = config.turnstileSiteKey;
-      const r = await fetch('/api/chat/sessions', {
+      const challengeToken = config.hasSession === true ? null : await token();
+      if (config.hasSession !== true && !challengeToken) {
+        status.textContent = 'No pudimos verificar la conexión. Intenta de nuevo para iniciar el chat.';
+        return false;
+      }
+      const r = await startupFetch('/api/chat/sessions', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ turnstile_token: await token(), turnstile_error: state.turnstileError || null })
+        body: JSON.stringify({ turnstile_token: challengeToken })
       });
       if (!r.ok) {
-        status.textContent = (await r.json().catch(() => ({}))).error || 'No pudimos iniciar el chat.';
+        status.textContent = r.data?.error || 'No pudimos iniciar el chat.';
         return false;
       }
       state.started = true;
@@ -150,7 +233,8 @@
       state.poll = setInterval(load, 2500);
       return true;
     } catch (error) {
-      status.textContent = location.protocol === 'file:' ? unavailableMessage() : (error.message || unavailableMessage());
+      status.textContent = location.protocol === 'file:' ? unavailableMessage()
+        : error.name === 'AbortError' ? 'La conexión tardó demasiado. Intenta de nuevo.' : (error.message || unavailableMessage());
       return false;
     }
   }
@@ -210,6 +294,7 @@
     e.preventDefault();
     const body = input.value.trim();
     if (!body || state.busy || !(await start())) return;
+    if (state.busy) return;
     input.value = '';
     const temp = { id: crypto.randomUUID(), direction: 'in', body, created_at: new Date().toISOString() };
     const element = render(temp, false);
