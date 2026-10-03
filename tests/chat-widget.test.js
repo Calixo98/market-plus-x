@@ -5,7 +5,7 @@ const vm = require('node:vm');
 const path = require('node:path');
 
 function browser({ hasSession = false, scriptLoaded = true, renderError = false, executeError = false, syncSuccess = false, failConfig = false,
-  hostWidth = 360, stallConfigBody = false, stallSessionBody = false, rejectReady = false } = {}) {
+  hostWidth = 360, stallConfigBody = false, stallSessionBody = false, rejectReady = false, turnstileRequired } = {}) {
   class Element {
     constructor() { this.dataset = {}; this.listeners = {}; this.children = []; this.value = ''; this.style = {}; this.clientWidth = hostWidth; }
     addEventListener(name, handler) { this.listeners[name] = handler; }
@@ -57,7 +57,9 @@ function browser({ hasSession = false, scriptLoaded = true, renderError = false,
         sessionPosts += 1;
         if (stallSessionBody && sessionPosts === 1) return { ok: false, json: () => new Promise(() => {}) };
       }
-      return response(url === '/api/chat/sessions' && !options.method ? { enabled: true, turnstileSiteKey: 'test-sitekey', hasSession } : { messages: [] });
+      return response(url === '/api/chat/sessions' && !options.method
+        ? { enabled: true, turnstileSiteKey: turnstileRequired === false ? null : 'test-sitekey', hasSession, turnstileRequired }
+        : { messages: [] });
     },
     setTimeout: (callback, ms) => { const id = ++timerId; timers.set(id, { callback, ms }); return id; },
     clearTimeout: id => timers.delete(id), setInterval: () => ++timerId,
@@ -101,6 +103,22 @@ test('existing signed session resumes without loading Turnstile', async () => {
   assert.equal(b.widgets.length, 0);
   assert.equal(b.posts().length, 1);
   assert.equal(JSON.parse(b.posts()[0].options.body).turnstile_token, null);
+});
+
+test('server-disabled verification creates a new session without SDK or token', async () => {
+  const b = browser({ turnstileRequired: false, scriptLoaded: false }); b.open(); await b.flush();
+  assert.equal(b.head.children.length, 0);
+  assert.equal(b.widgets.length, 0);
+  assert.equal(b.posts().length, 1);
+  assert.equal(JSON.parse(b.posts()[0].options.body).turnstile_token, null);
+});
+
+test('legacy config lacking the disable flag still requires verification', async () => {
+  const b = browser(); b.open(); await b.flush();
+  assert.equal(b.widgets.length, 1);
+  assert.equal(b.posts().length, 0);
+  b.widgets[0].options['error-callback']('challenge-failed'); await b.flush();
+  assert.equal(b.posts().length, 0);
 });
 
 for (const scriptLoaded of [true, false]) {

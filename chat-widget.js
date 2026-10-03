@@ -213,8 +213,9 @@
         return false;
       }
       state.siteKey = config.turnstileSiteKey;
-      const challengeToken = config.hasSession === true ? null : await token();
-      if (config.hasSession !== true && !challengeToken) {
+      const needsChallenge = config.turnstileRequired !== false && config.hasSession !== true;
+      const challengeToken = needsChallenge ? await token() : null;
+      if (needsChallenge && !challengeToken) {
         status.textContent = 'No pudimos verificar la conexión. Intenta de nuevo para iniciar el chat.';
         return false;
       }

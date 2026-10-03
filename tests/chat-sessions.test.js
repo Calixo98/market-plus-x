@@ -7,11 +7,19 @@ const originalEnv = { ...process.env };
 let verificationSuccess = true;
 let upstreamStatus = 200;
 const calls = [];
+const counters = new Map();
+const limitCalls = [];
 const stub = (file, exports) => {
   const id = path.resolve(__dirname, file);
   require.cache[id] = { id, filename: id, loaded: true, exports };
 };
-stub('../lib/kv.js', { evalScript: async () => 1 });
+stub('../lib/kv.js', { async evalScript(script, keys, args) {
+  const key = keys[0];
+  const count = (counters.get(key) || 0) + 1;
+  counters.set(key, count);
+  limitCalls.push({ key, seconds: args[0] });
+  return count;
+} });
 stub('../lib/http.js', {
   async fetchWithTimeout(url) {
     calls.push(url);
@@ -20,7 +28,10 @@ stub('../lib/http.js', {
   }
 });
 const security = require('../lib/security');
+const chatPolicy = require('../lib/chat-policy');
+const canonicalTurnstilePolicy = chatPolicy.turnstileRequired;
 const handler = require('../api/chat/sessions');
+const messages = require('../api/chat/messages');
 const request = (method = 'POST', body = {}, cookie = '') => ({ method, body, headers: { cookie, 'x-forwarded-for': '127.0.0.1' } });
 const response = () => ({
   statusCode: 200, headers: {},
@@ -32,6 +43,9 @@ const signedCookie = () => `mpx_chat_session=${encodeURIComponent(security.signS
 
 test.beforeEach(() => {
   calls.length = 0;
+  counters.clear(); limitCalls.length = 0;
+  // Existing verification regressions exercise explicit re-enabled policy.
+  chatPolicy.turnstileRequired = true;
   verificationSuccess = true;
   upstreamStatus = 200;
   Object.assign(process.env, {
@@ -44,8 +58,81 @@ test.after(() => { process.env = originalEnv; });
 
 test('config exposes only a boolean for a valid signed session', async () => {
   const res = response(); await handler(request('GET', {}, signedCookie()), res);
-  assert.deepEqual(res.body, { enabled: true, turnstileSiteKey: 'local-sitekey', hasSession: true });
+  assert.deepEqual(res.body, { enabled: true, turnstileRequired: true, turnstileSiteKey: 'local-sitekey', hasSession: true });
   assert.equal(res.headers['Cache-Control'], 'no-store');
+  assert.equal(calls.length, 0);
+});
+
+test('canonical chat policy is disabled and config withholds the widget key', async () => {
+  assert.equal(canonicalTurnstilePolicy, false);
+  chatPolicy.turnstileRequired = false;
+  const res = response(); await handler(request('GET'), res);
+  assert.deepEqual(res.body, { enabled: true, turnstileRequired: false, turnstileSiteKey: null, hasSession: false });
+});
+
+test('direct startup uses a new bounded bucket despite exhausted verification attempts', async () => {
+  chatPolicy.turnstileRequired = false;
+  const req = request();
+  const hash = security.ipHash(req);
+  counters.set(`ratelimit:chat-session:${hash}`, 5);
+  const res = response(); await handler(req, res);
+  assert.equal(res.statusCode, 200);
+  assert.equal(counters.get(`ratelimit:chat-session:${hash}`), 5);
+  assert.deepEqual(limitCalls, [{ key: `ratelimit:chat-session:direct:${hash}`, seconds: 3600 }]);
+  assert.equal(calls.some(url => url.includes('siteverify')), false);
+  assert.ok(security.readSession(request('GET', {}, res.headers['Set-Cookie'].split(';')[0])));
+});
+
+test('direct startup still denies the sixth new session per IP per hour', async () => {
+  chatPolicy.turnstileRequired = false;
+  for (let attempt = 1; attempt <= 6; attempt++) {
+    const res = response(); await handler(request(), res);
+    assert.equal(res.statusCode, attempt <= 5 ? 200 : 429);
+    if (attempt === 6) assert.equal(res.headers['Set-Cookie'], undefined);
+  }
+  assert.equal(calls.filter(url => url.includes('webchat/session')).length, 5);
+});
+
+test('client flags cannot disable a re-enabled server challenge', async () => {
+  const res = response(); await handler(request('POST', { turnstileRequired: false }), res);
+  assert.equal(res.statusCode, 403);
+  assert.equal(calls.length, 0);
+  assert.match(limitCalls[0].key, /^ratelimit:chat-session:(?!direct:)/);
+});
+
+test('forged cookie in direct mode creates a new limited signed session, not a reused one', async () => {
+  chatPolicy.turnstileRequired = false;
+  const forgedId = crypto.randomUUID();
+  const res = response(); await handler(request('POST', {}, `mpx_chat_session=${forgedId}.forged`), res);
+  assert.equal(res.statusCode, 200);
+  assert.equal(limitCalls.length, 1);
+  const id = security.readSession(request('GET', {}, res.headers['Set-Cookie'].split(';')[0]));
+  assert.ok(id); assert.notEqual(id, forgedId);
+});
+
+test('direct chat still requires a signed cookie for messages and validates the payload', async () => {
+  chatPolicy.turnstileRequired = false;
+  for (const cookie of ['', `mpx_chat_session=${crypto.randomUUID()}.forged`]) {
+    const res = response(); await messages(request('POST', {}, cookie), res);
+    assert.equal(res.statusCode, 401);
+  }
+  const res = response(); await messages(request('POST', {}, signedCookie()), res);
+  assert.equal(res.statusCode, 400);
+  assert.equal(calls.length, 0);
+});
+
+test('direct mode preserves message session/IP quotas', async () => {
+  chatPolicy.turnstileRequired = false;
+  const cookie = signedCookie();
+  const req = request('POST', { client_message_id: crypto.randomUUID(), body: 'Test question' }, cookie);
+  const sessionId = security.readSession(req);
+  counters.set(`ratelimit:chat-message-session:${sessionId}`, 12);
+  const res = response(); await messages(req, res);
+  assert.equal(res.statusCode, 429);
+  assert.deepEqual(limitCalls, [
+    { key: `ratelimit:chat-message-session:${sessionId}`, seconds: 600 },
+    { key: `ratelimit:chat-message-ip:${security.ipHash(req)}`, seconds: 3600 }
+  ]);
   assert.equal(calls.length, 0);
 });
 

@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const { ipHash, rateLimit, signSession, readSession, verifyTurnstile } = require('../../lib/security');
 const { fetchWithTimeout } = require('../../lib/http');
+const chatPolicy = require('../../lib/chat-policy');
 
 function agentUrl(path) {
   const base = String(process.env.AGENT_X_URL || '').replace(/\/$/, '');
@@ -22,13 +23,15 @@ async function callAgent(path, options = {}) {
 }
 
 module.exports = async (req, res) => {
+  const turnstileRequired = chatPolicy.turnstileRequired !== false;
   res.setHeader('Cache-Control', 'no-store');
   if (req.method === 'GET') {
     let hasSession = false;
     try { hasSession = Boolean(readSession(req)); } catch { /* Malformed cookies cannot resume a session. */ }
     return res.status(200).json({
       enabled: process.env.WEBCHAT_ENABLED === '1',
-      turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || null,
+      turnstileRequired,
+      turnstileSiteKey: turnstileRequired ? process.env.TURNSTILE_SITE_KEY || null : null,
       hasSession,
     });
   }
@@ -44,10 +47,11 @@ module.exports = async (req, res) => {
   try {
     let sessionId = readSession(req);
     if (!sessionId) {
-      if (!(await rateLimit(`chat-session:${ipHash(req)}`, 5, 3600))) {
+      const sessionLimitKey = `${turnstileRequired ? 'chat-session:' : 'chat-session:direct:'}${ipHash(req)}`;
+      if (!(await rateLimit(sessionLimitKey, 5, 3600))) {
         return res.status(429).json({ ok: false, error: 'Demasiados intentos' });
       }
-      if (!(await verifyTurnstile(body?.turnstile_token, req))) {
+      if (turnstileRequired && !(await verifyTurnstile(body?.turnstile_token, req))) {
         console.error('turnstile: cliente reporta', String(body?.turnstile_error || 'sin error').slice(0, 40));
         return res.status(403).json({ ok: false, error: 'Verificacion de seguridad fallida' });
       }
