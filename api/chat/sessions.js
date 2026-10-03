@@ -45,6 +45,7 @@ module.exports = async (req, res) => {
         return res.status(429).json({ ok: false, error: 'Demasiados intentos' });
       }
       if (!(await verifyTurnstile(body?.turnstile_token, req))) {
+        console.error('turnstile: cliente reporta', String(body?.turnstile_error || 'sin error').slice(0, 40));
         return res.status(403).json({ ok: false, error: 'Verificacion de seguridad fallida' });
       }
       sessionId = crypto.randomUUID();

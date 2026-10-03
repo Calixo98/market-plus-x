@@ -110,7 +110,7 @@
         size: 'invisible',
         execution: 'execute',
         callback: t => { host.remove(); resolve(t); },
-        'error-callback': () => { host.remove(); resolve(null); }
+        'error-callback': e => { state.turnstileError = String(e); host.remove(); resolve(null); }
       });
       window.turnstile.execute(widgetId);
     });
@@ -131,7 +131,7 @@
       const r = await fetch('/api/chat/sessions', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ turnstile_token: await token() })
+        body: JSON.stringify({ turnstile_token: await token(), turnstile_error: state.turnstileError || null })
       });
       if (!r.ok) {
         status.textContent = (await r.json().catch(() => ({}))).error || 'No pudimos iniciar el chat.';
