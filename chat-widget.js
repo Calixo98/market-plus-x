@@ -101,19 +101,26 @@
         document.head.appendChild(s);
       });
     }
-    return new Promise(resolve => {
+    const attempt = () => new Promise(resolve => {
       const host = document.createElement('div');
-      host.style.display = 'none';
+      // No usar display:none: Turnstile falla con 300030 si su contenedor no se renderiza.
+      host.style.cssText = 'position:fixed;left:0;bottom:0;width:300px;height:65px;opacity:0;pointer-events:none;z-index:-1';
       document.body.appendChild(host);
-      const widgetId = window.turnstile.render(host, {
+      const done = value => { try { window.turnstile.remove(widgetId); } catch {} host.remove(); resolve(value); };
+      let widgetId;
+      widgetId = window.turnstile.render(host, {
         sitekey: state.siteKey,
         size: 'invisible',
         execution: 'execute',
-        callback: t => { host.remove(); resolve(t); },
-        'error-callback': e => { state.turnstileError = String(e); host.remove(); resolve(null); }
+        callback: t => done(t),
+        'error-callback': e => { state.turnstileError = String(e); done(null); },
+        'timeout-callback': () => { state.turnstileError = 'timeout'; done(null); }
       });
       window.turnstile.execute(widgetId);
     });
+    let t = await attempt();
+    if (!t) t = await attempt();
+    return t;
   }
 
   async function start() {
