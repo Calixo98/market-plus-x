@@ -109,8 +109,8 @@
         if (settled) return;
         try {
           if (!window.turnstile?.render) throw new Error('No se pudo cargar la verificación. Intenta de nuevo.');
-          if (window.turnstile.ready) window.turnstile.ready(() => finish());
-          else finish();
+          // The API is already available; SDK ready() rejects async-loaded scripts.
+          finish();
         } catch (error) { finish(error); }
       };
       if (window.turnstile?.render) ready();

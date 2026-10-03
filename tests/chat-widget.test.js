@@ -5,7 +5,7 @@ const vm = require('node:vm');
 const path = require('node:path');
 
 function browser({ hasSession = false, scriptLoaded = true, renderError = false, executeError = false, syncSuccess = false, failConfig = false,
-  hostWidth = 360, stallConfigBody = false, stallSessionBody = false } = {}) {
+  hostWidth = 360, stallConfigBody = false, stallSessionBody = false, rejectReady = false } = {}) {
   class Element {
     constructor() { this.dataset = {}; this.listeners = {}; this.children = []; this.value = ''; this.style = {}; this.clientWidth = hostWidth; }
     addEventListener(name, handler) { this.listeners[name] = handler; }
@@ -31,7 +31,10 @@ function browser({ hasSession = false, scriptLoaded = true, renderError = false,
   const head = new Element();
   const document = { body: new Element(), head, activeElement: elements['#mpx-chat-launcher'], getElementById: id => elements[`#${id}`], createElement: () => new Element(), addEventListener() {} };
   const api = {
-    ready: callback => callback(),
+    ready: callback => {
+      if (rejectReady) throw new Error('[Cloudflare Turnstile] Remove async/defer from the Turnstile api.js script tag before using turnstile.ready().');
+      callback();
+    },
     render(host, options) {
       if (renderError) throw new Error('render failure');
       widgets.push({ host, options });
@@ -99,6 +102,23 @@ test('existing signed session resumes without loading Turnstile', async () => {
   assert.equal(b.posts().length, 1);
   assert.equal(JSON.parse(b.posts()[0].options.body).turnstile_token, null);
 });
+
+for (const scriptLoaded of [true, false]) {
+  test(`${scriptLoaded ? 'preloaded' : 'dynamically loaded'} async SDK renders without unsupported ready()`, async () => {
+    const b = browser({ scriptLoaded, rejectReady: true });
+    b.open(); await b.flush();
+    if (!scriptLoaded) {
+      assert.equal(b.widgets.length, 0);
+      b.window.turnstile = b.api;
+      b.head.children[0].onload(); await b.flush();
+    }
+    assert.equal(b.widgets.length, 1);
+    b.widgets[0].options.callback('verified-token'); await b.flush();
+    assert.equal(b.posts().length, 1);
+    assert.equal(JSON.parse(b.posts()[0].options.body).turnstile_token, 'verified-token');
+    assert.equal(b.timers.size, 0);
+  });
+}
 
 test('narrow mobile and unmeasurable hosts choose compact instead of clipping flexible', async () => {
   for (const hostWidth of [302, 0]) {
