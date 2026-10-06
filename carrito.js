@@ -272,8 +272,9 @@
     thumb.classList.add('border-2', 'border-accent');
 
     if (thumb.dataset.sku) {
-      const addBtn = document.querySelector(`[data-add-to-cart][data-sku-group="${grupo}"], [data-buy-now][data-sku-group="${grupo}"]`);
-      if (addBtn) addBtn.dataset.sku = thumb.dataset.sku;
+      // Todos los botones del grupo (una página puede repetir el CTA abajo).
+      document.querySelectorAll(`[data-add-to-cart][data-sku-group="${grupo}"], [data-buy-now][data-sku-group="${grupo}"]`)
+        .forEach(addBtn => { addBtn.dataset.sku = thumb.dataset.sku; });
     }
   }
 
